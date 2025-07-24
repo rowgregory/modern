@@ -1,0 +1,191 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MembershipStatus {
+  PENDING // Awaiting approval/payment
+  ACTIVE // Active member
+  INACTIVE // Temporarily inactive
+  SUSPENDED // Suspended by admin
+  EXPIRED // Membership expired
+  CANCELLED // Cancelled by member
+
+  @@map("membership_status")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Basic info
+  name       String
+  email      String  @unique
+  phone      String?
+  company    String
+  profession String
+
+  // BNI membership
+  chapterId        String
+  chapter          Chapter          @relation(fields: [chapterId], references: [id])
+  joinedAt         DateTime?
+  expiresAt        DateTime?
+  membershipStatus MembershipStatus @default(PENDING)
+
+  // Profile & Networking
+  interests    String[] // Array of interest categories
+  profileImage String? // URL to profile image
+  isPublic     Boolean  @default(true)
+  isActive     Boolean  @default(true)
+
+  // Verification & Security
+  lastLoginAt DateTime?
+
+  // Face-to-face relationships
+  requestedMeetings FaceToFace[] @relation("FaceToFaceRequester")
+  receivedMeetings  FaceToFace[] @relation("FaceToFaceRecipient")
+
+  // Closed and credited relationships
+  givenCredits    ClosedAndCredited[] @relation("ClosedAndCreditedGiver")
+  receivedCredits ClosedAndCredited[] @relation("ClosedAndCreditedReceiver")
+
+  logs Log[]
+}
+
+model FaceToFace {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Meeting details
+  scheduledAt DateTime
+  duration    Int      @default(30) // minutes
+  location    String? // optional meeting location
+  meetingType String   @default("FACE_TO_FACE") // FACE_TO_FACE, VIRTUAL, PHONE
+
+  // Participants (exactly 2 BNI users)
+  requesterId String
+  requester   User   @relation("FaceToFaceRequester", fields: [requesterId], references: [id])
+
+  recipientId String
+  recipient   User   @relation("FaceToFaceRecipient", fields: [recipientId], references: [id])
+
+  // Status tracking
+  status String @default("REQUESTED") // REQUESTED, CONFIRMED, COMPLETED, CANCELLED
+
+  // Meeting outcomes (filled after completion)
+  completed        Boolean   @default(false)
+  completedAt      DateTime?
+  referralGiven    Boolean   @default(false)
+  referralReceived Boolean   @default(false)
+  followUpRequired Boolean   @default(false)
+
+  // Notes
+  notes          String? // general meeting notes
+  requesterNotes String? // private notes for requester
+  recipientNotes String? // private notes for recipient
+
+  // BNI specific tracking
+  chapterId String?
+  chapter   Chapter? @relation(fields: [chapterId], references: [id])
+
+  @@unique([requesterId, recipientId, scheduledAt]) // prevent duplicate meetings
+  @@index([chapterId])
+  @@index([scheduledAt])
+  @@index([status])
+}
+
+model ClosedAndCredited {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Who is giving the thank you
+  giverId String
+  giver   User   @relation("ClosedAndCreditedGiver", fields: [giverId], references: [id])
+
+  // Who is receiving the thank you (who provided the referral)
+  receiverId String
+  receiver   User   @relation("ClosedAndCreditedReceiver", fields: [receiverId], references: [id])
+
+  // Business details
+  businessValue Decimal @db.Decimal(10, 2) // monetary value of closed business
+  currency      String  @default("USD")
+  description   String // description of the business/service
+  clientName    String? // name of the client (optional)
+
+  // When the business was closed
+  closedDate DateTime
+
+  // BNI tracking
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+
+  // Meeting context (if announced during a chapter meeting)
+  announcedAt DateTime? // when this was announced to the chapter
+  meetingId   String? // reference to chapter meeting if applicable
+
+  // Status
+  status String @default("REPORTED") // REPORTED, VERIFIED, DISPUTED
+
+  // Notes
+  notes String? // additional details about the closed business
+
+  @@index([chapterId])
+  @@index([giverId])
+  @@index([receiverId])
+  @@index([closedDate])
+  @@index([announcedAt])
+}
+
+model Chapter {
+  id String @id @default(cuid())
+
+  name        String
+  location    String
+  meetingDay  String // e.g., "TUESDAY"
+  meetingTime String // e.g., "07:30"
+
+  // Relationships
+  users             User[]
+  faceToFaces       FaceToFace[]
+  closedAndCredited ClosedAndCredited[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Newsletter {
+  id                       String  @id @default(cuid())
+  firstName                String  @db.VarChar(255)
+  lastName                 String  @db.VarChar(255)
+  email                    String  @unique @db.VarChar(255)
+  agreedToPrivacyStatement Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Log {
+  id       String @id @default(cuid())
+  level    String // e.g., 'info', 'error', 'debug'
+  message  String
+  metadata Json? // Optional, store additional context
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
