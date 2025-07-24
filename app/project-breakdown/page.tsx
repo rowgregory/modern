@@ -262,7 +262,9 @@ const ProjectBreakdown = () => {
                     <div className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-blue-500 bg-clip-text text-transparent mb-3">
                       $1000
                     </div>
-                    <div className="text-base text-gray-300 mb-6">Just $67 per member (split 12 ways)</div>
+                    <div className="text-base text-gray-300 mb-6">
+                      Just ${(1000 / 12).toFixed(2)} per member (split 12 ways)
+                    </div>
 
                     <div className="space-y-3 mb-6">
                       <div className="flex items-center gap-2">
@@ -305,7 +307,7 @@ const ProjectBreakdown = () => {
                     </div>
                     <div className="text-base text-gray-300 mb-6">
                       {selectedFeatures.length > 0
-                        ? `Just ${Math.round(calculateSelectedTotal() / 12)} per member (split 12 ways)`
+                        ? `Starting at $${Math.round(totalPrice / 12)} per member (split 12 ways)`
                         : 'Choose your own features below'}
                     </div>
 
@@ -534,7 +536,7 @@ const ProjectBreakdown = () => {
                           <div className="bg-gray-800 rounded-lg p-4 mb-4">
                             <div className="text-sm text-gray-300 mb-2">Cost per member (split 12 ways):</div>
                             <div className="text-2xl font-bold text-white">
-                              ${(Math.round(calculateSelectedTotal() + totalPrice) / 12).toFixed(2)}
+                              ${((Math.round(calculateSelectedTotal() + totalPrice) * 0.85) / 12).toFixed(2)}
                             </div>
                           </div>
                         )}
@@ -563,92 +565,6 @@ const ProjectBreakdown = () => {
                   </div>
                 </div>
               </section>
-
-              {/* Decision Helper Section */}
-              {/* <section className="mb-12">
-                <div className="bg-gradient-to-br from-gray-950 to-gray-900 border-2 border-yellow-500/30 rounded-xl p-6">
-                  <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-2 bg-yellow-600/20 border border-yellow-500/30 rounded-full px-4 py-2 mb-4">
-                      <Star className="w-4 h-4 text-yellow-400" />
-                      <span className="text-yellow-300 text-sm font-medium">Decision Guide</span>
-                    </div>
-                    <h2 className="text-2xl font-bold text-white mb-4">Not Sure How Many Features You Need?</h2>
-                    <p className="text-gray-300 text-lg">Let&apos;s figure out what makes sense for our chapter</p>
-                  </div>
-
-                  <div className="grid md:grid-cols-3 gap-6">
-               
-                    <div className="bg-gray-900/70 border border-blue-500/30 rounded-lg p-6 text-center">
-                      <div className="w-12 h-12 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Building className="w-6 h-6 text-blue-400" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white mb-3">Start Small & Grow</h3>
-                      <p className="text-gray-300 text-sm mb-4">
-                        Begin with core features (3), see what works, then add more later
-                      </p>
-                      <div className="bg-blue-600/10 border border-blue-500/20 rounded-lg p-3">
-                        <div className="text-blue-400 font-semibold">$$2,500</div>
-                        <div className="text-xs text-blue-300">Perfect for testing the waters</div>
-                      </div>
-                    </div>
-
-            
-                    <div className="bg-gray-900/70 border-2 border-purple-500/50 rounded-lg p-6 text-center ring-2 ring-purple-400/20">
-                      <div className="w-12 h-12 bg-purple-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Zap className="w-6 h-6 text-purple-400" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white mb-3">Full Platform Power</h3>
-                      <p className="text-gray-300 text-sm mb-4">
-                        Get everything now - all 8 features for maximum networking impact
-                      </p>
-                      <div className="bg-purple-600/10 border border-purple-500/20 rounded-lg p-3">
-                        <div className="text-purple-400 font-semibold">$4,200 (Save $1,500)</div>
-                        <div className="text-xs text-purple-300">Best value + local discount</div>
-                      </div>
-                    </div>
-
-         
-                    <div className="bg-gray-900/70 border border-green-500/30 rounded-lg p-6 text-center">
-                      <div className="w-12 h-12 bg-green-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Target className="w-6 h-6 text-green-400" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white mb-3">Custom Selection</h3>
-                      <p className="text-gray-300 text-sm mb-4">
-                        Pick exactly what features matter most to our specific needs
-                      </p>
-                      <div className="bg-green-600/10 border border-green-500/20 rounded-lg p-3">
-                        <div className="text-green-400 font-semibold">$500 - $1,200 each</div>
-                        <div className="text-xs text-green-300">Mix and match approach</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 bg-yellow-600/10 border border-yellow-500/30 rounded-lg p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-yellow-600/20 rounded-lg flex-shrink-0">
-                        <CheckCircle className="w-5 h-5 text-yellow-400" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-yellow-300 mb-2">My Recommendation for Our Chapter:</h4>
-                        <p className="text-gray-300 text-sm leading-relaxed">
-                          Start with the <strong className="text-white">core 5 features</strong> (Member Management,
-                          Meeting Tracker, Referral Tracking, Revenue Logging, + Security) for about{' '}
-                          <strong className="text-yellow-300">$3,200</strong>. This gives us everything we need to track
-                          our networking ROI and prove the platform&apos;s value. Then we can add games and advanced
-                          features once we see the impact.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 text-center">
-                    <p className="text-gray-400 text-sm">
-                      💡 <strong className="text-gray-300">Good news:</strong> We can always add features later at the
-                      same rates. No pressure to decide everything today!
-                    </p>
-                  </div>
-                </div>
-              </section> */}
             </div>
 
             {/* Right Column - Pricing & Details */}
@@ -763,7 +679,7 @@ const ProjectBreakdown = () => {
                         Hosting:{' '}
                         {selectedFeatures.length > 0
                           ? `${Math.round(calculateSelectedTotal() * 0.025) + 50}/month`
-                          : 'N/A'}
+                          : '$50/month'}
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
