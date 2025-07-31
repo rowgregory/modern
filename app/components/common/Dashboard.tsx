@@ -324,8 +324,8 @@ const Dashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex smitems-center justify-between flex-col sm:flex-row">
+              <div className="mb-3 sm:mb-0">
                 <h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent mb-2">
                   Admin Dashboard
                 </h1>
@@ -359,18 +359,27 @@ const Dashboard = () => {
 
           {/* Analytics Navigation */}
           <div className="mb-8">
-            <div className="flex space-x-1 bg-gray-800/50 backdrop-blur-sm rounded-xl p-1 border border-gray-700">
+            <div className="flex flex-wrap sm:flex-nowrap gap-1 bg-gray-800/50 backdrop-blur-sm rounded-xl p-1 border border-gray-700">
               {['overview', 'revenue', 'members', 'applications'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setSelectedAnalyticsTab(tab)}
-                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 capitalize ${
+                  className={`flex-1 min-w-0 px-2 sm:px-6 py-3 rounded-lg font-medium transition-all duration-200 capitalize text-xs sm:text-base ${
                     selectedAnalyticsTab === tab
                       ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-lg'
                       : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
                   }`}
                 >
-                  {tab === 'applications' ? 'Member Applications' : tab}
+                  <span className="truncate block">
+                    {tab === 'applications' ? (
+                      <>
+                        <span className="sm:hidden">Apps</span>
+                        <span className="hidden sm:inline">Member Applications</span>
+                      </>
+                    ) : (
+                      tab
+                    )}
+                  </span>
                 </button>
               ))}
             </div>
