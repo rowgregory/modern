@@ -1,0 +1,274 @@
+'use client'
+
+import React, { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Save, Edit2, X, Settings2, MapPin, Calendar, Clock, CheckCircle } from 'lucide-react'
+
+// Components
+import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import { showToast } from '@/app/redux/features/toastSlice'
+import { useGetChapterSettingsQuery, useUpdateChapterSettingsMutation } from '@/app/redux/services/settingsApi'
+import { Input } from '@/app/components/ui/Input'
+import { Select } from '@/app/components/ui/Select'
+import { validateChapterSettingsForm } from '@/app/lib/utils/validations/validateChapterSettingsForm'
+import { MEETING_FREQUENCIES } from '@/app/lib/constants/settings/meetingFrequencies'
+import { MEETING_DAYS } from '@/app/lib/constants/settings/meetingDay'
+import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { normalizeTimeFormat } from '@/app/lib/utils/time/normalizeTimeFormat'
+
+const ChapterSettingsPage: React.FC = () => {
+  const dispatch = useAppDispatch()
+  const { settingsForm } = useAppSelector((state: RootState) => state.form)
+  const { handleInput, setErrors } = createFormActions('settingsForm', dispatch)
+  const [updateChapterSettings, { isLoading }] = useUpdateChapterSettingsMutation()
+  const [isEditing, setIsEditing] = useState(false)
+  const { data } = useGetChapterSettingsQuery(chapterId)
+  const inputs = settingsForm?.inputs
+
+  useEffect(() => {
+    if (data?.settings) {
+      dispatch(
+        setInputs({
+          formName: 'settingsForm',
+          data: {
+            name: data?.settings.name,
+            location: data?.settings.location,
+            meetingDay: data?.settings.meetingDay,
+            meetingTime: normalizeTimeFormat(data?.settings.meetingTime),
+            meetingFrequency: data?.settings.meetingFrequency
+          }
+        })
+      )
+    }
+  }, [dispatch, data?.settings])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    try {
+      if (!validateChapterSettingsForm(inputs, setErrors)) return
+
+      await updateChapterSettings({ chapterId, settings: inputs }).unwrap()
+
+      // Show success toast
+      dispatch(
+        showToast({
+          type: 'success',
+          message: 'Chapter Settings Updated',
+          description: 'Your chapter settings have been successfully updated.'
+        })
+      )
+
+      setIsEditing(false)
+    } catch (error: any) {
+      // Show error toast
+      dispatch(
+        showToast({
+          type: 'error',
+          message: 'Update Failed',
+          description: error.message || 'Unable to update chapter settings'
+        })
+      )
+    }
+  }
+
+  const handleCancel = () => {
+    setIsEditing(false)
+    // Reset form if needed
+    // dispatch(clearInputs({ formName: 'settingsForm' }))
+  }
+
+  return (
+    <div className="bg-gray-900">
+      <div className="flex h-[calc(100vh-66px)]">
+        {/* Main Configuration Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex-1 p-6 overflow-y-auto"
+        >
+          {/* Form Content */}
+          <>
+            <div className="flex items-center justify-end mb-8">
+              {!isEditing ? (
+                <motion.button
+                  onClick={() => setIsEditing(true)}
+                  className=" flex items-center space-x-2 text-violet-400 hover:text-violet-300  bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/30 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Edit2 className="w-4 h-4" />
+                  <span>Edit Settings</span>
+                </motion.button>
+              ) : (
+                <div className="flex space-x-3">
+                  <motion.button
+                    onClick={handleSubmit}
+                    disabled={isLoading}
+                    className=" flex items-center space-x-2  bg-violet-600 hover:bg-violet-700  text-white font-medium  px-4 py-2.5 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed  transition-all duration-200"
+                    whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                    whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{isLoading ? 'Saving...' : 'Save Changes'}</span>
+                  </motion.button>
+                  <motion.button
+                    onClick={handleCancel}
+                    className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <X className="w-4 h-4" />
+                    <span>Cancel</span>
+                  </motion.button>
+                </div>
+              )}
+            </div>
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Chapter Information */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-2 h-8 bg-gradient-to-b from-cyan-400 to-violet-400 rounded-full"></div>
+                  <h3 className="text-lg font-semibold text-white">Chapter Information</h3>
+                </div>
+
+                <Input
+                  label="Chapter Name"
+                  icon={<Settings2 className="text-violet-400 w-4 h-4" />}
+                  type="text"
+                  name="name"
+                  value={inputs.name || ''}
+                  onChange={handleInput}
+                  disabled={!isEditing}
+                  placeholder="Enter chapter name"
+                />
+
+                <Input
+                  label="Meeting Location"
+                  icon={<MapPin className="text-violet-400 w-4 h-4" />}
+                  type="text"
+                  name="location"
+                  value={inputs.location || ''}
+                  onChange={handleInput}
+                  disabled={!isEditing}
+                  placeholder="Enter meeting location"
+                />
+              </div>
+
+              {/* Meeting Schedule */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-2 h-8 bg-gradient-to-b from-violet-400 to-fuchsia-400 rounded-full"></div>
+                  <h3 className="text-lg font-semibold text-white">Meeting Schedule</h3>
+                </div>
+
+                <Select
+                  label="Meeting Day"
+                  icon={<Calendar className="text-violet-400 w-4 h-4" />}
+                  name="meetingDay"
+                  value={inputs.meetingDay || ''}
+                  onChange={handleInput}
+                  disabled={!isEditing}
+                  options={MEETING_DAYS}
+                />
+
+                <Input
+                  label="Meeting Time"
+                  icon={<Clock className="text-violet-400 w-4 h-4" />}
+                  type="time"
+                  name="meetingTime"
+                  value={inputs.meetingTime || ''}
+                  onChange={handleInput}
+                  disabled={!isEditing}
+                />
+
+                <Select
+                  label="Meeting Frequency"
+                  icon={<Calendar className="text-violet-400 w-4 h-4" />}
+                  name="meetingFrequency"
+                  value={inputs.meetingFrequency || 'WEEKLY'}
+                  onChange={handleInput}
+                  disabled={!isEditing}
+                  options={MEETING_FREQUENCIES}
+                />
+              </div>
+            </div>
+          </>
+        </motion.div>
+
+        <div className="hidden xl:block w-80 bg-gray-800/30 border-l border-gray-700/50 p-6 overflow-y-auto">
+          {/* Right Panel */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-gray-400 text-sm font-medium">Meeting Overview</span>
+            </div>
+
+            {/* Configuration Status */}
+            <motion.div
+              className="mt-8 p-6 bg-green-500/5 border border-green-500/20 rounded-xl"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="flex items-start space-x-4">
+                <motion.div
+                  className="p-2 bg-green-500/10 rounded-lg flex-shrink-0"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, -5, 0]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: 'reverse'
+                  }}
+                >
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                </motion.div>
+                <div>
+                  <h4 className="text-sm font-bold text-green-300">Configuration Active</h4>
+                  <p className="text-xs text-gray-400 mt-2 leading-relaxed">
+                    All chapter settings are current and operational. Your chapter is configured for
+                    <span className="text-white font-medium"> {inputs?.meetingFrequency?.toLowerCase()}</span> meetings
+                    every <span className="text-white font-medium">{inputs?.meetingDay?.toLowerCase()}</span> at
+                    <span className="text-white font-medium"> {inputs?.meetingTime}</span>.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+            {/* Quick Stats */}
+            <div className="mt-8 grid grid-cols-1 gap-4">
+              <motion.div
+                className="bg-gray-800/20 hover:bg-gray-600/20 border border-gray-700/30 rounded-xl p-4 text-center"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              >
+                <div className="text-2xl font-bold text-cyan-400">13</div>
+                <div className="text-xs text-gray-400 mt-1">Total Members</div>
+              </motion.div>
+              <motion.div
+                className="bg-gray-800/20 border border-gray-700/30 rounded-xl p-4 text-center hover:bg-gray-600/20"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              >
+                <div className="text-2xl font-bold text-violet-400">{inputs.meetingTime || '—'}</div>
+                <div className="text-xs text-gray-400 mt-1">Meeting Time</div>
+              </motion.div>
+              <motion.div
+                className="bg-gray-800/20 hover:bg-gray-600/20 border border-gray-700/30 rounded-xl p-4 text-center"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              >
+                <div className="text-2xl font-bold text-fuchsia-400">Weekly</div>
+                <div className="text-xs text-gray-400 mt-1">Frequency</div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ChapterSettingsPage

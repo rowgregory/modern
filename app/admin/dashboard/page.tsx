@@ -1,10 +1,10 @@
-import Dashboard from '@/app/components/common/Dashboard'
+import Dashboard2 from '@/app/components/common/Dashboaord2'
 import React from 'react'
 
 const AdminDashboard = () => {
   return (
     <div>
-      <Dashboard />
+      <Dashboard2 />
     </div>
   )
 }

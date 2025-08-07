@@ -121,9 +121,23 @@ const ModernBusinessNetworkingLanding = () => {
 
   return (
     <div className="min-h-screen bg-gray-900">
+      <div className="flex items-center justify-end space-x-4 mr-6">
+        <Link
+          href="/admin/dashboard"
+          className="relative z-10 px-5 py-2.5 rounded-full text-lg text-white backdrop-blur-lg border border-white/10 mt-6 overflow-hidden group transition-all duration-300 hover:border-white/30"
+        >
+          <span className="relative z-10">Launch App</span>
+
+          {/* Shiny sweep effect */}
+          <div className="absolute inset-0 -left-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:left-full transition-all duration-1000 ease-out" />
+
+          {/* Subtle glow on hover */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </Link>
+      </div>
       {/* Hero Section */}
       <motion.section
-        className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 text-white overflow-hidden"
+        className="mt-[-74px] relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 text-white overflow-hidden"
         initial="hidden"
         animate={isVisible ? 'visible' : 'hidden'}
       >

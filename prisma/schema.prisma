@@ -24,6 +24,41 @@ enum MembershipStatus {
   @@map("membership_status")
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -31,12 +66,13 @@ model User {
 
   // Basic info
   name       String
+  role       String
   email      String  @unique
   phone      String?
   company    String
   profession String
 
-  // BNI membership
+  // Modern membership
   chapterId        String
   chapter          Chapter          @relation(fields: [chapterId], references: [id])
   joinedAt         DateTime?
@@ -44,13 +80,18 @@ model User {
   membershipStatus MembershipStatus @default(PENDING)
 
   // Profile & Networking
-  interests    String[] // Array of interest categories
-  profileImage String? // URL to profile image
-  isPublic     Boolean  @default(true)
-  isActive     Boolean  @default(true)
+  interests            String[] // Array of interest categories
+  profileImage         String? // URL to profile image
+  profileImageFilename String?
+  isPublic             Boolean  @default(true)
+  isActive             Boolean  @default(true)
 
   // Verification & Security
   lastLoginAt DateTime?
+
+  // NextAuth fields
+  emailVerified DateTime? // Add for NextAuth
+  image         String?
 
   // Face-to-face relationships
   requestedMeetings FaceToFace[] @relation("FaceToFaceRequester")
@@ -59,6 +100,9 @@ model User {
   // Closed and credited relationships
   givenCredits    ClosedAndCredited[] @relation("ClosedAndCreditedGiver")
   receivedCredits ClosedAndCredited[] @relation("ClosedAndCreditedReceiver")
+
+  accounts Account[]
+  sessions Session[]
 
   logs Log[]
 }
@@ -74,7 +118,7 @@ model FaceToFace {
   location    String? // optional meeting location
   meetingType String   @default("FACE_TO_FACE") // FACE_TO_FACE, VIRTUAL, PHONE
 
-  // Participants (exactly 2 BNI users)
+  // Participants (exactly 2 Modern users)
   requesterId String
   requester   User   @relation("FaceToFaceRequester", fields: [requesterId], references: [id])
 
@@ -96,7 +140,7 @@ model FaceToFace {
   requesterNotes String? // private notes for requester
   recipientNotes String? // private notes for recipient
 
-  // BNI specific tracking
+  // Modern specific tracking
   chapterId String?
   chapter   Chapter? @relation(fields: [chapterId], references: [id])
 
@@ -128,7 +172,7 @@ model ClosedAndCredited {
   // When the business was closed
   closedDate DateTime
 
-  // BNI tracking
+  // Modern tracking
   chapterId String
   chapter   Chapter @relation(fields: [chapterId], references: [id])
 
@@ -152,10 +196,11 @@ model ClosedAndCredited {
 model Chapter {
   id String @id @default(cuid())
 
-  name        String
-  location    String
-  meetingDay  String // e.g., "TUESDAY"
-  meetingTime String // e.g., "07:30"
+  name             String
+  location         String
+  meetingDay       String // e.g., "TUESDAY"
+  meetingTime      String // e.g., "07:30"
+  meetingFrequency String @default("WEEKLY") // e.g., "WEEKLY"
 
   // Relationships
   users             User[]
@@ -183,8 +228,8 @@ model Log {
   message  String
   metadata Json? // Optional, store additional context
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

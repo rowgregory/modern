@@ -5,15 +5,21 @@ import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { api } from './services/api'
 import { formReducer } from './features/formSlice'
-import { userReducer } from './features/userSlice'
 import { logReducer } from './features/logSlice'
-import { dashboardReducer } from './features/dashboardSlice'
+import { adminReducer } from './features/adminSlice'
+import { face2FaceReducer } from './features/face2FaceSlice'
+import { memberReducer } from './features/memberSlice'
+import { toastReduer } from './features/toastSlice'
+import { settingsReducer } from './features/settingsSlice'
 
 const rootReducer = combineReducers({
   form: formReducer,
-  user: userReducer,
+  member: memberReducer,
   log: logReducer,
-  dashboard: dashboardReducer,
+  admin: adminReducer,
+  face2Face: face2FaceReducer,
+  toast: toastReduer,
+  settings: settingsReducer,
   [api.reducerPath]: api.reducer
 })
 

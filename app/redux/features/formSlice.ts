@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ChangeEvent } from 'react'
-import { UserProps } from './userSlice'
 
 export type Inputs = {
   [key: string]: string | number | boolean | undefined | unknown
@@ -28,111 +27,53 @@ interface HandleInputProps {
   value: any
 }
 
-export type ConcertProps = {
-  id: string
-  name: string
-  pressRelease: string
-  description: string
-  eventDetails: [
-    {
-      date: string
-      time: string
-      location: { venueId: string; name: string; address: string; longitude: string; latitude: string }
-      externalLink: string
-    }
-  ]
+const memberInputs = {
+  name: '',
+  email: '',
+  phone: '',
+  company: '',
+  profession: '',
+  chapterId: '',
+  joinedAt: new Date().toISOString().split('T')[0],
+  expiresAt: '',
+  membershipStatus: 'PENDING',
+  interests: [],
+  profileImage: '',
+  isPublic: true
+}
 
-  imageUrl: string
-  imageFilename: string
-  type: string
-  createdAt: string
-  allSeriesExternalLink: string
-  isOnSale: boolean
+const profileInputs = {
+  name: '',
+  email: '',
+  phone: '',
+  profileImage: '',
+  profileImageFilename: '',
+  profession: '',
+  company: '',
+  isPublic: false,
+  interests: [],
+  chapter: {
+    name: '',
+    location: ''
+  },
+  meta: {
+    profileCompleteness: false
+  }
 }
 
 const formInitialState = {
   isCreating: false,
-  concert: {
-    inputs: {
-      name: '',
-      pressRelease: '',
-      description: '',
-      location: { venueId: '', name: '', address: '', longitude: '', latitude: '' },
-      eventDetails: [],
-      imageUrl: '',
-      imageFilename: '',
-      type: '',
-      allSeriesExternalLink: '',
-      time: '',
-      date: '',
-      city: '',
-      dayOfWeek: '',
-      externalLink: '',
-      cardDate: ''
-    },
+  isEditing: false,
+  memberForm: {
+    inputs: memberInputs,
     errors: {}
   },
-  testimonial: { id: '', name: '', review: '', createdAt: '', updatedAt: '' },
-  newsletterForm: {
-    inputs: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      isOption1: false,
-      isOption2: false,
-      isOption3: false,
-      isOption4: false,
-      isSelectAll: false
-    }
-  },
-  contact: { inputs: { name: '', email: '', message: '' }, errors: {} },
-  progress: 0,
-  home: { inputs: { src: '', mimeType: '', type: '', textBlockKey: '' } },
-  questionForm: { inputs: { name: '', email: '', message: '', hasResponded: false } },
-  registerForm: {
-    inputs: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      securityQuestion: '',
-      securityAnswer: '',
-      password: '',
-      registerCode: ''
-    },
+  settingsForm: {
+    inputs: { name: '', location: '', meetingDay: '', meetingTime: '', meetingFrequency: '' },
     errors: {}
   },
-  campForm: {
-    inputs: {
-      studentFirstName: '',
-      studentLastName: '',
-      grade: '',
-      school: '',
-      studentEmailAddress: '',
-      studentPhoneNumber: ''
-    },
-    errors: {}
-  },
-  filteredList: [],
-  text: '',
-  loginForm: { inputs: { email: '', password: '' }, errors: {} },
-  forgotPasswordForm: { inputs: { email: '', securityQuestion: '', securityAnswer: '' }, errors: {} },
-  question: { inputs: {}, errors: {} },
-  venue: {
-    inputs: {
-      name: '',
-      capacity: '',
-      file: '',
-      accessibility: '',
-      parking: '',
-      immersiveExperience: '',
-      imageUrl: '',
-      imageFilename: '',
-      address: ''
-    },
-    errors: {}
-  },
-  teamMember: {
-    inputs: { firstName: '', lastName: '', position: '', imageUrl: '', role: 'Board-Member', bio: '' },
+  profileForm: {
+    inputs: profileInputs,
     errors: {}
   }
 } as any
@@ -143,6 +84,12 @@ const formSlice = createSlice({
   reducers: {
     setIsCreating: (state) => {
       state.isCreating = true
+    },
+    setIsEditing: (state) => {
+      state.isEditing = true
+    },
+    setIsNotEditing: (state) => {
+      state.isEditing = false
     },
     setIsNotCreating: (state) => {
       state.isCreating = false
@@ -333,7 +280,7 @@ const formSlice = createSlice({
 })
 
 export const createFormActions = (formName: string, dispatch: any) => ({
-  setInputs: (data: UserProps | any) => dispatch(formSlice.actions.setInputs({ formName, data })),
+  setInputs: (data: any) => dispatch(formSlice.actions.setInputs({ formName, data })),
   clearInputs: () => dispatch(formSlice.actions.clearInputs({ formName })),
   setErrors: (errors: Errors) => dispatch(formSlice.actions.setErrors({ formName, errors })),
   setSubmitted: (submitted: boolean) => dispatch(formSlice.actions.setSubmitted({ formName, submitted })),
@@ -393,5 +340,14 @@ export const createFormActions = (formName: string, dispatch: any) => ({
   handleUploadProgress: (progress: any) => dispatch(formSlice.actions.setUploadProgress(progress))
 })
 
-export const { resetForm, setIsCreating, setIsNotCreating, setInputs, clearInputs, clearErrors } = formSlice.actions
+export const {
+  resetForm,
+  setIsCreating,
+  setIsNotCreating,
+  setInputs,
+  clearInputs,
+  clearErrors,
+  setIsEditing,
+  setIsNotEditing
+} = formSlice.actions
 export const formReducer = formSlice.reducer
