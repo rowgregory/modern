@@ -75,6 +75,10 @@ const formInitialState = {
   profileForm: {
     inputs: profileInputs,
     errors: {}
+  },
+  explorerForm: {
+    inputs: { name: '', email: '', location: '', phone: '', company: '', profession: '', interests: [] },
+    errors: {}
   }
 } as any
 

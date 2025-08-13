@@ -1,10 +1,10 @@
-import { sliceMember } from '@/app/lib/constants/api/sliceNames'
+import { sliceUser } from '@/app/lib/constants/api/sliceNames'
 import { createLog } from '@/app/lib/utils/api/createLog'
 import { handleApiError } from '@/app/lib/utils/api/handleApiError'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function getMyProfile(req: NextRequest, chapterId: string, memberId: string) {
+export async function getMyProfile(req: NextRequest, chapterId: string, userId: string) {
   try {
     // Validate chapter ID
     if (!chapterId) {
@@ -14,7 +14,7 @@ export async function getMyProfile(req: NextRequest, chapterId: string, memberId
     // Get user profile data
     const user = await prisma.user.findFirst({
       where: {
-        id: memberId,
+        id: userId,
         chapterId: chapterId
       },
       select: {
@@ -75,7 +75,7 @@ export async function getMyProfile(req: NextRequest, chapterId: string, memberId
 
     // Log success
     await createLog('info', 'User profile retrieved successfully', {
-      location: ['app route - GET /api/member/<chapterId>/<memberId>/me'],
+      location: ['app route - GET /api/member/<chapterId>/<userId>/me'],
       message: 'User profile retrieved successfully',
       name: 'UserProfileRetrieved',
       timestamp: new Date().toISOString(),
@@ -91,8 +91,7 @@ export async function getMyProfile(req: NextRequest, chapterId: string, memberId
 
     return NextResponse.json(
       {
-        success: true,
-        data: {
+        user: {
           ...user,
           // Add computed fields
           isProfileComplete,
@@ -126,7 +125,7 @@ export async function getMyProfile(req: NextRequest, chapterId: string, memberId
       error,
       req,
       action: 'Get my profile',
-      sliceName: sliceMember
+      sliceName: sliceUser
     })
   }
 }

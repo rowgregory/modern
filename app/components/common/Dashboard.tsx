@@ -29,7 +29,7 @@ import {
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
 import { useAppDispatch } from '@/app/redux/store'
 import ManageMembersDrawer from '../drawers/ManageMembersDrawer'
-import { setOpenManageMembersDrawer } from '@/app/redux/features/memberSlice'
+import { setOpenManageUsersDrawer } from '@/app/redux/features/userSlice'
 
 const Dashboard = () => {
   const [userRole] = useState('admin') // This would come from auth context
@@ -789,7 +789,7 @@ const Dashboard = () => {
         <h3 className="text-2xl font-bold text-white mb-6">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <motion.button
-            onClick={() => dispatch(setOpenManageMembersDrawer())}
+            onClick={() => dispatch(setOpenManageUsersDrawer())}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="p-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg hover:from-cyan-400 hover:to-cyan-500 transition-all flex items-center space-x-3 font-semibold"

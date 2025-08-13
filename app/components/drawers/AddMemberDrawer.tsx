@@ -2,8 +2,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, User, Briefcase, Shield, CheckCircle, Mail, Phone, Building, Calendar, Trash2 } from 'lucide-react'
 import { clearInputs, createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { setCloseAddMembersDrawer } from '@/app/redux/features/memberSlice'
-import { useCreateMemberMutation } from '@/app/redux/services/memberApi'
+import { setCloseAddUsersDrawer } from '@/app/redux/features/userSlice'
+import { useCreateUserMutation } from '@/app/redux/services/userApi'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import professionsList from '@/app/lib/constants/member/professionsList'
 import membershipStatusOptions from '@/app/lib/constants/member/membershipStatusOptions'
@@ -66,9 +66,9 @@ const AddMemberDrawer = () => {
   const dispatch = useAppDispatch()
   const { handleInput, setErrors, handleToggle } = createFormActions('memberForm', dispatch)
   const { memberForm } = useAppSelector((state: RootState) => state.form)
-  const { addMemberDrawer } = useAppSelector((state: RootState) => state.member)
-  const onClose = () => dispatch(setCloseAddMembersDrawer())
-  const [createMember, { isLoading }] = useCreateMemberMutation()
+  const { addUserDrawer } = useAppSelector((state: RootState) => state.user)
+  const onClose = () => dispatch(setCloseAddUsersDrawer())
+  const [createMember, { isLoading }] = useCreateUserMutation()
   const inputs = memberForm.inputs
   const errors = memberForm.errors
 
@@ -88,7 +88,7 @@ const AddMemberDrawer = () => {
       await createMember(memberData).unwrap()
 
       dispatch(clearInputs({ formName: 'memberForm' }))
-      dispatch(setCloseAddMembersDrawer())
+      dispatch(setCloseAddUsersDrawer())
 
       dispatch(
         showToast({
@@ -116,7 +116,7 @@ const AddMemberDrawer = () => {
 
   return (
     <AnimatePresence>
-      {addMemberDrawer && (
+      {addUserDrawer && (
         <>
           {/* Backdrop Overlay */}
           <motion.div

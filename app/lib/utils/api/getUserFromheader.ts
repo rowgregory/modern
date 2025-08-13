@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sliceMember } from '../../constants/api/sliceNames'
+import { sliceUser } from '../../constants/api/sliceNames'
 
 interface UserAuthOptions {
   req: NextRequest
@@ -20,7 +20,7 @@ export function getUserFromHeader({ req }: UserAuthOptions): UserAuthResult {
       return {
         success: false,
         response: NextResponse.json(
-          { message: 'Unauthorized: Missing user header', sliceName: sliceMember },
+          { message: 'Unauthorized: Missing user header', sliceName: sliceUser },
           { status: 401 }
         )
       }
@@ -33,7 +33,7 @@ export function getUserFromHeader({ req }: UserAuthOptions): UserAuthResult {
       return {
         success: false,
         response: NextResponse.json(
-          { message: 'Unauthorized: Invalid user data', sliceName: sliceMember },
+          { message: 'Unauthorized: Invalid user data', sliceName: sliceUser },
           { status: 401 }
         )
       }
@@ -48,7 +48,7 @@ export function getUserFromHeader({ req }: UserAuthOptions): UserAuthResult {
     return {
       success: false,
       response: NextResponse.json(
-        { message: 'Unauthorized: Invalid user header format', sliceName: sliceMember },
+        { message: 'Unauthorized: Invalid user header format', sliceName: sliceUser },
         { status: 401 }
       )
     }

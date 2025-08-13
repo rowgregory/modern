@@ -1,8 +1,8 @@
 import { ClosedAndCredited } from './closedAndCredited'
 import { Face2Face } from './face2Face'
 
-// Base Member interface matching your Prisma User model
-export interface Member {
+// Base User interface matching your Prisma User model
+export interface User {
   id: string
   createdAt: string
   updatedAt: string
@@ -45,7 +45,7 @@ export interface Member {
   logs?: Log[]
 }
 
-// Membership status enum
+// Usership status enum
 export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'EXPIRED' | 'SUSPENDED'
 
 // Chapter interface (basic version)
@@ -60,13 +60,13 @@ export interface Chapter {
   updatedAt: string
 }
 
-// Member with chapter details (for display)
-export interface MemberWithChapter extends Member {
+// User with chapter details (for display)
+export interface UserWithChapter extends User {
   chapter: Chapter
 }
 
-// Member form data (for creating/updating)
-export interface MemberFormData {
+// User form data (for creating/updating)
+export interface UserFormData {
   name: string
   email: string
   phone?: string
@@ -83,8 +83,8 @@ export interface MemberFormData {
   isActive: boolean
 }
 
-// Member list item (minimal data for tables/cards)
-export interface MemberListItem {
+// User list item (minimal data for tables/cards)
+export interface UserListItem {
   id: string
   name: string
   email: string
@@ -103,16 +103,16 @@ export interface MemberListItem {
   interests: string[]
 }
 
-// Member profile (for detailed views)
-export interface MemberProfile extends Member {
+// User profile (for detailed views)
+export interface UserProfile extends User {
   chapter: Chapter
   recentMeetings?: Face2Face[]
   totalMeetings?: number
   totalReferrals?: number
 }
 
-// Member filters (for search/filtering)
-export interface MemberFilters {
+// User filters (for search/filtering)
+export interface UserFilters {
   search?: string
   membershipStatus?: MembershipStatus | 'all'
   chapterId?: string | 'all'
@@ -125,45 +125,45 @@ export interface MemberFilters {
   limit?: number
 }
 
-// Member pagination
-export interface MemberPagination {
+// User pagination
+export interface UserPagination {
   page: number
   limit: number
   total: number
   totalPages: number
 }
 
-// Member API responses
-export interface GetMembersResponse {
+// User API responses
+export interface GetUsersResponse {
   success: boolean
-  members: MemberListItem[]
-  pagination: MemberPagination
+  members: UserListItem[]
+  pagination: UserPagination
 }
 
-export interface GetMemberResponse {
+export interface GetUserResponse {
   success: boolean
-  member: MemberWithChapter
+  member: UserWithChapter
 }
 
-export interface CreateMemberResponse {
-  success: boolean
-  message: string
-  member: MemberWithChapter
-}
-
-export interface UpdateMemberResponse {
+export interface CreateUserResponse {
   success: boolean
   message: string
-  member: MemberWithChapter
+  member: UserWithChapter
 }
 
-export interface DeleteMemberResponse {
+export interface UpdateUserResponse {
+  success: boolean
+  message: string
+  member: UserWithChapter
+}
+
+export interface DeleteUserResponse {
   success: boolean
   message: string
 }
 
-// Member statistics
-export interface MemberStats {
+// User statistics
+export interface UserStats {
   total: number
   active: number
   pending: number

@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createLog } from '@/app/lib/utils/api/createLog'
 import { handleApiError } from '@/app/lib/utils/api/handleApiError'
-import { sliceMember } from '@/app/lib/constants/api/sliceNames' // Adjust import path
+import { sliceUser } from '@/app/lib/constants/api/sliceNames' // Adjust import path
 import prisma from '@/prisma/client'
 
-export async function updateMyProfile(req: NextRequest, chapterId: string, memberId: string) {
+export async function updateMyProfile(req: NextRequest, chapterId: string, userId: string) {
   try {
     // Validate parameters
-    if (!chapterId || !memberId) {
+    if (!chapterId || !userId) {
       return NextResponse.json(
         {
-          error: 'Chapter ID and Member ID are required'
+          error: 'Chapter ID and User ID are required'
         },
         { status: 400 }
       )
@@ -24,16 +24,17 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, membe
     if (!name || !company || !profession) {
       return NextResponse.json(
         {
-          error: 'Required fields: name, company, profession'
+          error: 'Required fields: name, company, profession',
+          sliceName: sliceUser
         },
         { status: 400 }
       )
     }
 
-    // Check if member exists and user has permission to update
-    const existingMember = await prisma.user.findFirst({
+    // Check if user exists and user has permission to update
+    const existingUser = await prisma.user.findFirst({
       where: {
-        id: memberId,
+        id: userId,
         chapterId: chapterId
       },
       select: {
@@ -52,10 +53,10 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, membe
       }
     })
 
-    if (!existingMember) {
+    if (!existingUser) {
       return NextResponse.json(
         {
-          error: 'Member not found or you do not have permission to update this profile'
+          error: 'User not found or you do not have permission to update this profile'
         },
         { status: 404 }
       )
@@ -75,9 +76,9 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, membe
     if (profileImage !== undefined) updateData.profileImage = profileImage
     if (profileImageFilename !== undefined) updateData.profileImageFilename = profileImageFilename
 
-    // Update the member
-    const updatedMember = await prisma.user.update({
-      where: { id: memberId },
+    // Update the user
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
       data: updateData,
       select: {
         id: true,
@@ -109,26 +110,26 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, membe
     })
 
     // Calculate computed fields
-    const membershipDays = updatedMember.joinedAt
-      ? Math.floor((new Date().getTime() - new Date(updatedMember.joinedAt).getTime()) / (1000 * 60 * 60 * 24))
+    const usershipDays = updatedUser.joinedAt
+      ? Math.floor((new Date().getTime() - new Date(updatedUser.joinedAt).getTime()) / (1000 * 60 * 60 * 24))
       : 0
 
-    const isExpiringSoon = updatedMember.expiresAt
-      ? Math.floor((new Date(updatedMember.expiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) <= 30
+    const isExpiringSoon = updatedUser.expiresAt
+      ? Math.floor((new Date(updatedUser.expiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) <= 30
       : false
 
     const isProfileComplete = !!(
-      updatedMember.name?.trim() &&
-      updatedMember.email?.trim() &&
-      updatedMember.company?.trim() &&
-      updatedMember.profession?.trim()
+      updatedUser.name?.trim() &&
+      updatedUser.email?.trim() &&
+      updatedUser.company?.trim() &&
+      updatedUser.profession?.trim()
     )
 
     // Track what fields were changed
     const changedFields = Object.keys(updateData).filter((key) => {
       if (key === 'updatedAt') return false
 
-      const oldValue = (existingMember as any)[key]
+      const oldValue = (existingUser as any)[key]
       const newValue = updateData[key]
 
       if (Array.isArray(newValue) && Array.isArray(oldValue)) {
@@ -138,49 +139,47 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, membe
     })
 
     // Log success
-    await createLog('info', 'Member profile updated successfully', {
-      location: ['app route - PUT /api/member/<chapterId>/<memberId>/me'],
-      message: 'Member profile updated successfully',
-      name: 'MemberProfileUpdated',
+    await createLog('info', 'User profile updated successfully', {
+      location: ['app route - PUT /api/user/<chapterId>/<userId>/me'],
+      message: 'User profile updated successfully',
+      name: 'UserProfileUpdated',
       timestamp: new Date().toISOString(),
       url: req.url,
       method: req.method,
       chapterId,
-      memberId,
+      userId,
       userEmail: '',
       changedFields,
-      previousName: existingMember.name,
+      previousName: existingUser.name,
       newName: updateData.name
     })
 
     return NextResponse.json(
       {
-        success: true,
-        message: 'Member profile updated successfully',
-        data: {
-          ...updatedMember,
+        user: {
+          ...updatedUser,
           // Add computed fields
           isProfileComplete,
-          membershipDays,
+          usershipDays,
           isExpiringSoon
         },
         meta: {
           chapterId,
-          lastUpdated: updatedMember.updatedAt,
+          lastUpdated: updatedUser.updatedAt,
           changedFields,
           profileCompleteness: {
             isComplete: isProfileComplete,
             missingFields: [
-              !updatedMember.name?.trim() && 'name',
-              !updatedMember.company?.trim() && 'company',
-              !updatedMember.profession?.trim() && 'profession',
-              !updatedMember.phone?.trim() && 'phone'
+              !updatedUser.name?.trim() && 'name',
+              !updatedUser.company?.trim() && 'company',
+              !updatedUser.profession?.trim() && 'profession',
+              !updatedUser.phone?.trim() && 'phone'
             ].filter(Boolean)
           },
-          membership: {
-            status: updatedMember.membershipStatus,
-            joinedDaysAgo: membershipDays,
-            expiresAt: updatedMember.expiresAt,
+          usership: {
+            status: updatedUser.membershipStatus,
+            joinedDaysAgo: usershipDays,
+            expiresAt: updatedUser.expiresAt,
             isExpiringWithin30Days: isExpiringSoon
           }
         }
@@ -191,8 +190,8 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, membe
     return await handleApiError({
       error,
       req,
-      action: 'Update member profile',
-      sliceName: sliceMember
+      action: 'Update user profile',
+      sliceName: sliceUser
     })
   }
 }

@@ -19,7 +19,7 @@ import {
   Download
 } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { setCloseManageMembersDrawer } from '@/app/redux/features/memberSlice'
+import { setCloseManageUsersDrawer } from '@/app/redux/features/userSlice'
 
 const ManageMembersDrawer = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -29,7 +29,7 @@ const ManageMembersDrawer = () => {
   const [, setEditingMember] = useState(null)
   const { manageMembersDrawer } = useAppSelector((state: RootState) => state.admin)
   const dispatch = useAppDispatch()
-  const onClose = () => dispatch(setCloseManageMembersDrawer())
+  const onClose = () => dispatch(setCloseManageUsersDrawer())
   // Sample members data - based on your Prisma schema
   const [members, setMembers] = useState([
     {

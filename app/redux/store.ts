@@ -8,18 +8,22 @@ import { formReducer } from './features/formSlice'
 import { logReducer } from './features/logSlice'
 import { adminReducer } from './features/adminSlice'
 import { face2FaceReducer } from './features/face2FaceSlice'
-import { memberReducer } from './features/memberSlice'
+import { userReducer } from './features/userSlice'
 import { toastReduer } from './features/toastSlice'
 import { settingsReducer } from './features/settingsSlice'
+import { appReducer } from './features/appSlice'
+import { notificationReducer } from './features/notificationsSlice'
 
 const rootReducer = combineReducers({
   form: formReducer,
-  member: memberReducer,
+  user: userReducer,
   log: logReducer,
   admin: adminReducer,
   face2Face: face2FaceReducer,
   toast: toastReduer,
   settings: settingsReducer,
+  app: appReducer,
+  notification: notificationReducer,
   [api.reducerPath]: api.reducer
 })
 

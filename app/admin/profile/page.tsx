@@ -24,7 +24,7 @@ import { createFormActions, setInputs, setIsEditing, setIsNotEditing } from '@/a
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { Switch } from '@/app/components/ui/Switch'
 import { Input } from '@/app/components/ui/Input'
-import { useGetMyProfileQuery, useUpdateMyProfileMutation } from '@/app/redux/services/memberApi'
+import { useGetMyProfileQuery, useUpdateMyProfileMutation } from '@/app/redux/services/userApi'
 import { showToast } from '@/app/redux/features/toastSlice'
 import validateProfileForm from '@/app/lib/utils/validations/validateProfileForm'
 import { chapterId } from '@/app/lib/constants/api/chapterId'

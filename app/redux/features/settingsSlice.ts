@@ -24,12 +24,10 @@ export const settingsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addMatcher(settingsApi.endpoints.getChapterSettings.matchFulfilled, (state, { payload }: any) => {
-        console.log('getChapterSettings PAYLOAD: ', payload)
         state.settings = payload.settings
         state.loading = false
       })
       .addMatcher(settingsApi.endpoints.updateChapterSettings.matchFulfilled, (state, { payload }: any) => {
-        console.log('updateChapterSettings PAYLOAD: ', payload)
         state.settings = payload
       })
       .addMatcher(

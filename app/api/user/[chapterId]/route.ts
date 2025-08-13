@@ -1,3 +1,4 @@
+import { sliceUser } from '@/app/lib/constants/api/sliceNames'
 import prisma from '@/prisma/client'
 import { NextResponse } from 'next/server'
 
@@ -6,17 +7,14 @@ export async function GET(_: any, { params }: any) {
     const parameters = await params
     const chapterId = parameters.chapterId
 
-    // Build where clause
     const where: any = {}
 
     if (chapterId) {
       where.chapterId = chapterId
     }
 
-    console.log('CHAPTERISE: ', chapterId)
-
     // Fetch users with pagination
-    const members = await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       where,
       include: {
         chapter: {
@@ -31,11 +29,13 @@ export async function GET(_: any, { params }: any) {
       }
     })
 
-    console.log('MMEBES: ', members)
-
-    return NextResponse.json({
-      members
-    })
+    return NextResponse.json(
+      {
+        users,
+        sliceName: sliceUser
+      },
+      { status: 200 }
+    )
   } catch {
     return NextResponse.json(
       {

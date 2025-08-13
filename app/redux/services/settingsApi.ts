@@ -1,4 +1,4 @@
-import { Chapter } from '@/types/member'
+import { Chapter } from '@/types/user'
 import { api } from './api'
 
 const BASE_URL = '/settings'

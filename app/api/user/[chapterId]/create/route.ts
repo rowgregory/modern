@@ -1,5 +1,5 @@
 // app/api/users/route.ts
-import { sliceMember } from '@/app/lib/constants/api/sliceNames'
+import { sliceUser } from '@/app/lib/constants/api/sliceNames'
 // import { getUserFromHeader } from '@/app/lib/utils/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/utils/api/handleApiError'
 import { createLog } from '@/app/lib/utils/api/createLog'
@@ -19,7 +19,6 @@ export async function POST(req: NextRequest, { params }: any) {
 
     const parameters = await params
     const chapterId = parameters.chapterId
-    console.log('CHAPTER ID: ', chapterId)
     const body = await req.json()
 
     // Validate input data
@@ -30,7 +29,8 @@ export async function POST(req: NextRequest, { params }: any) {
         {
           error: 'Validation failed',
           message: 'Please check your input data',
-          fieldErrors: validationErrors
+          fieldErrors: validationErrors,
+          sliceName: sliceUser
         },
         { status: 400 }
       )
@@ -46,7 +46,8 @@ export async function POST(req: NextRequest, { params }: any) {
         {
           error: 'Email already exists',
           field: 'email',
-          message: 'A user with this email address already exists'
+          message: 'A user with this email address already exists',
+          sliceName: sliceUser
         },
         { status: 400 }
       )
@@ -76,7 +77,7 @@ export async function POST(req: NextRequest, { params }: any) {
       : new Date(joinedAt.getTime() + 365 * 24 * 60 * 60 * 1000) // 1 year from join date
 
     // Create the user
-    await prisma.user.create({
+    const createdUser = await prisma.user.create({
       data: {
         name: body.name.trim(),
         email: body.email.toLowerCase(),
@@ -117,8 +118,8 @@ export async function POST(req: NextRequest, { params }: any) {
 
     return NextResponse.json(
       {
-        success: true,
-        message: 'User created successfully'
+        user: createdUser,
+        sliceName: sliceUser
       },
       { status: 201 }
     )
@@ -127,7 +128,7 @@ export async function POST(req: NextRequest, { params }: any) {
       error,
       req,
       action: 'Member created',
-      sliceName: sliceMember
+      sliceName: sliceUser
     })
   }
 }

@@ -18,33 +18,33 @@ import {
   Crown
 } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { useGetMembersQuery } from '@/app/redux/services/memberApi'
+import { useGetUsersQuery } from '@/app/redux/services/userApi'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { formatDate } from '@/app/lib/utils/date/formatDate'
-import { setOpenAddMembersDrawer } from '@/app/redux/features/memberSlice'
+import { setOpenAddUsersDrawer } from '@/app/redux/features/userSlice'
 
 const MembersListPage = () => {
   const dispatch = useAppDispatch()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [viewMode, setViewMode] = useState('grid') // 'grid' or 'list'
-  const { members } = useAppSelector((state: RootState) => state.member)
-  useGetMembersQuery({ chapterId })
+  const { users } = useAppSelector((state: RootState) => state.user)
+  useGetUsersQuery({ chapterId })
 
   const statusOptions = [
-    { value: 'all', label: 'All Members', count: members.length },
-    { value: 'ACTIVE', label: 'Active', count: members.filter((m) => m.membershipStatus === 'ACTIVE').length },
-    { value: 'PENDING', label: 'Pending', count: members.filter((m) => m.membershipStatus === 'PENDING').length },
-    { value: 'EXPIRED', label: 'Expired', count: members.filter((m) => m.membershipStatus === 'EXPIRED').length },
+    { value: 'all', label: 'All Members', count: users.length },
+    { value: 'ACTIVE', label: 'Active', count: users.filter((m) => m.membershipStatus === 'ACTIVE').length },
+    { value: 'PENDING', label: 'Pending', count: users.filter((m) => m.membershipStatus === 'PENDING').length },
+    { value: 'EXPIRED', label: 'Expired', count: users.filter((m) => m.membershipStatus === 'EXPIRED').length },
     {
       value: 'INACTIVE',
       label: 'Inactive',
-      count: members.filter((m) => m.membershipStatus === 'INACTIVE').length
+      count: users.filter((m) => m.membershipStatus === 'INACTIVE').length
     },
     {
       value: 'SUSPENDED',
       label: 'Suspended',
-      count: members.filter((m) => m.membershipStatus === 'SUSPENDED').length
+      count: users.filter((m) => m.membershipStatus === 'SUSPENDED').length
     }
   ]
 
@@ -98,7 +98,7 @@ const MembersListPage = () => {
     return diffDays
   }
 
-  const filteredMembers = members.filter((member) => {
+  const filteredMembers = users.filter((member) => {
     const matchesSearch =
       searchQuery === '' ||
       member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -121,7 +121,7 @@ const MembersListPage = () => {
         >
           <div className="flex items-center justify-end">
             <motion.button
-              onClick={() => dispatch(setOpenAddMembersDrawer())}
+              onClick={() => dispatch(setOpenAddUsersDrawer())}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-lg hover:from-violet-500 hover:to-fuchsia-500 transition-all flex items-center space-x-2 font-semibold shadow-lg"

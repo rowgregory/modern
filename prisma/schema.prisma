@@ -61,6 +61,7 @@ model VerificationToken {
 
 model User {
   id        String   @id @default(cuid())
+  tempId    String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -71,6 +72,7 @@ model User {
   phone      String?
   company    String
   profession String
+  location   String  @default("")
 
   // Modern membership
   chapterId        String
@@ -105,6 +107,8 @@ model User {
   sessions Session[]
 
   logs Log[]
+
+  notificationsRead NotificationRead[]
 }
 
 model FaceToFace {
@@ -206,6 +210,7 @@ model Chapter {
   users             User[]
   faceToFaces       FaceToFace[]
   closedAndCredited ClosedAndCredited[]
+  notifications     Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -233,4 +238,42 @@ model Log {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  title      String
+  message    String
+  type       NotificationType
+  isRead     Boolean          @default(false)
+  chapterId  String
+  entityId   String? // ID of the explorer application, etc.
+  entityType String? // "application", "member", etc.
+
+  readBy  NotificationRead[] // Relation to junction table
+  chapter Chapter            @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Junction table to track which admins have read which notifications
+model NotificationRead {
+  id             String   @id @default(cuid())
+  notificationId String
+  userId         String
+  readAt         DateTime @default(now())
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+}
+
+enum NotificationType {
+  APPLICATION_SUBMITTED
+  APPLICATION_APPROVED
+  APPLICATION_REJECTED
+  NEW_MEMBER
+  SYSTEM_ALERT
 }
