@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ChangeEvent } from 'react'
 
 export type Inputs = {
   [key: string]: string | number | boolean | undefined | unknown
@@ -167,85 +166,7 @@ const formSlice = createSlice({
         }
       }
     },
-    removeConcertDetails: (state, { payload }: PayloadAction<{ formName: string; concertId: string }>) => {
-      const { formName, concertId } = payload
-      if (!state[formName] || !state[formName].inputs.eventDetails) return
-      state[formName].inputs.eventDetails = state[formName].inputs.eventDetails.filter(
-        (event: any) => event.id !== concertId
-      )
-    },
-    addVenue: (state, { payload }: PayloadAction<{ formName: string; venue: any }>) => {
-      const { formName, venue } = payload
-      if (!state[formName]) return
 
-      const { location } = state[formName].inputs
-
-      // Check if a venue is already selected
-      const isSelected = location?.venueId === venue.id
-
-      if (isSelected) {
-        // If the same venue is clicked again, unselect it
-        state[formName].inputs.location = null
-      } else {
-        // If a different venue is clicked, unselect the current one and select the new one
-        state[formName].inputs.location = {
-          venueId: venue.id,
-          name: venue.name,
-          address: venue.address,
-          longitude: venue.longitude,
-          latitude: venue.latitude
-        }
-      }
-    },
-    addConcertDetails: (state, { payload }: PayloadAction<{ formName: string; newId: string }>) => {
-      const { formName, newId } = payload
-      if (!state[formName]) return
-
-      const { time, date, location, city, dayOfWeek, externalLink, eventDetails = [] } = state[formName].inputs
-
-      const newConcert = { id: newId, time, date, location, city, dayOfWeek, externalLink }
-
-      const updatedEventDetails = [...JSON.parse(JSON.stringify(eventDetails)), newConcert]
-
-      state[formName].inputs = {
-        ...state[formName].inputs,
-        eventDetails: updatedEventDetails,
-        time: '',
-        date: '',
-        city: '',
-        dayOfWeek: '',
-        location: {},
-        externalLink: ''
-      }
-    },
-    updateConcertDetails: (state, { payload }: PayloadAction<{ formName: string; eventDetaildId: string }>) => {
-      const { formName, eventDetaildId } = payload
-      if (!state[formName]) return
-
-      const { time, date, location, eventDetails, city, dayOfWeek, externalLink } = state[formName].inputs
-      const parsedEventDetails = (eventDetails && JSON.parse(JSON.stringify(eventDetails))) ?? []
-
-      const eventIndex = parsedEventDetails.findIndex((e: any) => e.id === eventDetaildId)
-
-      if (eventIndex !== -1) {
-        const updatedEventDetails = eventDetails.map((e: any) =>
-          e.id === eventDetaildId
-            ? { ...e, time, date, location, city, dayOfWeek, externalLink } // Update the existing event
-            : e
-        )
-
-        state[formName].inputs = {
-          ...state[formName].inputs,
-          eventDetails: updatedEventDetails,
-          time: '',
-          date: '',
-          city: '',
-          dayOfWeek: '',
-          location: {},
-          externalLink: ''
-        }
-      }
-    },
     handleFileUpload: (
       state,
       action: PayloadAction<{ formName: string; imageUrl: string | ArrayBuffer | null; file: File | null }>
@@ -293,55 +214,7 @@ export const createFormActions = (formName: string, dispatch: any) => ({
   handleSelect: (e: any) =>
     dispatch(formSlice.actions.handleSelect({ formName, name: e.target.name, value: e.target.value })),
   handleToggle: (e: any) =>
-    dispatch(formSlice.actions.handleToggle({ formName, name: e.target.name, checked: e.target.checked })),
-  addVenue: (venue: any) => dispatch(formSlice.actions.addVenue({ formName, venue })),
-  addConcertDetails: (newId: string) => dispatch(formSlice.actions.addConcertDetails({ formName, newId })),
-  updateConcertDetails: (eventDetaildId: string) =>
-    dispatch(formSlice.actions.updateConcertDetails({ formName, eventDetaildId })),
-  removeConcertDetails: (concertId: string) =>
-    dispatch(formSlice.actions.removeConcertDetails({ formName, concertId })),
-  handleFileChange: (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
-    if (files && files[0] && files[0].type.startsWith('image/') && !files[0].type.startsWith('image/heic')) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        dispatch(formSlice.actions.handleFileUpload({ formName, imageUrl: reader.result, file: files[0] }))
-      }
-      reader.readAsDataURL(files[0])
-    }
-  },
-  handleVideoChange: (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
-    if (files && files[0] && files[0].type.startsWith('video/')) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        dispatch(formSlice.actions.handleVideoUpload({ formName, videoUrl: reader.result, videoFile: files[0] }))
-      }
-      reader.readAsDataURL(files[0])
-    }
-  },
-  handleFileDrop: (event: React.DragEvent<HTMLDivElement>) => {
-    const files = event.dataTransfer.files
-    if (files && files[0] && files[0].type.startsWith('image/') && !files[0].type.startsWith('image/heic')) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        dispatch(formSlice.actions.handleFileUpload({ formName, imageUrl: reader.result, file: files[0] }))
-      }
-      reader.readAsDataURL(files[0])
-    }
-  },
-
-  handleVideoDrop: (event: React.DragEvent<HTMLDivElement>) => {
-    const files = event.dataTransfer.files
-    if (files && files[0] && files[0].type.startsWith('video/')) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        dispatch(formSlice.actions.handleVideoUpload({ formName, videoUrl: reader.result, videoFile: files[0] }))
-      }
-      reader.readAsDataURL(files[0])
-    }
-  },
-  handleUploadProgress: (progress: any) => dispatch(formSlice.actions.setUploadProgress(progress))
+    dispatch(formSlice.actions.handleToggle({ formName, name: e.target.name, checked: e.target.checked }))
 })
 
 export const {

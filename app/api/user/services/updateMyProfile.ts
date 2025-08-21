@@ -18,7 +18,7 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
 
     // Parse request body
     const body = await req.json()
-    const { name, phone, company, profession, interests, isPublic, profileImage, profileImageFilename } = body
+    const { name, phone, company, profession, interests, isPublic, isAdmin, profileImage, profileImageFilename } = body
 
     // Validate required fields
     if (!name || !company || !profession) {
@@ -73,6 +73,7 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
     if (phone !== undefined) updateData.phone = phone?.trim() || null
     if (interests !== undefined) updateData.interests = interests
     if (isPublic !== undefined) updateData.isPublic = Boolean(isPublic)
+    if (isAdmin !== undefined) updateData.isAdmin = Boolean(isAdmin)
     if (profileImage !== undefined) updateData.profileImage = profileImage
     if (profileImageFilename !== undefined) updateData.profileImageFilename = profileImageFilename
 

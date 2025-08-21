@@ -93,3 +93,7 @@ export const formatDateTime = (date: DateInput) => formatDate(date, { style: 'me
 // formatDateShort(date)      // "Jan 15, 2024"
 // formatAppointmentDate(date) // "Monday, January 15, 2024"
 // formatDateTime(date)       // "Jan 15, 2024, 2:30 PM"
+
+export const convertToDateFormat = (dateTimeString: string): string => {
+  return dateTimeString?.split('T')[0]
+}

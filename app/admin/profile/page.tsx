@@ -31,6 +31,7 @@ import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { formatDateLong } from '@/app/lib/utils/date/formatDate'
 import MemberStatusBadge from '@/app/components/member/MemberStatusBadge'
 import { motion } from 'framer-motion'
+import { useSession } from 'next-auth/react'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -48,6 +49,7 @@ const itemVariants = {
 }
 
 const ProfilePage = () => {
+  const session = useSession()
   const dispatch = useAppDispatch()
   const { profileForm, isEditing } = useAppSelector((state: RootState) => state.form)
   const { handleInput, setErrors, handleToggle } = createFormActions('profileForm', dispatch)
@@ -55,7 +57,8 @@ const ProfilePage = () => {
   const [newInterest, setNewInterest] = useState('')
   const inputs = profileForm?.inputs
   const errors = profileForm?.errors
-  const { data } = useGetMyProfileQuery({ chapterId, id: 'cmduzntqz000g8jw7vhhzj1zy' })
+  const { data } = useGetMyProfileQuery({ chapterId, userId: session.data?.user.id })
+  console.log('data: ', data)
 
   useEffect(() => {
     if (data && dispatch) {
@@ -63,31 +66,32 @@ const ProfilePage = () => {
         setInputs({
           formName: 'profileForm',
           data: {
-            id: data?.data?.id,
-            name: data?.data?.name || '',
-            email: data?.data?.email || '',
-            phone: data?.data?.phone || '',
-            company: data?.data?.company || '',
-            profession: data?.data?.profession || '',
-            role: data?.data?.role || '',
-            interests: data?.data?.interests || [],
-            profileImage: data?.data?.profileImage || null,
-            profileImageFilename: data?.data?.profileImageFilename || null,
-            isPublic: data?.data?.isPublic ?? true,
-            isActive: data?.data?.isActive ?? true,
-            membershipStatus: data?.data?.membershipStatus || '',
-            joinedAt: data?.data?.joinedAt || null,
-            expiresAt: data?.data?.expiresAt || null,
-            lastLoginAt: data?.data?.lastLoginAt || null,
-            createdAt: data?.data?.createdAt || null,
-            updatedAt: data?.data?.updatedAt || null,
-            isProfileComplete: data?.data?.isProfileComplete ?? false,
-            membershipDays: data?.data?.membershipDays || 0,
-            isExpiringSoon: data?.data?.isExpiringSoon ?? false,
+            id: data?.user?.id,
+            name: data?.user?.name || '',
+            email: data?.user?.email || '',
+            phone: data?.user?.phone || '',
+            company: data?.user?.company || '',
+            profession: data?.user?.profession || '',
+            role: data?.user?.role || '',
+            interests: data?.user?.interests || [],
+            profileImage: data?.user?.profileImage || null,
+            profileImageFilename: data?.user?.profileImageFilename || null,
+            isPublic: data?.user?.isPublic ?? true,
+            isActive: data?.user?.isActive ?? true,
+            isAdmin: data?.user?.isAdmin ?? false,
+            membershipStatus: data?.user?.membershipStatus || '',
+            joinedAt: data?.user?.joinedAt || null,
+            expiresAt: data?.user?.expiresAt || null,
+            lastLoginAt: data?.user?.lastLoginAt || null,
+            createdAt: data?.user?.createdAt || null,
+            updatedAt: data?.user?.updatedAt || null,
+            isProfileComplete: data?.user?.isProfileComplete ?? false,
+            membershipDays: data?.user?.membershipDays || 0,
+            isExpiringSoon: data?.user?.isExpiringSoon ?? false,
             chapter: {
-              id: data?.data?.chapter?.id || '',
-              name: data?.data?.chapter?.name || '',
-              location: data?.data?.chapter?.location || ''
+              id: data?.user?.chapter?.id || '',
+              name: data?.user?.chapter?.name || '',
+              location: data?.user?.chapter?.location || ''
             },
             meta: {
               chapterId: data?.meta?.chapterId || '',
@@ -154,7 +158,7 @@ const ProfilePage = () => {
     try {
       if (!validateProfileForm(inputs, setErrors)) return
 
-      await updateMyProfile({ chapterId, id: inputs.id, ...inputs }).unwrap()
+      await updateMyProfile({ chapterId, userId: inputs.id, ...inputs }).unwrap()
 
       dispatch(
         showToast({

@@ -124,7 +124,13 @@ const ModernBusinessNetworkingLanding = () => {
 
   return (
     <div className="min-h-screen bg-[#121212]">
-      <div className="flex items-center justify-end space-x-4 mr-6">
+      <div className="flex items-center justify-between space-x-4 px-6">
+        <Link
+          href="/"
+          className="bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent uppercase text-2xl font-bold cursor-pointer hover:bg-gradient-to-r hover:from-teal-400 hover:via-blue-400 hover:to-cyan-400"
+        >
+          CORE
+        </Link>
         <LaunchAppButton />
       </div>
       {/* Hero Section */}

@@ -13,6 +13,7 @@ import commonInterests from '@/app/lib/constants/member/commonInterestsList'
 import { Switch } from '../ui/Switch'
 import { ProfileImageUpload } from '../ui/ProfileImageUpload'
 import { showToast } from '@/app/redux/features/toastSlice'
+import { convertToDateFormat } from '@/app/lib/utils/date/formatDate'
 
 const drawerVariants = {
   closed: {
@@ -111,6 +112,8 @@ const AddMemberDrawer = () => {
           description: `There was an error ${memberForm?.inputs?.isUpdating ? 'updating' : 'creating'} ${memberForm?.inputs?.name}`
         })
       )
+    } finally {
+      dispatch(clearInputs({ formName: 'memberForm' }))
     }
   }
 
@@ -125,6 +128,8 @@ const AddMemberDrawer = () => {
       dispatch(setInputs({ formName: 'memberForm', data: { interests: updatedInterests } }))
     }
   }
+
+  console.log('formatForDateTimeLocal(inputs.expiresAt): ', convertToDateFormat(inputs.expiresAt))
 
   return (
     <AnimatePresence>
@@ -333,7 +338,7 @@ const AddMemberDrawer = () => {
                       name="joinedAt"
                       type="date"
                       label="Join Date"
-                      value={inputs.joinedAt || ''}
+                      value={convertToDateFormat(inputs.joinedAt) || ''}
                       onChange={handleInput}
                       icon={<Calendar className="w-5 h-5" />}
                       error={errors.joinedAt}
@@ -344,7 +349,7 @@ const AddMemberDrawer = () => {
                       name="expiresAt"
                       type="date"
                       label="Expires At"
-                      value={inputs.expiresAt || ''}
+                      value={convertToDateFormat(inputs.expiresAt) || ''}
                       onChange={handleInput}
                       icon={<Calendar className="w-5 h-5" />}
                     />
@@ -437,6 +442,13 @@ const AddMemberDrawer = () => {
                     checked={inputs.isPublic ?? true}
                     onChange={handleToggle}
                     label="Public Profile"
+                  />
+                  {/* Admin Settings */}
+                  <Switch
+                    name="isAdmin"
+                    checked={inputs.isAdmin ?? false}
+                    onChange={handleToggle}
+                    label="Admin privileges"
                   />
                 </motion.div>
               </form>
