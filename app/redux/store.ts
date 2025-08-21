@@ -45,3 +45,9 @@ export type AppSelector = typeof store.getState
 export const useAppDispatch: () => AppDispatch = useDispatch
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+
+export const useUserSelector = () => useAppSelector((state) => state.user)
+export const useNotificationSelector = () => useAppSelector((state) => state.notification)
+export const useAdminSelector = () => useAppSelector((state) => state.admin)
+export const useToastSelector = () => useAppSelector((state) => state.toast)
+export const useSettingsSelector = () => useAppSelector((state) => state.settings)

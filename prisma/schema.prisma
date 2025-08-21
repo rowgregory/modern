@@ -66,13 +66,15 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Basic info
-  name       String
-  role       String
-  email      String  @unique
-  phone      String?
-  company    String
-  profession String
-  location   String  @default("")
+  name        String
+  role        String
+  email       String  @unique
+  phone       String?
+  company     String
+  profession  String
+  location    String  @default("")
+  isAdmin     Boolean @default(false)
+  isSuperUser Boolean @default(false)
 
   // Modern membership
   chapterId        String

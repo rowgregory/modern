@@ -95,10 +95,10 @@ export const userSlice = createSlice({
     setCloseManageUsersDrawer: (state) => {
       state.manageUsersDrawer = false
     },
-    setOpenAddUsersDrawer: (state) => {
+    setOpenAddUserDrawer: (state) => {
       state.addUserDrawer = true
     },
-    setCloseAddUsersDrawer: (state) => {
+    setCloseAddUserDrawer: (state) => {
       state.addUserDrawer = false
     },
     resetUser: (state) => {
@@ -194,8 +194,8 @@ export const userReducer = userSlice.reducer as Reducer<UserState>
 export const {
   setOpenManageUsersDrawer,
   setCloseManageUsersDrawer,
-  setOpenAddUsersDrawer,
-  setCloseAddUsersDrawer,
+  setOpenAddUserDrawer,
+  setCloseAddUserDrawer,
   resetUser,
   setUsers,
   setUser,

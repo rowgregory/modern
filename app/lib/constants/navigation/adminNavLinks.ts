@@ -13,11 +13,11 @@ import {
 
 export const adminNavLinks = [
   {
-    id: 'dashboard',
-    label: 'Dashboard',
+    id: 'bridge',
+    label: 'The Bridge',
     icon: Home,
     description: 'Overview & Analytics',
-    linkKey: '/admin/dashboard'
+    linkKey: '/admin/bridge'
   },
   {
     id: 'face-to-face',

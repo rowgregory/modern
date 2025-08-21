@@ -21,7 +21,8 @@ import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import { useGetUsersQuery } from '@/app/redux/services/userApi'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { formatDate } from '@/app/lib/utils/date/formatDate'
-import { setOpenAddUsersDrawer } from '@/app/redux/features/userSlice'
+import { setOpenAddUserDrawer } from '@/app/redux/features/userSlice'
+import { setInputs } from '@/app/redux/features/formSlice'
 
 const MembersListPage = () => {
   const dispatch = useAppDispatch()
@@ -121,7 +122,7 @@ const MembersListPage = () => {
         >
           <div className="flex items-center justify-end">
             <motion.button
-              onClick={() => dispatch(setOpenAddUsersDrawer())}
+              onClick={() => dispatch(setOpenAddUserDrawer())}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-lg hover:from-violet-500 hover:to-fuchsia-500 transition-all flex items-center space-x-2 font-semibold shadow-lg"
@@ -199,6 +200,10 @@ const MembersListPage = () => {
 
                 return (
                   <motion.div
+                    onClick={() => {
+                      dispatch(setInputs({ formName: 'memberForm', data: { ...member, isUpdating: true } }))
+                      dispatch(setOpenAddUserDrawer())
+                    }}
                     key={member.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

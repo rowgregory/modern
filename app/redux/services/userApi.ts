@@ -53,8 +53,8 @@ export const userApi = api.injectEndpoints({
           : [{ type: 'User', id: 'LIST' }]
     }),
     getMyProfile: build.query({
-      query: ({ chapterId, id }) => ({
-        url: `${BASE_URL}/${chapterId}/${id}/me`
+      query: ({ chapterId, userId }) => ({
+        url: `${BASE_URL}/${chapterId}/${userId}/me`
       }),
       providesTags: (result, __, { chapterId }) =>
         result
@@ -66,16 +66,16 @@ export const userApi = api.injectEndpoints({
           : [{ type: 'User', id: 'ME' }]
     }),
     updateMyProfile: build.mutation({
-      query: ({ chapterId, id, ...profileData }) => ({
-        url: `${BASE_URL}/${chapterId}/${id}/me`,
+      query: ({ chapterId, userId, ...profileData }) => ({
+        url: `${BASE_URL}/${chapterId}/${userId}/me`,
         method: 'PUT',
         body: profileData
       }),
-      invalidatesTags: (_, __, { chapterId, id }) => [
-        { type: 'User', id }, // Invalidate the specific user/user
-        { type: 'User', id: 'ME' }, // Invalidate "my profile" queries
-        { type: 'User', id: `${chapterId}-ME` }, // Invalidate chapter-specific "my profile"
-        { type: 'User', id: 'LIST' } // Optional: invalidate user lists if profile data shows there
+      invalidatesTags: (_, __, { chapterId, userId }) => [
+        { type: 'User', userId }, // Invalidate the specific user/user
+        { type: 'User', userId: 'ME' }, // Invalidate "my profile" queries
+        { type: 'User', userId: `${chapterId}-ME` }, // Invalidate chapter-specific "my profile"
+        { type: 'User', userId: 'LIST' } // Optional: invalidate user lists if profile data shows there
       ]
     }),
     createUser: build.mutation({
@@ -97,15 +97,15 @@ export const userApi = api.injectEndpoints({
         { type: 'User', id: 'LIST' }
       ]
     }),
-    updateUser: build.mutation<UpdateUserResponse, { chapterId: string; id: string; data: Partial<UserFormData> }>({
-      query: ({ chapterId, id, data }) => ({
-        url: `${BASE_URL}/${chapterId}/${id}`,
-        method: 'PATCH',
+    updateUser: build.mutation<UpdateUserResponse, { chapterId: string; userId: string; data: Partial<UserFormData> }>({
+      query: ({ chapterId, userId, ...data }) => ({
+        url: `${BASE_URL}/${chapterId}/${userId}/update`,
+        method: 'PUT',
         body: data
       }),
-      invalidatesTags: (_, __, { id }: { id: string }) => [
-        { type: 'User', id },
-        { type: 'User', id: 'LIST' }
+      invalidatesTags: (_, __, { userId }: { userId: string }) => [
+        { type: 'User', userId },
+        { type: 'User', userId: 'LIST' }
       ]
     }),
     deleteUser: build.mutation<DeleteUserResponse, { chapterId: string; id: string }>({

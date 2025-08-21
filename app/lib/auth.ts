@@ -2,6 +2,10 @@ import prisma from '@/prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
 import { createLog } from './utils/api/createLog'
+import magicLinkTemplate from './email-templates/magic-link'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: false,
@@ -26,24 +30,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       sendVerificationRequest: async ({ identifier: email, url, provider }) => {
         console.log('Sending magic link to:', email)
         console.log('🔗 Magic link URL:', url)
+        console.log('PROVIDER:', provider)
 
         try {
-          const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/send-verification`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              email,
-              url,
-              from: provider.from
-            })
+          const result = await resend.emails.send({
+            from: provider.from!,
+            to: email,
+            subject: 'Access The Bridge',
+            html: magicLinkTemplate(url)
           })
 
-          if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(`Failed to send email: ${errorData.error}`)
-          }
+          console.log('RESULT: ', result)
 
           setTimeout(async () => {
             try {
@@ -125,18 +122,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return true
     },
-    async session({ session, token }) {
-      // Only pass userId - keep JWT minimal
-      if (token.userId && typeof token.userId === 'string') {
-        session.user.id = token.userId
-      } else {
-        // Handle case where userId is missing (shouldn't happen in normal flow)
-        console.error('❌ Missing userId in token')
-        // Return session anyway to avoid type errors, but without id
-        // This will likely cause issues in your app and force re-auth
-      }
-      return session
-    },
     async jwt({ token, user }) {
       if (user) {
         // First time sign in - get user from database
@@ -148,12 +133,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (dbUser) {
             // Store only userId in JWT
             token.userId = dbUser.id
+            token.role = dbUser.role
+            token.isAdmin = dbUser.isAdmin
+            token.isSuperUser = dbUser.isSuperUser
           }
         } catch (error) {
           console.error('❌ Failed to fetch user for JWT:', error)
         }
       }
       return token
+    },
+    async session({ session, token }) {
+      console.log('📋 Session callback - token userId:', token.userId)
+
+      // Transfer data from token to session
+      if (token.userId && typeof token.userId === 'string') {
+        session.user.id = token.userId
+        session.user.role = token.role as string
+        session.user.isAdmin = token.isAdmin as boolean
+        session.user.isSuperUser = token.isSuperUser as boolean
+        console.log('✅ Session populated with user data')
+      } else {
+        console.error('❌ Missing userId in token')
+      }
+
+      return session
     }
   }
 })

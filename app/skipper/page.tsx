@@ -37,7 +37,7 @@ const interests = [
   'Non-Profit'
 ]
 
-const Explorer = () => {
+const Skipper = () => {
   const dispatch = useAppDispatch()
   const { handleInput } = createFormActions('explorerForm', dispatch)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -116,11 +116,11 @@ const Explorer = () => {
     'w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors'
 
   return (
-    <div className="min-h-screen bg-gray-900 py-8">
+    <div className="min-h-screen py-12 bg-[#121212]">
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Explorer Application</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">Skipper Application</h1>
           <p className="text-gray-400 text-lg">Join our premier business networking organization</p>
         </div>
 
@@ -129,8 +129,9 @@ const Explorer = () => {
           onSubmit={handleSubmit}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="bg-gray-800 rounded-lg shadow-2xl border border-gray-700"
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 shadow-2xl"
+          style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}
         >
           <div className="p-8 space-y-10">
             {/* Personal Information */}
@@ -390,4 +391,4 @@ const Explorer = () => {
   )
 }
 
-export default Explorer
+export default Skipper

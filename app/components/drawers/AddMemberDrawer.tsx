@@ -2,8 +2,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, User, Briefcase, Shield, CheckCircle, Mail, Phone, Building, Calendar, Trash2 } from 'lucide-react'
 import { clearInputs, createFormActions, setInputs } from '@/app/redux/features/formSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { setCloseAddUsersDrawer } from '@/app/redux/features/userSlice'
-import { useCreateUserMutation } from '@/app/redux/services/userApi'
+import { setCloseAddUserDrawer } from '@/app/redux/features/userSlice'
+import { useCreateUserMutation, useUpdateUserMutation } from '@/app/redux/services/userApi'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import professionsList from '@/app/lib/constants/member/professionsList'
 import membershipStatusOptions from '@/app/lib/constants/member/membershipStatusOptions'
@@ -67,10 +67,12 @@ const AddMemberDrawer = () => {
   const { handleInput, setErrors, handleToggle } = createFormActions('memberForm', dispatch)
   const { memberForm } = useAppSelector((state: RootState) => state.form)
   const { addUserDrawer } = useAppSelector((state: RootState) => state.user)
-  const onClose = () => dispatch(setCloseAddUsersDrawer())
-  const [createMember, { isLoading }] = useCreateUserMutation()
+  const onClose = () => dispatch(setCloseAddUserDrawer())
+  const [createUser, { isLoading: isCreating }] = useCreateUserMutation()
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation()
   const inputs = memberForm.inputs
   const errors = memberForm.errors
+  const isLoading = isCreating || isUpdating
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -85,20 +87,30 @@ const AddMemberDrawer = () => {
         expiresAt: inputs?.expiresAt
       }
 
-      await createMember(memberData).unwrap()
+      if (memberForm?.inputs?.isUpdating) {
+        await updateUser({ userId: memberForm?.inputs?.id, ...memberData }).unwrap()
+      } else {
+        await createUser(memberData).unwrap()
+      }
 
       dispatch(clearInputs({ formName: 'memberForm' }))
-      dispatch(setCloseAddUsersDrawer())
+      dispatch(setCloseAddUserDrawer())
 
       dispatch(
         showToast({
           type: 'success',
-          message: 'New Member Added',
-          description: `${memberData.name} is now part of the team!`
+          message: memberForm?.inputs?.isUpdating ? 'Member updated' : 'New Member Added',
+          description: `${memberData.name} ${memberForm?.inputs?.isUpdating ? 'has been updated!' : 'is now part of the team!'}`
         })
       )
-    } catch (error) {
-      console.error('Error adding member:', error)
+    } catch {
+      dispatch(
+        showToast({
+          type: 'error',
+          message: `Error ${memberForm?.inputs?.isUpdating ? 'updating' : 'adding'} member`,
+          description: `There was an error ${memberForm?.inputs?.isUpdating ? 'updating' : 'creating'} ${memberForm?.inputs?.name}`
+        })
+      )
     }
   }
 
@@ -148,7 +160,7 @@ const AddMemberDrawer = () => {
                 transition={{ delay: 0.2, duration: 0.4 }}
               >
                 <h2 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                  Add New Member to Lynnfluence
+                  {memberForm?.inputs?.isUpdating ? 'Update member' : 'Add New Member to Lynnfluence'}
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">Create a new member profile for Lynnfluence Chapter</p>
               </motion.div>
@@ -458,12 +470,12 @@ const AddMemberDrawer = () => {
                   {isLoading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      <span>Adding Member...</span>
+                      <span>{memberForm?.inputs?.isUpdating ? 'Updating' : 'Adding'} Member...</span>
                     </>
                   ) : (
                     <>
                       <CheckCircle className="w-5 h-5" />
-                      <span>Add Member</span>
+                      <span>{memberForm?.inputs?.isUpdating ? 'Update' : 'Add'} Member</span>
                     </>
                   )}
                 </motion.button>

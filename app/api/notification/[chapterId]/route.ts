@@ -1,9 +1,18 @@
+import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { sliceNotification } from '@/app/lib/constants/api/sliceNames'
 import prisma from '@/prisma/client'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(_: any, { params }: any) {
+export async function GET(req: NextRequest, { params }: any) {
   try {
+    const userAuth = getUserFromHeader({
+      req
+    })
+
+    if (!userAuth.success) {
+      return userAuth.response!
+    }
+
     const parameters = await params
     const chapterId = parameters.chapterId
 
@@ -18,7 +27,7 @@ export async function GET(_: any, { params }: any) {
       where,
       include: {
         readBy: {
-          where: { userId: 'cmeagq2ea0013104ist9eku96' },
+          where: { userId: userAuth.userId },
           select: {
             id: true,
             readAt: true
@@ -42,7 +51,7 @@ export async function GET(_: any, { params }: any) {
       where: {
         ...where,
         readBy: {
-          none: { userId: 'cmeagq2ea0013104ist9eku96' } // Notifications with NO read record for this user
+          none: { userId: userAuth.userId } // Notifications with NO read record for this user
         }
       }
     })

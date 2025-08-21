@@ -103,78 +103,78 @@ const QuickActionButton = ({ title, icon: Icon, color, onClick }: any) => (
   </button>
 )
 
-const Dashboard2 = () => {
-  const weeklyActivity = [
-    { day: 'Mon', f2f: 34, leads: 28, meetings: 12 },
-    { day: 'Tue', f2f: 28, leads: 22, meetings: 8 },
-    { day: 'Wed', f2f: 42, leads: 35, meetings: 15 },
-    { day: 'Thu', f2f: 38, leads: 31, meetings: 11 },
-    { day: 'Fri', f2f: 45, leads: 38, meetings: 18 },
-    { day: 'Sat', f2f: 15, leads: 12, meetings: 3 },
-    { day: 'Sun', f2f: 8, leads: 6, meetings: 1 }
-  ]
+const weeklyActivity = [
+  { day: 'Mon', f2f: 34, leads: 28, meetings: 12 },
+  { day: 'Tue', f2f: 28, leads: 22, meetings: 8 },
+  { day: 'Wed', f2f: 42, leads: 35, meetings: 15 },
+  { day: 'Thu', f2f: 38, leads: 31, meetings: 11 },
+  { day: 'Fri', f2f: 45, leads: 38, meetings: 18 },
+  { day: 'Sat', f2f: 15, leads: 12, meetings: 3 },
+  { day: 'Sun', f2f: 8, leads: 6, meetings: 1 }
+]
 
-  const professionDistribution = [
-    { profession: 'Real Estate Agent', member: 'Jennifer Adams', filled: true, color: '#06B6D4' },
-    { profession: 'IT Consultant', member: 'Mike Chen', filled: true, color: '#8B5CF6' },
-    { profession: 'Business Attorney', member: 'Robert Taylor', filled: true, color: '#EC4899' },
-    { profession: 'Digital Marketing', member: 'Sarah Johnson', filled: true, color: '#10B981' },
-    { profession: 'Financial Advisor', member: 'Lisa Rodriguez', filled: true, color: '#F59E0B' },
-    { profession: 'Insurance Agent', member: null, filled: false, color: '#EF4444' },
-    { profession: 'CPA/Accountant', member: null, filled: false, color: '#6366F1' },
-    { profession: 'Graphic Designer', member: null, filled: false, color: '#84CC16' },
-    { profession: 'Construction Contractor', member: null, filled: false, color: '#64748B' },
-    { profession: 'Healthcare Provider', member: null, filled: false, color: '#F97316' },
-    { profession: 'Restaurant/Catering', member: null, filled: false, color: '#8B5CF6' },
-    { profession: 'Auto Services', member: null, filled: false, color: '#06B6D4' }
-  ]
+const professionDistribution = [
+  { profession: 'Real Estate Agent', member: 'Jennifer Adams', filled: true, color: '#06B6D4' },
+  { profession: 'IT Consultant', member: 'Mike Chen', filled: true, color: '#8B5CF6' },
+  { profession: 'Business Attorney', member: 'Robert Taylor', filled: true, color: '#EC4899' },
+  { profession: 'Digital Marketing', member: 'Sarah Johnson', filled: true, color: '#10B981' },
+  { profession: 'Financial Advisor', member: 'Lisa Rodriguez', filled: true, color: '#F59E0B' },
+  { profession: 'Insurance Agent', member: null, filled: false, color: '#EF4444' },
+  { profession: 'CPA/Accountant', member: null, filled: false, color: '#6366F1' },
+  { profession: 'Graphic Designer', member: null, filled: false, color: '#84CC16' },
+  { profession: 'Construction Contractor', member: null, filled: false, color: '#64748B' },
+  { profession: 'Healthcare Provider', member: null, filled: false, color: '#F97316' },
+  { profession: 'Restaurant/Catering', member: null, filled: false, color: '#8B5CF6' },
+  { profession: 'Auto Services', member: null, filled: false, color: '#06B6D4' }
+]
 
-  const topPerformers = [
-    {
-      name: 'Jennifer Adams',
-      subtitle: '8 deals • 15 F2F meetings',
-      amount: '$125,000',
-      rank: '1',
-      color: 'bg-blue-600'
-    },
-    {
-      name: 'Mike Chen',
-      subtitle: '6 deals • 12 F2F meetings',
-      amount: '$98,000',
-      rank: '2',
-      color: 'bg-violet-600'
-    },
-    {
-      name: 'Robert Taylor',
-      subtitle: '5 deals • 14 F2F meetings',
-      amount: '$87,000',
-      rank: '3',
-      color: 'bg-green-600'
-    },
-    {
-      name: 'Lisa Rodriguez',
-      subtitle: '5 deals • 11 F2F meetings',
-      amount: '$76,000',
-      rank: '4',
-      color: 'bg-pink-600'
-    },
-    {
-      name: 'James Wilson',
-      subtitle: '4 deals • 9 F2F meetings',
-      amount: '$65,000',
-      rank: '5',
-      color: 'bg-orange-600'
-    }
-  ]
+const topPerformers = [
+  {
+    name: 'Jennifer Adams',
+    subtitle: '8 deals • 15 F2F meetings',
+    amount: '$125,000',
+    rank: '1',
+    color: 'bg-blue-600'
+  },
+  {
+    name: 'Mike Chen',
+    subtitle: '6 deals • 12 F2F meetings',
+    amount: '$98,000',
+    rank: '2',
+    color: 'bg-violet-600'
+  },
+  {
+    name: 'Robert Taylor',
+    subtitle: '5 deals • 14 F2F meetings',
+    amount: '$87,000',
+    rank: '3',
+    color: 'bg-green-600'
+  },
+  {
+    name: 'Lisa Rodriguez',
+    subtitle: '5 deals • 11 F2F meetings',
+    amount: '$76,000',
+    rank: '4',
+    color: 'bg-pink-600'
+  },
+  {
+    name: 'James Wilson',
+    subtitle: '4 deals • 9 F2F meetings',
+    amount: '$65,000',
+    rank: '5',
+    color: 'bg-orange-600'
+  }
+]
 
-  const memberEngagement = [
-    { range: '90-100%', count: 23, color: 'bg-green-500' },
-    { range: '70-89%', count: 31, color: 'bg-blue-500' },
-    { range: '50-69%', count: 18, color: 'bg-yellow-500' },
-    { range: '30-49%', count: 9, color: 'bg-orange-500' },
-    { range: '0-29%', count: 6, color: 'bg-red-500' }
-  ]
+const memberEngagement = [
+  { range: '90-100%', count: 23, color: 'bg-green-500' },
+  { range: '70-89%', count: 31, color: 'bg-blue-500' },
+  { range: '50-69%', count: 18, color: 'bg-yellow-500' },
+  { range: '30-49%', count: 9, color: 'bg-orange-500' },
+  { range: '0-29%', count: 6, color: 'bg-red-500' }
+]
 
+const AdminBridge = () => {
   return (
     <div className="bg-gray-900">
       {/* Main Layout */}
@@ -420,4 +420,4 @@ const Dashboard2 = () => {
   )
 }
 
-export default Dashboard2
+export default AdminBridge

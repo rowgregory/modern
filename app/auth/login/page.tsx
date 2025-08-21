@@ -1,11 +1,9 @@
 'use client'
 
-'use client'
-
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, ArrowRight, CheckCircle, AlertCircle, Loader2, Building2, Users, Handshake, Shield } from 'lucide-react'
+import { Mail, ArrowRight, CheckCircle, AlertCircle, Loader2, Building2, Users, Shield, ShipWheel } from 'lucide-react'
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
@@ -21,7 +19,8 @@ const LoginPage = () => {
     try {
       const result = await signIn('email', {
         email,
-        redirect: false
+        redirect: false,
+        callbackUrl: '/auth/callback'
       })
 
       if (result?.error) {
@@ -43,10 +42,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div
-      className="min-h-screen bg-gray-950 flex items-center justify-center p-6"
-      style={{ backgroundColor: '#121212' }}
-    >
+    <div className="min-h-screen bg-[#121212] flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* Header */}
         <motion.div
@@ -56,15 +52,15 @@ const LoginPage = () => {
           className="text-center mb-8"
         >
           <div className="flex items-center justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 rounded-2xl flex items-center justify-center">
-              <Handshake className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 rounded-2xl flex items-center justify-center">
+              <ShipWheel className="w-8 h-8 text-white" />
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent mb-2">
-            Modern Chapter Portal
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent mb-2">
+            The Bridge
           </h1>
-          <p className="text-gray-400 text-lg">Member access to your chapter dashboard</p>
+          <p className="text-gray-400 text-lg">Access The Bridge to navigate your chapter dashboard</p>
         </motion.div>
 
         {/* Login Card */}
@@ -85,7 +81,7 @@ const LoginPage = () => {
                 transition={{ duration: 0.3 }}
               >
                 <div className="mb-6">
-                  <h2 className="text-xl font-semibold text-white mb-2">Sign in to your chapter</h2>
+                  <h2 className="text-xl font-semibold text-white mb-2">Sign in to The Bridge</h2>
                   <p className="text-gray-400 text-sm">Enter your email to receive a secure magic link</p>
                 </div>
 
@@ -104,7 +100,7 @@ const LoginPage = () => {
                         placeholder="your.email@company.com"
                         required
                         disabled={isLoading}
-                        className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -125,7 +121,7 @@ const LoginPage = () => {
                     disabled={isLoading || !email}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-lg hover:from-violet-500 hover:to-fuchsia-500 transition-all flex items-center justify-center space-x-2 font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-500 hover:to-cyan-500 transition-all flex items-center justify-center space-x-2 font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 cursor-pointer"
                     style={{ boxShadow: '0 0 20px rgba(139, 92, 246, 0.4)' }}
                   >
                     {isLoading ? (
@@ -202,21 +198,21 @@ const LoginPage = () => {
         >
           <div className="text-center">
             <div className="w-10 h-10 bg-gray-800/50 border border-gray-700 rounded-lg flex items-center justify-center mx-auto mb-2">
-              <Shield className="w-5 h-5 text-violet-400" />
+              <Shield className="w-5 h-5 text-cyan-400" />
             </div>
             <p className="text-xs text-gray-400">Secure Access</p>
           </div>
 
           <div className="text-center">
             <div className="w-10 h-10 bg-gray-800/50 border border-gray-700 rounded-lg flex items-center justify-center mx-auto mb-2">
-              <Users className="w-5 h-5 text-violet-400" />
+              <Users className="w-5 h-5 text-cyan-400" />
             </div>
             <p className="text-xs text-gray-400">Member Portal</p>
           </div>
 
           <div className="text-center">
             <div className="w-10 h-10 bg-gray-800/50 border border-gray-700 rounded-lg flex items-center justify-center mx-auto mb-2">
-              <Building2 className="w-5 h-5 text-violet-400" />
+              <Building2 className="w-5 h-5 text-cyan-400" />
             </div>
             <p className="text-xs text-gray-400">Chapter Tools</p>
           </div>
@@ -229,7 +225,7 @@ const LoginPage = () => {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-center mt-8"
         >
-          <p className="text-xs text-gray-500">Modern Chapter Management System</p>
+          <p className="text-xs text-gray-500">Coastal Referral Exchange Management System</p>
         </motion.div>
       </div>
     </div>

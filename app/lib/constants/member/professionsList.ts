@@ -197,6 +197,7 @@ const professionsList = [
   'Estate Planning Attorney',
   'Trust Officer',
   'Retirement Planning Specialist',
+  'Payroll Services',
 
   // Non-Profit & Government
   'Non-Profit Director',

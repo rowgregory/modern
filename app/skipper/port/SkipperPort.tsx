@@ -56,7 +56,7 @@ const generateHandbookPDF = () => {
   doc.save('Explorer-Handbook.pdf')
 }
 
-const ExplorerBasecamp = () => {
+const SkipperPort = () => {
   const dispatch = useAppDispatch()
   const [showNotification, setShowNotification] = useState(true)
   const { tempApplication } = useAppSelector((state: RootState) => state.app)
@@ -171,6 +171,7 @@ const ExplorerBasecamp = () => {
     }, 5000)
     return () => clearTimeout(timer)
   }, [])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
       {/* Background Pattern */}
@@ -517,4 +518,4 @@ const ExplorerBasecamp = () => {
   )
 }
 
-export default ExplorerBasecamp
+export default SkipperPort

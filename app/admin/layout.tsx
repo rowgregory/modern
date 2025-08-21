@@ -27,14 +27,17 @@ import { useAppDispatch } from '../redux/store'
 import { useGetNotificationsQuery } from '../redux/services/notificationApi'
 import { chapterId } from '../lib/constants/api/chapterId'
 import { Notification } from '@/types/notification'
+import { useGetMyProfileQuery } from '../redux/services/userApi'
+import { useSession } from 'next-auth/react'
+import { setOpenAddUserDrawer } from '../redux/features/userSlice'
 
 const actionItems = [
   { action: 'schedule-f2f', label: 'Schedule F2F', icon: Calendar, open: openFace2FaceDrawer },
-  { action: 'create-lead', label: 'Generate Lead', icon: Target, open: openFace2FaceDrawer },
-  { action: 'c-and-c', label: 'Log Closed & Credited', icon: CreditCard, open: openFace2FaceDrawer },
-  { action: 'add-member', label: 'Add New Member', icon: Users, open: openFace2FaceDrawer },
-  { action: 'add-explorer', label: 'Invite Explorer', icon: Footprints, open: openFace2FaceDrawer },
-  { action: 'generate-report', label: 'Generate Report', icon: BarChart3, open: openFace2FaceDrawer }
+  { action: 'create-lead', label: 'Generate Lead', icon: Target, open: () => {} },
+  { action: 'c-and-c', label: 'Log Closed & Credited', icon: CreditCard, open: () => {} },
+  { action: 'add-member', label: 'Add New Member', icon: Users, open: setOpenAddUserDrawer },
+  { action: 'add-explorer', label: 'Invite Explorer', icon: Footprints, open: () => {} },
+  { action: 'generate-report', label: 'Generate Report', icon: BarChart3, open: () => {} }
 ]
 
 interface AdminLayoutProps {
@@ -43,12 +46,18 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const dispatch = useAppDispatch()
+  const session = useSession()
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
   const [isActionsOpen, setIsActionsOpen] = useState(false)
   const [selectedTimeframe, setSelectedTimeframe] = useState('week')
   const pathname = useCustomPathname()
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const { data } = useGetNotificationsQuery(chapterId) as { data: any }
+  const { data: userObj } = useGetMyProfileQuery(
+    { chapterId, userId: session.data?.user.id },
+    { skip: !session.data?.user.id }
+  )
+
   const notifications = data?.notifications
   const unreadCount = data?.unreadCount
 
@@ -108,7 +117,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   className="flex items-center space-x-3"
                 >
                   <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-violet-400 rounded-lg"></div>
-                  <span className="text-white font-bold text-lg">Admin</span>
+                  <span className="text-white font-bold text-lg">{userObj?.user?.name?.split(' ')[0]}</span>
                 </motion.div>
               )}
               <button
@@ -168,10 +177,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               className="p-4 border-t border-gray-800"
             >
               <div className="flex items-center space-x-3 p-3 bg-gray-800/50 rounded-xl">
-                <div className="w-8 h-8 bg-gradient-to-r from-violet-400 to-fuchsia-400 rounded-full"></div>
+                <div className="w-8 h-8 bg-gradient-to-r from-violet-400 to-fuchsia-400 rounded-full flex items-center justify-center text-white font-bold">
+                  {userObj?.user?.name?.charAt(0)}
+                </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium truncate">Admin User</p>
-                  <p className="text-gray-400 text-xs truncate">admin@company.com</p>
+                  <p className="text-white text-sm font-medium truncate">
+                    {session.data?.user.isSuperUser ? 'Super User' : session.data?.user.isAdmin ? 'Admin' : 'Member'}
+                  </p>
+                  <p className="text-gray-400 text-xs truncate">{userObj?.user?.email}</p>
                 </div>
               </div>
             </motion.div>

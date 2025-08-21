@@ -3,7 +3,7 @@
 import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react'
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api`,
+  baseUrl: `/api`,
   prepareHeaders: (headers) => {
     headers.set('Content-Type', 'application/json')
     return headers

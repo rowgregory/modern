@@ -1,7 +1,7 @@
 import Dashboard from '@/app/components/common/Dashboard'
 import React from 'react'
 
-const MemberDashoard = () => {
+const MemberBridge = () => {
   return (
     <div>
       <Dashboard />
@@ -9,4 +9,4 @@ const MemberDashoard = () => {
   )
 }
 
-export default MemberDashoard
+export default MemberBridge
