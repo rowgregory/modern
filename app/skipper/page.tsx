@@ -11,6 +11,7 @@ import { useCreateExplorerMutation } from '../redux/services/userApi'
 import { chapterId } from '../lib/constants/api/chapterId'
 import { setTempApplication } from '../redux/features/appSlice'
 import { showToast } from '../redux/features/toastSlice'
+import { Switch } from '../components/ui/Switch'
 
 const chapters = [{ id: 'ch1', name: 'Modern', location: 'Lynn, MA', meetingDay: 'Thursday 7:00 AM' }]
 
@@ -39,7 +40,7 @@ const interests = [
 
 const Skipper = () => {
   const dispatch = useAppDispatch()
-  const { handleInput } = createFormActions('explorerForm', dispatch)
+  const { handleInput, handleToggle } = createFormActions('explorerForm', dispatch)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { explorerForm } = useAppSelector((state: RootState) => state.form)
   const { push } = useRouter()
@@ -118,12 +119,6 @@ const Skipper = () => {
   return (
     <div className="min-h-screen py-12 bg-[#121212]">
       <div className="max-w-4xl mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Skipper Application</h1>
-          <p className="text-gray-400 text-lg">Join our premier business networking organization</p>
-        </div>
-
         {/* Form Container */}
         <motion.form
           onSubmit={handleSubmit}
@@ -209,7 +204,7 @@ const Skipper = () => {
                 <h2 className="text-2xl font-semibold text-white">Business Information</h2>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Company Name <span className="text-red-400">*</span>
@@ -237,6 +232,39 @@ const Skipper = () => {
                     required
                     className={InputStyle}
                     placeholder="e.g., Financial Advisor, Attorney"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Licensing Status</label>
+                  <div className="mt-1">
+                    <Switch
+                      name="isLicensed"
+                      checked={explorerForm?.inputs.isLicensed ?? false}
+                      onChange={handleToggle}
+                      label="Are you licensed?"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">License Number</label>
+                  <input
+                    type="text"
+                    name="businessLicenseNumber"
+                    value={explorerForm.inputs.businessLicenseNumber || ''}
+                    onChange={handleInput}
+                    disabled={!explorerForm?.inputs?.isLicensed}
+                    className={`${InputStyle} ${
+                      !explorerForm?.inputs?.isLicensed ? 'opacity-50 cursor-not-allowed bg-gray-800' : ''
+                    }`}
+                    placeholder={
+                      explorerForm?.inputs?.isLicensed
+                        ? 'Your business license number'
+                        : 'Enable licensing to enter license number'
+                    }
                   />
                 </div>
               </div>

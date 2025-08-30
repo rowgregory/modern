@@ -1,96 +1,33 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Plus,
-  ChevronDown,
-  Download,
-  Users,
-  BarChart3,
-  Calendar,
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Target,
-  Footprints,
-  CreditCard,
-  Bell
-} from 'lucide-react'
+import React, { FC, ReactNode, useState } from 'react'
+import { motion } from 'framer-motion'
 import { adminNavLinks } from '../lib/constants/navigation/adminNavLinks'
 import useCustomPathname from '@/hooks/useCustomPathname'
-import Link from 'next/link'
 import AddMemberDrawer from '../components/drawers/AddMemberDrawer'
-import { itemVariants } from '../components/drawers/AdminNavigationDrawer'
-import { openFace2FaceDrawer } from '../redux/features/face2FaceSlice'
-import { useAppDispatch } from '../redux/store'
-import { useGetNotificationsQuery } from '../redux/services/notificationApi'
-import { chapterId } from '../lib/constants/api/chapterId'
-import { Notification } from '@/types/notification'
-import { useGetMyProfileQuery } from '../redux/services/userApi'
-import { useSession } from 'next-auth/react'
-import { setOpenAddUserDrawer } from '../redux/features/userSlice'
+import FixedLeftNavigationPanel from '../components/admin/FixedLeftNavigationPanel'
+import FixedHeader from '../components/admin/FixedHeader'
 
-const actionItems = [
-  { action: 'schedule-f2f', label: 'Schedule F2F', icon: Calendar, open: openFace2FaceDrawer },
-  { action: 'create-lead', label: 'Generate Lead', icon: Target, open: () => {} },
-  { action: 'c-and-c', label: 'Log Closed & Credited', icon: CreditCard, open: () => {} },
-  { action: 'add-member', label: 'Add New Member', icon: Users, open: setOpenAddUserDrawer },
-  { action: 'add-explorer', label: 'Invite Explorer', icon: Footprints, open: () => {} },
-  { action: 'generate-report', label: 'Generate Report', icon: BarChart3, open: () => {} }
-]
-
-interface AdminLayoutProps {
-  children: React.ReactNode
-}
-
-export default function AdminLayout({ children }: AdminLayoutProps) {
-  const dispatch = useAppDispatch()
-  const session = useSession()
+const AdminLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
-  const [isActionsOpen, setIsActionsOpen] = useState(false)
-  const [selectedTimeframe, setSelectedTimeframe] = useState('week')
-  const pathname = useCustomPathname()
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
-  const { data } = useGetNotificationsQuery(chapterId) as { data: any }
-  const { data: userObj } = useGetMyProfileQuery(
-    { chapterId, userId: session.data?.user.id },
-    { skip: !session.data?.user.id }
-  )
+  const path = useCustomPathname()
 
-  const notifications = data?.notifications
-  const unreadCount = data?.unreadCount
-
-  // Get current page from pathname
+  // Get current page from path
   const getCurrentPageId = () => {
-    const pathSegments = pathname.split('/').filter(Boolean)
+    const pathSegments = path.split('/').filter(Boolean)
     const lastSegment = pathSegments[pathSegments.length - 1]
 
     // Handle special cases for multi-word routes
-    if (pathname.includes('/face-2-face')) return 'face-to-face'
-    if (pathname.includes('/closed-and-credited')) return 'closed-and-credited'
+    if (path.includes('/face-2-face')) return 'face-to-face'
+    if (path.includes('/closed-and-credited')) return 'closed-and-credited'
 
     // Find matching navigation item
-    const matchingItem = adminNavLinks.find((item) => item.linkKey === pathname || item.id === lastSegment)
+    const matchingItem = adminNavLinks.find((item) => item.linkKey === path || item.id === lastSegment)
 
     return matchingItem?.id || 'dashboard'
   }
 
   const selectedPage = getCurrentPageId()
-
-  const handleActionClick = (item: any) => {
-    setIsActionsOpen(false)
-    dispatch(item.open())
-  }
-
-  const getPageDisplayName = (page: string) => {
-    const item = adminNavLinks.find((nav) => nav.id === page)
-    return item?.label || page
-  }
-
-  const markAsRead = (notificationId: string) => {
-    console.log('MARK AS READ:: ', notificationId)
-  }
 
   return (
     <>
@@ -98,98 +35,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       <div className="min-h-screen bg-gray-950 flex">
         {/* Fixed Left Navigation Panel */}
-        <motion.div
-          initial={false}
-          animate={{
-            width: isNavigationCollapsed ? '80px' : '280px'
-          }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-800 z-20 flex flex-col"
-        >
-          {/* Navigation Header */}
-          <div className="p-4 border-b border-gray-800">
-            <div className="flex items-center justify-between">
-              {!isNavigationCollapsed && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex items-center space-x-3"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-violet-400 rounded-lg"></div>
-                  <span className="text-white font-bold text-lg">{userObj?.user?.name?.split(' ')[0]}</span>
-                </motion.div>
-              )}
-              <button
-                onClick={() => setIsNavigationCollapsed(!isNavigationCollapsed)}
-                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                {isNavigationCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Navigation Items */}
-          <div className="flex-1 overflow-y-auto py-4">
-            <nav className="space-y-2 px-3">
-              {adminNavLinks.map((item, index) => (
-                <Link href={item.linkKey} key={item.id}>
-                  <motion.div
-                    key={item.id}
-                    variants={itemVariants}
-                    initial="closed"
-                    animate="open"
-                    custom={index}
-                    className={`
-                  w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all
-                  ${
-                    selectedPage === item.id
-                      ? 'bg-gradient-to-r from-cyan-600/20 to-violet-600/20 text-cyan-400 border border-cyan-600/30'
-                      : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                  }
-                `}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <item.icon className="w-5 h-5 flex-shrink-0" />
-                    {!isNavigationCollapsed && (
-                      <motion.span
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="font-medium"
-                      >
-                        {item.label}
-                      </motion.span>
-                    )}
-                  </motion.div>
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          {/* Navigation Footer */}
-          {!isNavigationCollapsed && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="p-4 border-t border-gray-800"
-            >
-              <div className="flex items-center space-x-3 p-3 bg-gray-800/50 rounded-xl">
-                <div className="w-8 h-8 bg-gradient-to-r from-violet-400 to-fuchsia-400 rounded-full flex items-center justify-center text-white font-bold">
-                  {userObj?.user?.name?.charAt(0)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium truncate">
-                    {session.data?.user.isSuperUser ? 'Super User' : session.data?.user.isAdmin ? 'Admin' : 'Member'}
-                  </p>
-                  <p className="text-gray-400 text-xs truncate">{userObj?.user?.email}</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </motion.div>
+        <FixedLeftNavigationPanel
+          isNavigationCollapsed={isNavigationCollapsed}
+          setIsNavigationCollapsed={setIsNavigationCollapsed}
+          selectedPage={selectedPage}
+        />
 
         {/* Main Content Area */}
         <div
@@ -200,181 +50,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           }}
         >
           {/* Fixed Header */}
-          <header
-            className="fixed top-0 right-0 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 z-30 h-[69px]"
-            style={{
-              left: isNavigationCollapsed ? '80px' : '280px',
-              transition: 'left 0.3s ease-in-out'
-            }}
-          >
-            <div className="h-full px-6 flex items-center justify-between">
-              {/* Header Left */}
-              <div className="flex items-center space-x-4">
-                <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                    {getPageDisplayName(selectedPage)}
-                  </h1>
-                  <p className="text-gray-400 text-sm">
-                    {selectedPage === 'dashboard'
-                      ? 'Complete chapter management and analytics'
-                      : `Currently viewing: ${getPageDisplayName(selectedPage)}`}
-                  </p>
-                </div>
-              </div>
-
-              {/* Header Right */}
-              <div className="flex items-center space-x-4">
-                {/* Search */}
-                <div className="relative hidden md:block">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    name="text"
-                    type="text"
-                    placeholder="Search..."
-                    className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-400 focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all focus:outline-none"
-                  />
-                </div>
-
-                {/* Notification Bell */}
-                <div className="relative">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                    className="relative p-2 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 transition-all"
-                  >
-                    <Bell className="w-5 h-5 text-gray-400" />
-                    {/* Red dot for unread notifications */}
-                    {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </span>
-                    )}
-                  </motion.button>
-
-                  {/* Notification Dropdown */}
-                  <AnimatePresence>
-                    {isNotificationsOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2 w-80 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50"
-                      >
-                        <div className="p-4 border-b border-gray-700">
-                          <h3 className="font-semibold text-white">Notifications</h3>
-                          <p className="text-sm text-gray-400">{unreadCount} unread</p>
-                        </div>
-
-                        <div className="max-h-96 overflow-y-auto">
-                          {notifications.length === 0 ? (
-                            <div className="p-4 text-center text-gray-400">No notifications</div>
-                          ) : (
-                            notifications.slice(0, 5).map((notification: Notification) => (
-                              <motion.div
-                                key={notification.id}
-                                className={`p-4 border-b border-gray-700 cursor-pointer transition-all ${
-                                  !notification.isRead ? 'bg-violet-500/10' : ''
-                                }`}
-                                onClick={() => markAsRead(notification.id)}
-                              >
-                                <div className="flex justify-between items-start">
-                                  <div className="flex-1">
-                                    <h4 className="font-medium text-white text-sm">{notification.title}</h4>
-                                    <p className="text-sm text-gray-400 mt-1">{notification.message}</p>
-                                    <span className="text-xs text-gray-500">
-                                      {new Date(notification.createdAt).toLocaleDateString()}
-                                    </span>
-                                  </div>
-                                  {!notification.isRead && (
-                                    <div className="h-2 w-2 bg-violet-400 rounded-full flex-shrink-0 mt-2" />
-                                  )}
-                                </div>
-                              </motion.div>
-                            ))
-                          )}
-                        </div>
-
-                        {notifications.length > 5 && (
-                          <div className="p-4 border-t border-gray-700">
-                            <button className="w-full text-center text-violet-400 hover:text-violet-300 text-sm">
-                              View all notifications
-                            </button>
-                          </div>
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Timeframe Selector */}
-                <select
-                  value={selectedTimeframe}
-                  onChange={(e) => setSelectedTimeframe(e.target.value)}
-                  className="px-4 py-2 bg-gray-800 border border-gray-700 text-gray-200 rounded-lg focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all text-sm focus:outline-none"
-                >
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                  <option value="quarter">This Quarter</option>
-                  <option value="year">This Year</option>
-                </select>
-
-                {/* Actions Dropdown */}
-                <div className="relative">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setIsActionsOpen(!isActionsOpen)}
-                    className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-violet-600 text-white rounded-lg hover:from-cyan-500 hover:to-violet-500 transition-all flex items-center space-x-2 font-medium shadow-lg text-sm"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Actions</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isActionsOpen ? 'rotate-180' : ''}`} />
-                  </motion.button>
-
-                  <AnimatePresence>
-                    {isActionsOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-xl"
-                      >
-                        <div className="py-2">
-                          {actionItems.map((item) => (
-                            <motion.button
-                              key={item.action}
-                              whileHover={{ backgroundColor: 'rgba(139, 92, 246, 0.1)' }}
-                              onClick={() => {
-                                handleActionClick(item)
-                              }}
-                              className="w-full px-4 py-3 text-left text-gray-200 hover:text-white transition-all flex items-center space-x-3"
-                            >
-                              <item.icon className="w-4 h-4 text-violet-400" />
-                              <span className="font-medium text-sm">{item.label}</span>
-                            </motion.button>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Export Button */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-lg hover:from-violet-500 hover:to-fuchsia-500 transition-all flex items-center space-x-2 font-medium shadow-lg text-sm"
-                >
-                  <Download className="w-4 h-4" />
-                  <span className="hidden lg:inline">Export</span>
-                </motion.button>
-              </div>
-            </div>
-            {/* Overlay for mobile actions dropdown */}
-          </header>
+          <FixedHeader isNavigationCollapsed={isNavigationCollapsed} selectedPage={selectedPage} />
 
           {/* Content Area */}
           <main className="flex-1 pt-16 overflow-hidden">
@@ -393,3 +69,5 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     </>
   )
 }
+
+export default AdminLayout

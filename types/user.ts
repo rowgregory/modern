@@ -13,6 +13,12 @@ export interface User {
   phone: string | null
   company: string
   profession: string
+  location: string
+  bio: string
+  title: string
+  website: string
+  yearsInBusiness: string
+  industry: string
 
   // Modern membership
   chapterId: string

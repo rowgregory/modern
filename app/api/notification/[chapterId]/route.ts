@@ -1,5 +1,5 @@
-import { getUserFromHeader } from '@/app/lib/api/getUserFromheader'
 import { sliceNotification } from '@/app/lib/constants/api/sliceNames'
+import { getUserFromHeader } from '@/app/lib/utils/api/getUserFromheader'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 

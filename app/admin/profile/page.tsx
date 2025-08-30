@@ -226,16 +226,7 @@ const ProfilePage = () => {
             {!isEditing ? (
               <button
                 onClick={() => dispatch(setIsEditing())}
-                className="
-                  flex items-center space-x-2 
-                  text-violet-400 hover:text-violet-300
-                  bg-violet-500/10 hover:bg-violet-500/20
-                  border border-violet-500/20 hover:border-violet-500/30
-                  px-4 py-2.5
-                  rounded-lg 
-                  font-medium text-sm
-                  transition-all duration-200
-                "
+                className="flex items-center space-x-2 text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/30 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200"
               >
                 <Edit2 className="w-4 h-4" />
                 <span>Edit Profile</span>
@@ -245,15 +236,7 @@ const ProfilePage = () => {
                 <button
                   onClick={handleSubmit}
                   disabled={isLoading}
-                  className="
-                    flex items-center space-x-2 
-                    bg-violet-600 hover:bg-violet-700
-                    text-white font-medium
-                    px-4 py-2.5
-                    rounded-lg text-sm
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    transition-all duration-200
-                  "
+                  className="flex items-center space-x-2 bg-violet-600 hover:bg-violet-700 text-white font-medium px-4 py-2.5 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   <Save className="w-4 h-4" />
                   <span>{isLoading ? 'Saving...' : 'Save Changes'}</span>

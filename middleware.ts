@@ -12,7 +12,8 @@ export async function middleware(req: NextRequest) {
     nextUrl.pathname.startsWith('/_next') ||
     nextUrl.pathname.includes('.') ||
     nextUrl.pathname.startsWith('/icon') ||
-    nextUrl.pathname.startsWith('/api/placeholder')
+    nextUrl.pathname.startsWith('/api/placeholder') ||
+    nextUrl.pathname.match(/^\/api\/user\/[^\/]+$/)
   ) {
     return NextResponse.next()
   }

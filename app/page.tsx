@@ -124,18 +124,9 @@ const ModernBusinessNetworkingLanding = () => {
 
   return (
     <div className="min-h-screen bg-[#121212]">
-      <div className="flex items-center justify-between space-x-4 px-6">
-        <Link
-          href="/"
-          className="bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent uppercase text-2xl font-bold cursor-pointer hover:bg-gradient-to-r hover:from-teal-400 hover:via-blue-400 hover:to-cyan-400"
-        >
-          CORE
-        </Link>
-        <LaunchAppButton />
-      </div>
       {/* Hero Section */}
       <motion.section
-        className="mt-[-74px] relative min-h-screen flex items-center justify-center text-white overflow-hidden"
+        className="mt-[-98px] relative min-h-screen flex items-center justify-center text-white overflow-hidden"
         initial="hidden"
         animate={isVisible ? 'visible' : 'hidden'}
       >

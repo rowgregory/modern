@@ -20,7 +20,7 @@ const LoginPage = () => {
       const result = await signIn('email', {
         email,
         redirect: false,
-        callbackUrl: '/auth/callback'
+        callbackUrl: '/auth/custom-callback'
       })
 
       if (result?.error) {
@@ -42,7 +42,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#121212] flex items-center justify-center p-6">
+    <div className="min-h-dvh mt-[-74px] bg-[#121212] flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* Header */}
         <motion.div
@@ -140,7 +140,7 @@ const LoginPage = () => {
 
                 <div className="mt-6 pt-6 border-t border-gray-700">
                   <p className="text-xs text-gray-500 text-center">
-                    Only registered Modern chapter members can access this system.
+                    Only registered Core chapter members can access this system.
                     <br />
                     Contact your chapter admin if you need access.
                   </p>

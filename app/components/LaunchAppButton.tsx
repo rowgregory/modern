@@ -5,7 +5,7 @@ const LaunchAppButton = () => {
   return (
     <Link
       href="/auth/login"
-      className="relative z-10 px-5 py-2.5 rounded-full text-lg text-white backdrop-blur-lg border border-white/10 mt-6 overflow-hidden group transition-all duration-300 hover:border-white/30"
+      className="relative z-10 px-5 py-2.5 rounded-full text-lg text-white backdrop-blur-lg border border-white/10 overflow-hidden group transition-all duration-300 hover:border-white/30"
     >
       <span className="relative z-10">Launch App</span>
 

@@ -66,17 +66,24 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Basic info
-  name        String
-  role        String
-  email       String  @unique
-  phone       String?
-  company     String
-  profession  String
-  location    String  @default("")
-  isAdmin     Boolean @default(false)
-  isSuperUser Boolean @default(false)
+  name                  String
+  role                  String
+  email                 String  @unique
+  phone                 String?
+  company               String
+  profession            String
+  location              String  @default("")
+  yearsInBusiness       String  @default("")
+  industry              String  @default("")
+  title                 String  @default("")
+  bio                   String  @default("")
+  website               String  @default("")
+  isLicensed            Boolean @default(false)
+  businessLicenseNumber String  @default("")
+  isAdmin               Boolean @default(false)
+  isSuperUser           Boolean @default(false)
 
-  // Modern membership
+  // Core membership
   chapterId        String
   chapter          Chapter          @relation(fields: [chapterId], references: [id])
   joinedAt         DateTime?
@@ -278,4 +285,7 @@ enum NotificationType {
   APPLICATION_REJECTED
   NEW_MEMBER
   SYSTEM_ALERT
+  FACE_TO_FACE_REQUEST
+  FACE_TO_FACE_CONFIRMED
+  FACE_TO_FACE_CANCELLED
 }

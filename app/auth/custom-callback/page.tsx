@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ShipWheel } from 'lucide-react'
 
-const AuthCallback = () => {
+const AuthCustomCallback = () => {
   const { data: session, status } = useSession()
   const { push } = useRouter()
   const dispatch = useAppDispatch()
@@ -116,4 +116,4 @@ const AuthCallback = () => {
   )
 }
 
-export default AuthCallback
+export default AuthCustomCallback
