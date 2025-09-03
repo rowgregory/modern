@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  CheckCircle,
   Clock,
   User,
   Mail,
@@ -9,24 +8,24 @@ import {
   MapPin,
   Calendar,
   FileText,
-  AlertCircle,
   Download,
   MessageSquare,
-  Star,
   ChevronRight,
   Info,
-  Heart,
   Users,
   Lock,
-  X
+  X,
+  Anchor,
+  Compass,
+  Waves,
+  AlertTriangle,
+  Zap
 } from 'lucide-react'
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
 import jsPDF from 'jspdf'
 import { formatDate, formatDateShort } from '@/app/lib/utils/date/formatDate'
 import { useSearchParams } from 'next/navigation'
-import { useGetExplorerByTempIdQuery } from '@/app/redux/services/userApi'
+import { useGetUserByIdQuery } from '@/app/redux/services/userApi'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
-import { setTempApplication } from '@/app/redux/features/appSlice'
 
 const generateHandbookPDF = () => {
   const doc = new jsPDF()
@@ -53,44 +52,23 @@ const generateHandbookPDF = () => {
   // ... add more content
 
   // Download the PDF
-  doc.save('Explorer-Handbook.pdf')
+  doc.save('Skipper-Handbook.pdf')
 }
 
 const SkipperPort = () => {
-  const dispatch = useAppDispatch()
   const [showNotification, setShowNotification] = useState(true)
-  const { tempApplication } = useAppSelector((state: RootState) => state.app)
   const searchParams = useSearchParams()
-  const tempId = searchParams.get('tempId')
+  const skipperId = searchParams.get('skipperId')
 
-  const shouldFetchFromServer = tempId && !tempApplication
-
-  const { data } = useGetExplorerByTempIdQuery(
-    { chapterId, tempId },
-    {
-      skip: !shouldFetchFromServer
-    }
-  )
-
-  useEffect(() => {
-    // Only set temp application if:
-    // 1. We have data from the server
-    // 2. We don't already have temp application data in Redux
-    // 3. The data has a user object
-    if (data?.user && !tempApplication && shouldFetchFromServer) {
-      dispatch(setTempApplication({ ...data.user, tempId: data.user.id }))
-    }
-  }, [data, tempApplication, shouldFetchFromServer, dispatch])
-
-  const createdAt = tempApplication?.formData?.createdAt
+  const { data, isLoading } = useGetUserByIdQuery({ chapterId, userId: skipperId })
 
   const addDays = (date: string | number | Date, days: number) => {
     return new Date(new Date(date).getTime() + days * 24 * 60 * 60 * 1000)
   }
 
   const formatDateRange = (startDays: number, endDays: number) => {
-    const startDate = addDays(createdAt, startDays)
-    const endDate = addDays(createdAt, endDays)
+    const startDate = addDays(data?.user?.createdAt, startDays)
+    const endDate = addDays(data?.user?.createdAt, endDays)
 
     const startDay = startDate.getDate()
     const endDay = endDate.getDate()
@@ -107,7 +85,7 @@ const SkipperPort = () => {
       id: 1,
       title: 'Application Submitted',
       status: 'completed',
-      date: formatDateShort(createdAt),
+      date: formatDateShort(data?.user?.createdAt),
       description: 'Your application has been successfully received'
     },
     {
@@ -137,52 +115,96 @@ const SkipperPort = () => {
     {
       title: 'Complete your profile',
       description:
-        tempApplication?.formData?.membershipStatus === 'APPROVED'
+        data?.user?.membershipStatus === 'APPROVED'
           ? 'Add your interests and professional background to connect with like-minded members'
           : 'Available after approval - add your professional background and more',
-      action: tempApplication?.formData?.membershipStatus === 'APPROVED' ? 'Complete Profile' : 'Pending Approval',
-      icon: tempApplication?.formData?.membershipStatus === 'APPROVED' ? User : Lock,
-      disabled: tempApplication?.formData?.membershipStatus === 'PENDING'
+      action: data?.user?.membershipStatus === 'APPROVED' ? 'Complete Profile' : 'Pending Approval',
+      icon: data?.user?.membershipStatus === 'APPROVED' ? User : Lock,
+      disabled: data?.user?.membershipStatus === 'PENDING'
     },
     {
-      title: 'Get familiar with Modern',
+      title: 'Get familiar with Coastal Referral Exchange',
       description: 'Learn about our community guidelines and networking opportunities',
       action: 'Learn More',
       icon: Info
     },
     {
       title: 'Connect with members',
-      description: 'Start building your professional network within the Modern community',
+      description: 'Start building your professional network within the Coastal Referral Exchange community',
       action: 'Browse Members',
       icon: Users
     }
   ]
 
   const resources = [
-    { title: 'Explorer Handbook', type: 'PDF', size: '2.4 MB', pdf: generateHandbookPDF },
+    { title: 'Skipper Handbook', type: 'PDF', size: '2.4 MB', pdf: generateHandbookPDF },
     { title: 'Safety Guidelines', type: 'PDF', size: '1.8 MB', pdf: () => {} },
     { title: 'Equipment List', type: 'PDF', size: '856 KB', pdf: () => {} },
     { title: 'Training Videos', type: 'Link', size: 'Online', pdf: () => {} }
   ]
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowNotification(false)
-    }, 5000)
-    return () => clearTimeout(timer)
-  }, [])
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden flex justify-center py-10">
+        <div className="w-8 h-8 rounded-full border-2 border-cyan-500 border-t-0 animate-spin" />
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-                           radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.3) 0%, transparent 50%)`
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      {/* Storm Background Effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Lightning flashes */}
+        <motion.div
+          animate={{
+            opacity: [0, 0.4, 0, 0.2, 0, 0.6, 0],
+            scale: [1, 1.01, 1]
           }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            repeatDelay: 3,
+            times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1]
+          }}
+          className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-300/20 via-cyan-200/10 to-transparent pointer-events-none"
         />
+
+        {/* Rain effect */}
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(150)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-px h-16 bg-gradient-to-b from-cyan-200/60 to-transparent"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `-10%`
+              }}
+              animate={{
+                y: [0, 800],
+                opacity: [0, 0.8, 0]
+              }}
+              transition={{
+                duration: Math.random() * 1.5 + 1,
+                repeat: Infinity,
+                delay: Math.random() * 3,
+                ease: 'linear'
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Animated waves at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 overflow-hidden">
+          <motion.div
+            animate={{ x: [-100, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            className="absolute bottom-0 left-0 w-[200%] h-full bg-gradient-to-r from-cyan-900/20 via-slate-700/30 to-cyan-900/20"
+            style={{
+              clipPath: 'polygon(0 60%, 25% 80%, 50% 60%, 75% 85%, 100% 65%, 100% 100%, 0% 100%)'
+            }}
+          />
+        </div>
       </div>
 
       {/* Notification Bar */}
@@ -192,18 +214,18 @@ const SkipperPort = () => {
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
-            className="relative z-50 bg-green-600 text-white px-6 py-3"
+            className="relative z-50 bg-gradient-to-r from-emerald-700 to-teal-700 text-white px-6 py-3 border-b border-emerald-600/50"
           >
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <CheckCircle className="h-5 w-5" />
+                <Anchor className="h-5 w-5" />
                 <span className="font-medium">
-                  Application submitted successfully! We&apos;ll review it within 2-3 business days.
+                  Skipper application logged successfully! Harbor Master will review within 2-3 tides.
                 </span>
               </div>
               <button
                 onClick={() => setShowNotification(false)}
-                className="text-green-100 hover:text-white transition-colors"
+                className="text-emerald-100 hover:text-white transition-colors"
               >
                 <X />
               </button>
@@ -221,26 +243,32 @@ const SkipperPort = () => {
           className="mb-8"
         >
           <div className="flex items-center space-x-4 mb-4">
-            <div className="h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <Star className="h-6 w-6 text-white" />
+            <div className="h-12 w-12 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-900/50">
+              <Compass className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Welcome to Basecamp</h1>
-              <p className="text-blue-200">Explorer Application Dashboard</p>
+              <h1 className="text-3xl font-bold text-white">Storm Harbor Port</h1>
+              <p className="text-cyan-200">Skipper Registry & Maritime Command</p>
             </div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6">
+          <div className="bg-slate-800/40 backdrop-blur-md rounded-2xl border border-cyan-500/30 p-6 shadow-xl shadow-slate-900/50">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h2 className="text-xl font-semibold text-white mb-2">Hello, {tempApplication?.formData?.name}! 👋</h2>
-                <p className="text-blue-200">
-                  Your explorer application is being processed. Here&apos;s everything you need to know.
+                <h2 className="text-xl font-semibold text-white mb-2 flex items-center space-x-2">
+                  <span>Ahoy, {data?.user?.name}!</span>
+                  <Waves className="h-5 w-5 text-cyan-400" />
+                </h2>
+                <p className="text-cyan-200">
+                  Your skipper credentials are under review by the Harbor Master. Weather the storm while we process
+                  your application.
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-sm text-blue-200">Application ID</div>
-                <div className="text-lg font-mono font-bold text-white">{tempApplication?.tempId}</div>
+                <div className="text-sm text-cyan-300">Skipper ID</div>
+                <div className="text-lg font-mono font-bold text-white bg-slate-700/50 px-3 py-1 rounded-lg border border-cyan-500/20">
+                  {data?.user?.id}
+                </div>
               </div>
             </div>
           </div>
@@ -254,11 +282,11 @@ const SkipperPort = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6"
+              className="bg-slate-800/40 backdrop-blur-md rounded-2xl border border-slate-600/30 p-6 shadow-xl shadow-slate-900/50"
             >
               <div className="flex items-center space-x-3 mb-6">
-                <Clock className="h-6 w-6 text-blue-400" />
-                <h3 className="text-xl font-semibold text-white">Application Progress</h3>
+                <Clock className="h-6 w-6 text-cyan-400" />
+                <h3 className="text-xl font-semibold text-white">Voyage Progress</h3>
               </div>
 
               <div className="space-y-6">
@@ -272,18 +300,18 @@ const SkipperPort = () => {
                   >
                     <div className="relative">
                       <div
-                        className={`h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                        className={`h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                           step.status === 'completed'
-                            ? 'bg-green-500 text-white'
+                            ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-900/50'
                             : step.status === 'current'
-                              ? 'bg-blue-500 text-white animate-pulse'
-                              : 'bg-white/20 text-white/60'
+                              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white animate-pulse shadow-amber-900/50'
+                              : 'bg-slate-700/50 text-slate-300 border border-slate-600/50'
                         }`}
                       >
                         {step.status === 'completed' ? (
-                          <CheckCircle className="h-5 w-5" />
+                          <Anchor className="h-5 w-5" />
                         ) : step.status === 'current' ? (
-                          <Clock className="h-5 w-5" />
+                          <Compass className="h-5 w-5" />
                         ) : (
                           <div className="h-2 w-2 bg-current rounded-full" />
                         )}
@@ -291,7 +319,9 @@ const SkipperPort = () => {
                       {index < applicationSteps.length - 1 && (
                         <div
                           className={`absolute top-10 left-5 w-0.5 h-12 transition-colors duration-300 ${
-                            step.status === 'completed' ? 'bg-green-500' : 'bg-white/20'
+                            step.status === 'completed'
+                              ? 'bg-gradient-to-b from-emerald-500 to-emerald-400'
+                              : 'bg-slate-600/50'
                           }`}
                         />
                       )}
@@ -300,9 +330,11 @@ const SkipperPort = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <h4 className="font-semibold text-white">{step.title}</h4>
-                        <span className="text-sm text-blue-200">{step.date}</span>
+                        <span className="text-sm text-cyan-300 bg-slate-700/30 px-2 py-1 rounded-full">
+                          {step.date}
+                        </span>
                       </div>
-                      <p className="text-sm text-white/70">{step.description}</p>
+                      <p className="text-sm text-slate-300">{step.description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -312,16 +344,17 @@ const SkipperPort = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.5 }}
-                className="mt-6 p-4 bg-blue-500/20 rounded-xl border border-blue-400/20"
+                className="mt-6 p-4 bg-gradient-to-r from-cyan-800/20 to-blue-800/20 rounded-xl border border-cyan-400/30 shadow-inner"
               >
                 <div className="flex items-center space-x-3">
-                  <Info className="h-5 w-5 text-blue-400" />
+                  <Info className="h-5 w-5 text-cyan-400" />
                   <div>
-                    <div className="font-medium text-white">Estimated Decision Date</div>
-                    <div className="text-sm text-white/70">
+                    <div className="font-medium text-white">Expected Clearance Date</div>
+                    <div className="text-sm text-slate-300">
                       {new Date(
-                        new Date(tempApplication?.formData?.createdAt).getTime() + 5 * 24 * 60 * 60 * 1000
-                      ).toLocaleDateString()}
+                        new Date(data?.user?.createdAt).getTime() + 5 * 24 * 60 * 60 * 1000
+                      ).toLocaleDateString()}{' '}
+                      - <span className="text-cyan-400">Fair Winds Expected</span>
                     </div>
                   </div>
                 </div>
@@ -333,11 +366,11 @@ const SkipperPort = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6"
+              className="bg-slate-800/40 backdrop-blur-md rounded-2xl border border-slate-600/30 p-6 shadow-xl shadow-slate-900/50"
             >
               <div className="flex items-center space-x-3 mb-6">
-                <AlertCircle className="h-6 w-6 text-orange-400" />
-                <h3 className="text-xl font-semibold text-white">Recommended Next Steps</h3>
+                <AlertTriangle className="h-6 w-6 text-amber-400" />
+                <h3 className="text-xl font-semibold text-white">Chart Your Course</h3>
               </div>
 
               <div className="space-y-4">
@@ -347,10 +380,10 @@ const SkipperPort = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
-                    className={`group bg-white/5 rounded-xl p-4 transition-all duration-300 border border-transparent ${
+                    className={`group bg-slate-700/20 rounded-xl p-4 transition-all duration-300 border ${
                       step.disabled
-                        ? 'opacity-60 cursor-not-allowed'
-                        : 'hover:bg-white/10 cursor-pointer hover:border-white/20'
+                        ? 'opacity-60 cursor-not-allowed border-slate-600/30'
+                        : 'hover:bg-slate-700/40 cursor-pointer hover:border-cyan-400/50 border-slate-600/30'
                     }`}
                     onClick={
                       step.disabled
@@ -363,27 +396,31 @@ const SkipperPort = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-start space-x-3">
                         <div
-                          className={`h-8 w-8 rounded-lg flex items-center justify-center transition-colors ${
-                            step.disabled ? 'bg-white/10' : 'bg-white/20 group-hover:bg-white/30'
+                          className={`h-8 w-8 rounded-lg flex items-center justify-center transition-colors shadow-lg ${
+                            step.disabled
+                              ? 'bg-slate-600/30 shadow-slate-800/50'
+                              : 'bg-gradient-to-r from-cyan-600 to-blue-600 group-hover:from-cyan-500 group-hover:to-blue-500 shadow-cyan-900/50'
                           }`}
                         >
                           <step.icon className="h-4 w-4 text-white" />
                         </div>
                         <div>
                           <h4 className="font-medium text-white">{step.title}</h4>
-                          <p className="text-sm text-white/70">{step.description}</p>
+                          <p className="text-sm text-slate-300">{step.description}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <span
-                          className={`text-sm transition-colors ${
-                            step.disabled ? 'text-white/40' : 'text-blue-300 group-hover:text-blue-200'
+                          className={`text-sm transition-colors px-2 py-1 rounded-full whitespace-nowrap ${
+                            step.disabled
+                              ? 'text-slate-400 bg-slate-600/20'
+                              : 'text-cyan-300 group-hover:text-cyan-200 bg-cyan-800/30 group-hover:bg-cyan-700/40'
                           }`}
                         >
                           {step.action}
                         </span>
                         {!step.disabled && (
-                          <ChevronRight className="h-4 w-4 text-blue-300 group-hover:text-blue-200 group-hover:translate-x-1 transition-all" />
+                          <ChevronRight className="h-4 w-4 text-cyan-300 group-hover:text-cyan-200 group-hover:translate-x-1 transition-all" />
                         )}
                       </div>
                     </div>
@@ -400,51 +437,33 @@ const SkipperPort = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6"
+              className="bg-slate-800/40 backdrop-blur-md rounded-2xl border border-slate-600/30 p-6 shadow-xl shadow-slate-900/50"
             >
               <div className="flex items-center space-x-3 mb-6">
-                <User className="h-6 w-6 text-purple-400" />
-                <h3 className="text-xl font-semibold text-white">Your Profile</h3>
+                <User className="h-6 w-6 text-cyan-400" />
+                <h3 className="text-xl font-semibold text-white">Captain&apos;s Log</h3>
               </div>
 
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Mail className="h-4 w-4 text-white/60" />
-                  <span className="text-white text-sm">{tempApplication?.formData?.email}</span>
+                  <Mail className="h-4 w-4 text-slate-400" />
+                  <span className="text-white text-sm">{data?.user?.email}</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Phone className="h-4 w-4 text-white/60" />
-                  <span className="text-white text-sm">{tempApplication?.formData?.phone}</span>
+                  <Phone className="h-4 w-4 text-slate-400" />
+                  <span className="text-white text-sm">{data?.user?.phone}</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <MapPin className="h-4 w-4 text-white/60" />
+                  <MapPin className="h-4 w-4 text-slate-400" />
                   <span className="text-white text-sm">
-                    {tempApplication?.formData &&
-                      tempApplication?.formData?.location?.charAt(0).toUpperCase() +
-                        tempApplication?.formData?.location?.slice(1)}
+                    {data?.user && data?.user?.location?.charAt(0).toUpperCase() + data?.user?.location?.slice(1)}
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Calendar className="h-4 w-4 text-white/60" />
+                  <Calendar className="h-4 w-4 text-slate-400" />
                   <span className="text-white text-sm">
-                    Applied {formatDate(tempApplication?.formData?.createdAt, { includeTime: true })}
+                    Logged {formatDate(data?.user?.createdAt, { includeTime: true })}
                   </span>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-white/20">
-                <div className="text-sm text-white/70 mb-2">Experience Level</div>
-                <div className="text-white font-medium">{tempApplication?.formData?.experience}</div>
-              </div>
-
-              <div className="mt-4">
-                <div className="text-sm text-white/70 mb-2">Interests</div>
-                <div className="flex flex-wrap gap-2">
-                  {tempApplication?.formData?.interests?.map((interest: string, index: number) => (
-                    <span key={index} className="px-2 py-1 bg-white/20 rounded-full text-xs text-white">
-                      {interest}
-                    </span>
-                  ))}
                 </div>
               </div>
             </motion.div>
@@ -454,33 +473,33 @@ const SkipperPort = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6"
+              className="bg-slate-800/40 backdrop-blur-md rounded-2xl border border-slate-600/30 p-6 shadow-xl shadow-slate-900/50"
             >
               <div className="flex items-center space-x-3 mb-6">
-                <FileText className="h-6 w-6 text-green-400" />
-                <h3 className="text-xl font-semibold text-white">Resources</h3>
+                <FileText className="h-6 w-6 text-emerald-400" />
+                <h3 className="text-xl font-semibold text-white">Maritime Archives</h3>
               </div>
 
               <div className="space-y-3">
-                {resources.map((resource: any, index) => (
+                {resources.map((resource, index) => (
                   <motion.div
                     onClick={resource.pdf}
                     key={index}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="group flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-all duration-300 cursor-pointer"
+                    className="group flex items-center justify-between p-3 bg-slate-700/20 hover:bg-slate-700/40 rounded-lg transition-all duration-300 cursor-pointer border border-slate-600/30 hover:border-emerald-400/50"
                   >
                     <div className="flex items-center space-x-3">
-                      <Download className="h-4 w-4 text-white/60 group-hover:text-white transition-colors" />
+                      <Download className="h-4 w-4 text-slate-400 group-hover:text-emerald-400 transition-colors" />
                       <div>
                         <div className="text-white text-sm font-medium">{resource.title}</div>
-                        <div className="text-white/60 text-xs">
+                        <div className="text-slate-400 text-xs">
                           {resource.type} • {resource.size}
                         </div>
                       </div>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-white/40 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                    <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
                   </motion.div>
                 ))}
               </div>
@@ -491,24 +510,25 @@ const SkipperPort = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="bg-gradient-to-r from-pink-500/20 to-purple-600/20 backdrop-blur-md rounded-2xl border border-pink-400/20 p-6"
+              className="bg-gradient-to-r from-amber-800/20 to-orange-700/20 backdrop-blur-md rounded-2xl border border-amber-500/30 p-6 shadow-xl shadow-orange-900/50"
             >
               <div className="flex items-center space-x-3 mb-4">
-                <Heart className="h-6 w-6 text-pink-400" />
-                <h3 className="text-xl font-semibold text-white">Need Help?</h3>
+                <Zap className="h-6 w-6 text-amber-400" />
+                <h3 className="text-xl font-semibold text-white">Storm Watch Support</h3>
               </div>
 
-              <p className="text-white/80 text-sm mb-4">
-                Our support team is here to help with any questions about your application.
+              <p className="text-slate-200 text-sm mb-4">
+                Our Harbor Master is standing by to assist with any questions about your skipper application or maritime
+                operations.
               </p>
 
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-pink-600 hover:to-purple-700 transition-all duration-300 flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white py-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg shadow-amber-900/50"
               >
                 <MessageSquare className="h-4 w-4" />
-                <span>Contact Support</span>
+                <span>Signal Harbor Master</span>
               </motion.button>
             </motion.div>
           </div>

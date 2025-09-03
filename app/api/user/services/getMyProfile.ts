@@ -23,7 +23,11 @@ export async function getMyProfile(req: NextRequest, chapterId: string, userId: 
         email: true,
         phone: true,
         company: true,
-        profession: true,
+        industry: true,
+        website: true,
+        businessLicenseNumber: true,
+        yearsInBusiness: true,
+        bio: true,
         role: true,
         interests: true,
         profileImage: true,
@@ -60,7 +64,7 @@ export async function getMyProfile(req: NextRequest, chapterId: string, userId: 
       user.name?.trim() &&
       user.email?.trim() &&
       user.company?.trim() &&
-      user.profession?.trim()
+      user.industry?.trim()
     )
 
     // Calculate membership days
@@ -106,7 +110,7 @@ export async function getMyProfile(req: NextRequest, chapterId: string, userId: 
             missingFields: [
               !user.name?.trim() && 'name',
               !user.company?.trim() && 'company',
-              !user.profession?.trim() && 'profession',
+              !user.industry?.trim() && 'industry',
               !user.phone?.trim() && 'phone'
             ].filter(Boolean)
           },

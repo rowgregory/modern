@@ -18,7 +18,7 @@ const staggerContainer: any = {
   }
 }
 
-export default function ChartYourCourse({ modernValues }: { modernValues: any[] }) {
+export default function ChartYourCourse({ creValues }: { creValues: any[] }) {
   return (
     <motion.section
       className="py-20 relative"
@@ -52,7 +52,7 @@ export default function ChartYourCourse({ modernValues }: { modernValues: any[] 
         </motion.div>
 
         <motion.div variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {modernValues.map((value: any, index: number) => (
+          {creValues.map((value: any, index: number) => (
             <motion.div
               key={index}
               variants={fadeInUp}

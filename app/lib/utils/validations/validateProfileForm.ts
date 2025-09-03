@@ -15,10 +15,6 @@ const validateProfileForm = (inputs: any, setErrors: any) => {
     newErrors.company = 'Company is required'
   }
 
-  if (!inputs.profession?.trim()) {
-    newErrors.profession = 'Profession is required'
-  }
-
   if (inputs.phone && !/^[\+]?[1-9][\d]{0,15}$/.test(inputs.phone.replace(/[\s\-\(\)]/g, ''))) {
     newErrors.phone = 'Invalid phone number format'
   }

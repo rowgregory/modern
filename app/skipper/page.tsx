@@ -1,113 +1,134 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { User, Building2, MapPin, Briefcase, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react'
-import { createFormActions, setInputs } from '../redux/features/formSlice'
+import {
+  User,
+  MapPin,
+  CheckCircle,
+  ArrowRight,
+  Anchor,
+  Navigation,
+  Shield,
+  Waves,
+  Compass,
+  Ship,
+  Zap,
+  AlertTriangle
+} from 'lucide-react'
+import { createFormActions } from '../redux/features/formSlice'
 import { RootState, useAppDispatch, useAppSelector } from '../redux/store'
 import { useRouter } from 'next/navigation'
-// import validateExplorerForm from '../components/forms/validations/validateExplorerForm'
-import { useCreateExplorerMutation } from '../redux/services/userApi'
+import { useCreateUserMutation } from '../redux/services/userApi'
 import { chapterId } from '../lib/constants/api/chapterId'
-import { setTempApplication } from '../redux/features/appSlice'
 import { showToast } from '../redux/features/toastSlice'
 import { Switch } from '../components/ui/Switch'
+import validateSkipperForm from '../components/forms/validations/validateSkipperForm'
 
-const chapters = [{ id: 'ch1', name: 'Modern', location: 'Lynn, MA', meetingDay: 'Thursday 7:00 AM' }]
+const StormEffects = () => {
+  const [isClient, setIsClient] = useState(false)
 
-const interests = [
-  'Accounting',
-  'Architecture',
-  'Automotive',
-  'Banking',
-  'Construction',
-  'Consulting',
-  'Education',
-  'Engineering',
-  'Finance',
-  'Healthcare',
-  'Insurance',
-  'Legal',
-  'Marketing',
-  'Real Estate',
-  'Technology',
-  'Manufacturing',
-  'Retail',
-  'Hospitality',
-  'Transportation',
-  'Non-Profit'
-]
+  useEffect(() => {
+    if (!isClient) {
+      setIsClient(true)
+    }
+  }, [isClient])
+
+  if (!isClient) return
+
+  return (
+    <>
+      {/* Storm Background Effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Lightning flashes */}
+        <motion.div
+          animate={{
+            opacity: [0, 0.4, 0, 0.2, 0, 0.6, 0],
+            scale: [1, 1.01, 1]
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            repeatDelay: 3,
+            times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1]
+          }}
+          className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-300/20 via-cyan-200/10 to-transparent pointer-events-none"
+        />
+
+        {/* Rain effect */}
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(50)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-px h-16 bg-gradient-to-b from-cyan-200/60 to-transparent"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `-10%`
+              }}
+              animate={{
+                y: [0, 800],
+                opacity: [0, 0.8, 0]
+              }}
+              transition={{
+                duration: Math.random() * 1.5 + 1,
+                repeat: Infinity,
+                delay: Math.random() * 3,
+                ease: 'linear'
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Animated waves at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 overflow-hidden">
+          <motion.div
+            animate={{ x: [-100, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            className="absolute bottom-0 left-0 w-[200%] h-full bg-gradient-to-r from-cyan-900/20 via-slate-700/30 to-cyan-900/20"
+            style={{
+              clipPath: 'polygon(0 60%, 25% 80%, 50% 60%, 75% 85%, 100% 65%, 100% 100%, 0% 100%)'
+            }}
+          />
+        </div>
+      </div>
+    </>
+  )
+}
 
 const Skipper = () => {
   const dispatch = useAppDispatch()
-  const { handleInput, handleToggle } = createFormActions('explorerForm', dispatch)
+  const { handleInput, handleToggle, setErrors } = createFormActions('skipperForm', dispatch)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { explorerForm } = useAppSelector((state: RootState) => state.form)
+  const { skipperForm } = useAppSelector((state: RootState) => state.form)
   const { push } = useRouter()
-  const [createExplorer, { error }] = useCreateExplorerMutation() as any
-
-  const handleInterestToggle = (interest: string) => {
-    dispatch(
-      setInputs({
-        formName: 'explorerForm',
-        data: {
-          interests: explorerForm?.inputs?.interests.includes(interest)
-            ? [...explorerForm?.inputs?.interests].filter((i: any) => i !== interest)
-            : [...explorerForm?.inputs?.interests, interest]
-        }
-      })
-    )
-  }
+  const [createSkipper] = useCreateUserMutation() as any
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
-    setIsSubmitting(true)
-
-    const tempId = `EXP-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`
-
-    dispatch(
-      setTempApplication({
-        ...explorerForm.inputs,
-        tempId,
-        submittedDate: new Date().toLocaleDateString()
-      })
-    )
-    push(`/explorer/basecamp?tempId=${tempId}`)
-
-    // if (!validateExplorerForm(explorerForm.inputs, setErrors)) return
+    if (!validateSkipperForm(skipperForm.inputs, setErrors)) return
 
     try {
-      const result = await createExplorer({ chapterId, tempId, ...explorerForm.inputs }).unwrap()
-      const tempApp = { ...result.user, tempId: result.user.id }
+      setIsSubmitting(true)
 
-      // Success - clear temp data and show success toast
-      dispatch(setTempApplication(tempApp))
+      const result = await createSkipper({ chapterId, ...skipperForm.inputs }).unwrap()
+
+      push(`/skipper/port?skipperId=${result.user.id}`)
       dispatch(
         showToast({
           type: 'success',
           message: 'Application submitted successfully!',
-          description: `Thank you for your interest, ${result.user?.name || explorerForm.inputs.firstName}!`
+          description: `Thank you for your interest, ${skipperForm.inputs.firstName}!`
         })
       )
-    } catch {
-      // Error - redirect back to form and show error
-      push(`/explorer`)
-
-      // Extract error message safely
-      const errorMessage = error?.data?.message || 'Something went wrong. Please try again.'
-
+    } catch (error: any) {
       dispatch(
         showToast({
           type: 'error',
           message: 'Submission failed',
-          description: errorMessage
+          description: error?.data?.message || 'Something went wrong. Please try again.'
         })
       )
-
-      // Keep temp data in Redux so user doesn't lose their work
-      // Or clear it if you want them to start over:
-      // dispatch(clearTempApplication())
     } finally {
       setIsSubmitting(false)
     }
@@ -117,291 +138,289 @@ const Skipper = () => {
     'w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors'
 
   return (
-    <div className="min-h-screen py-12 bg-[#121212]">
-      <div className="max-w-4xl mx-auto px-6">
+    <div className="min-h-screen py-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      <StormEffects />
+      <div className="max-w-4xl mx-auto px-6 relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8"
+        >
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <div className="h-12 w-12 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-900/50">
+              <Anchor className="h-6 w-6 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-white">Coastal Referral Exchange</h1>
+          </div>
+          <p className="text-cyan-200">Join Storm Harbor&apos;s Elite Business Network</p>
+        </motion.div>
+
         {/* Form Container */}
         <motion.form
           onSubmit={handleSubmit}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 shadow-2xl"
-          style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}
+          className="bg-slate-800/40 backdrop-blur-md border border-slate-600/30 rounded-xl p-8 shadow-2xl shadow-slate-900/50"
         >
           <div className="p-8 space-y-10">
             {/* Personal Information */}
             <section>
               <div className="flex items-center mb-6">
-                <div className="bg-blue-600 p-2 rounded-lg mr-4">
+                <div className="bg-gradient-to-r from-cyan-600 to-blue-600 p-2 rounded-lg mr-4 shadow-lg shadow-cyan-900/50">
                   <User className="w-5 h-5 text-white" />
                 </div>
-                <h2 className="text-2xl font-semibold text-white">Personal Information</h2>
+                <h2 className="text-2xl font-semibold text-white">Captain&apos;s Details</h2>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="lg:col-span-2">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Full Name <span className="text-red-400">*</span>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Full Name <span className="text-amber-400">*</span>
                   </label>
                   <input
                     type="text"
                     name="name"
-                    value={explorerForm.inputs.name || ''}
+                    value={skipperForm.inputs.name || ''}
                     onChange={handleInput}
                     required
                     className={InputStyle}
-                    placeholder="Enter your full name"
+                    placeholder="Enter your captain's name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Email Address <span className="text-red-400">*</span>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Email Address <span className="text-amber-400">*</span>
                   </label>
                   <input
                     type="email"
                     name="email"
-                    value={explorerForm.inputs.email || ''}
+                    value={skipperForm.inputs.email || ''}
                     onChange={handleInput}
                     required
                     className={InputStyle}
-                    placeholder="your.email@company.com"
+                    placeholder="captain@maritime.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">City</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Home Port</label>
                   <input
                     type="text"
                     name="location"
-                    value={explorerForm.inputs.location || ''}
+                    value={skipperForm.inputs.location || ''}
                     onChange={handleInput}
                     className={InputStyle}
-                    placeholder="Lynn"
+                    placeholder="Boston Harbor"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Signal Number</label>
                   <input
                     type="tel"
                     name="phone"
-                    value={explorerForm.inputs.phone || ''}
+                    value={skipperForm.inputs.phone || ''}
                     onChange={handleInput}
                     className={InputStyle}
-                    placeholder="(555) 123-4567"
+                    placeholder="(555) 123-SHIP"
                   />
                 </div>
               </div>
             </section>
 
-            {/* Business Information */}
+            {/* Maritime Information */}
             <section>
               <div className="flex items-center mb-6">
-                <div className="bg-green-600 p-2 rounded-lg mr-4">
-                  <Building2 className="w-5 h-5 text-white" />
+                <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-2 rounded-lg mr-4 shadow-lg shadow-emerald-900/50">
+                  <Ship className="w-5 h-5 text-white" />
                 </div>
-                <h2 className="text-2xl font-semibold text-white">Business Information</h2>
+                <h2 className="text-2xl font-semibold text-white">Business Vessel Operations</h2>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Company Name <span className="text-red-400">*</span>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Vessel Name <span className="text-amber-400">*</span>
                   </label>
                   <input
                     type="text"
                     name="company"
-                    value={explorerForm.inputs.company || ''}
+                    value={skipperForm.inputs.company || ''}
                     onChange={handleInput}
                     required
                     className={InputStyle}
-                    placeholder="Your company name"
+                    placeholder="Your business name or vessel"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Profession/Industry <span className="text-red-400">*</span>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Business Industry <span className="text-amber-400">*</span>
                   </label>
                   <input
                     type="text"
-                    name="profession"
-                    value={explorerForm.inputs.profession || ''}
+                    name="industry"
+                    value={skipperForm.inputs.industry || ''}
                     onChange={handleInput}
                     required
                     className={InputStyle}
-                    placeholder="e.g., Financial Advisor, Attorney"
+                    placeholder="e.g., Financial Advisor, Maritime Attorney, Insurance Broker"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Licensing Status</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Captain&apos;s License</label>
                   <div className="mt-1">
                     <Switch
                       name="isLicensed"
-                      checked={explorerForm?.inputs.isLicensed ?? false}
+                      checked={skipperForm?.inputs.isLicensed ?? false}
                       onChange={handleToggle}
-                      label="Are you licensed?"
+                      label="Do you hold a Professional License?"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">License Number</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Professional License Number</label>
                   <input
                     type="text"
                     name="businessLicenseNumber"
-                    value={explorerForm.inputs.businessLicenseNumber || ''}
+                    value={skipperForm.inputs.businessLicenseNumber || ''}
                     onChange={handleInput}
-                    disabled={!explorerForm?.inputs?.isLicensed}
+                    disabled={!skipperForm?.inputs?.isLicensed}
                     className={`${InputStyle} ${
-                      !explorerForm?.inputs?.isLicensed ? 'opacity-50 cursor-not-allowed bg-gray-800' : ''
+                      !skipperForm?.inputs?.isLicensed ? 'opacity-50 cursor-not-allowed bg-slate-700/30' : ''
                     }`}
                     placeholder={
-                      explorerForm?.inputs?.isLicensed
-                        ? 'Your business license number'
-                        : 'Enable licensing to enter license number'
+                      skipperForm?.inputs?.isLicensed
+                        ? 'Your professional license number'
+                        : 'Enable license to enter number'
                     }
                   />
                 </div>
               </div>
             </section>
 
-            {/* Chapter Selection */}
+            {/* Harbor Selection */}
             <section>
               <div className="flex items-center mb-6">
-                <div className="bg-purple-600 p-2 rounded-lg mr-4">
-                  <MapPin className="w-5 h-5 text-white" />
+                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-2 rounded-lg mr-4 shadow-lg shadow-purple-900/50">
+                  <Compass className="w-5 h-5 text-white" />
                 </div>
-                <h2 className="text-2xl font-semibold text-white">Modern Chapter</h2>
+                <h2 className="text-2xl font-semibold text-white">Storm Harbor Watch Chapter</h2>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Chapter</label>
-                <div className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
-                  {chapters.map((chapter) => (
-                    <option key={chapter.id} value={chapter.id} className="">
-                      {chapter.name} - {chapter.location} ({chapter.meetingDay})
-                    </option>
-                  ))}
+                <label className="block text-sm font-medium text-slate-300 mb-2">Assigned Harbor Chapter</label>
+                <div className="w-full px-4 py-3 bg-slate-700/30 border border-slate-600/50 rounded-lg text-white cursor-not-allowed opacity-75">
+                  <div className="flex items-center justify-between">
+                    <span>Storm Harbor Watch - North Shore (Tuesdays at Dawn)</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-2 w-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                      <span className="text-xs text-emerald-400">Active</span>
+                    </div>
+                  </div>
                 </div>
+                <p className="text-slate-400 text-xs mt-2">
+                  You will be automatically assigned to the Storm Harbor Watch chapter based on your location.
+                </p>
               </div>
             </section>
 
-            {/* Industry Classification */}
-            <section>
-              <div className="flex items-center mb-6">
-                <div className="bg-orange-600 p-2 rounded-lg mr-4">
-                  <Briefcase className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-2xl font-semibold text-white">Industry Classification</h2>
-              </div>
-
-              <p className="text-gray-400 mb-6">
-                Select your primary industry category. Modern operates on the principle of one member per classification
-                to ensure exclusive territory protection.
-              </p>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {interests.map((interest) => (
-                  <button
-                    key={interest}
-                    type="button"
-                    onClick={() => handleInterestToggle(interest)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
-                      explorerForm.inputs.interests.includes(interest)
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600 hover:border-gray-500'
-                    }`}
-                  >
-                    {interest}
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            {/* Member Benefits */}
-            <section className="bg-gray-750 rounded-lg p-6 border border-gray-600">
+            {/* Harbor Benefits */}
+            <section className="bg-slate-700/30 rounded-lg p-6 border border-slate-600/50 shadow-inner">
               <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                <CheckCircle className="w-5 h-5 mr-2 text-green-400" />
-                North Shore Chapter Benefits
+                <Shield className="w-5 h-5 mr-2 text-emerald-400" />
+                Coastal Referral Exchange Benefits
               </h3>
-              <div className="mb-4 p-3 bg-blue-900/30 border border-blue-700 rounded-lg">
-                <p className="text-blue-200 text-sm">
-                  <strong>New Chapter Launch:</strong> Join our founding members on Boston&apos;s North Shore! Many of
-                  our charter members bring 20+ years of proven networking experience.
+              <div className="mb-4 p-3 bg-cyan-800/20 border border-cyan-600/50 rounded-lg">
+                <p className="text-cyan-200 text-sm">
+                  <strong>New Chapter Launch:</strong> Join our founding crew on Boston&apos;s stormy North Shore! Many
+                  of our charter members bring 20+ years of proven business networking experience across diverse
+                  industries.
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <div className="flex items-center text-gray-300">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
-                    <span>Weekly breakfast meetings (7:30 AM)</span>
+                  <div className="flex items-center text-slate-300">
+                    <Waves className="w-3 h-3 text-cyan-400 mr-3" />
+                    <span>Weekly business breakfast meetings (7:30 AM)</span>
                   </div>
-                  <div className="flex items-center text-gray-300">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <span>Experienced networking professionals</span>
+                  <div className="flex items-center text-slate-300">
+                    <Anchor className="w-3 h-3 text-emerald-400 mr-3" />
+                    <span>Seasoned business professionals</span>
                   </div>
-                  <div className="flex items-center text-gray-300">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
-                    <span>Prime North Shore territory</span>
+                  <div className="flex items-center text-slate-300">
+                    <Compass className="w-3 h-3 text-cyan-400 mr-3" />
+                    <span>Prime North Shore business territory</span>
                   </div>
-                  <div className="flex items-center text-gray-300">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <span>Strong referral partnerships</span>
+                  <div className="flex items-center text-slate-300">
+                    <Ship className="w-3 h-3 text-emerald-400 mr-3" />
+                    <span>Storm-tested referral partnerships</span>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex items-center text-gray-300">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
-                    <span>Exclusive industry classifications</span>
+                  <div className="flex items-center text-slate-300">
+                    <Navigation className="w-3 h-3 text-cyan-400 mr-3" />
+                    <span>Exclusive business category protection</span>
                   </div>
-                  <div className="flex items-center text-gray-300">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <span>Founding member opportunities</span>
+                  <div className="flex items-center text-slate-300">
+                    <Zap className="w-3 h-3 text-emerald-400 mr-3" />
+                    <span>Charter member business opportunities</span>
                   </div>
-                  <div className="flex items-center text-gray-300">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
+                  <div className="flex items-center text-slate-300">
+                    <MapPin className="w-3 h-3 text-cyan-400 mr-3" />
                     <span>Local business community focus</span>
                   </div>
-                  <div className="flex items-center text-gray-300">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <span>Proven networking methodology</span>
+                  <div className="flex items-center text-slate-300">
+                    <CheckCircle className="w-3 h-3 text-emerald-400 mr-3" />
+                    <span>Proven business networking methodology</span>
                   </div>
                 </div>
               </div>
             </section>
 
             {/* Application Notice */}
-            <div className="bg-yellow-900/30 border border-yellow-700 rounded-lg p-4">
+            <div className="bg-amber-900/20 border border-amber-600/50 rounded-lg p-4 shadow-inner">
               <div className="flex items-start">
-                <AlertCircle className="w-5 h-5 text-yellow-400 mr-3 mt-0.5 flex-shrink-0" />
+                <AlertTriangle className="w-5 h-5 text-amber-400 mr-3 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="text-yellow-400 font-semibold mb-1">Application Review Process</h4>
-                  <p className="text-yellow-200 text-sm">
-                    Your application will be reviewed by chapter leadership within 2-3 business days. You&apos;ll be
-                    contacted to schedule a visitor session before final approval.
+                  <h4 className="text-amber-400 font-semibold mb-1">Harbor Master Review Process</h4>
+                  <p className="text-amber-200 text-sm">
+                    Your application will be reviewed by the Harbor Master within 2-3 business tides. You&apos;ll be
+                    contacted to schedule a business networking session before receiving your member credentials.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Submit Button */}
-            <div className="pt-6 border-t border-gray-700">
+            <div className="pt-6 border-t border-slate-600/50">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-sm text-gray-400">By submitting, you agree to Modern&apos;s terms and conditions</p>
-                <button
+                <p className="text-sm text-slate-400">
+                  By submitting, you agree to Coastal Referral Exchange&apos;s code of conduct and referral terms
+                </p>
+                <motion.button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:bg-blue-700 disabled:bg-blue-800 px-8 py-3 rounded-lg font-semibold text-white transition-colors inline-flex items-center gap-2 disabled:cursor-not-allowed cursor-pointer group"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-600 px-8 py-3 rounded-lg font-semibold text-white transition-all inline-flex items-center gap-2 disabled:cursor-not-allowed cursor-pointer group whitespace-nowrap shadow-lg shadow-cyan-900/50"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                      Processing...
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        className="rounded-full h-4 w-4 border-2 border-white border-t-transparent"
+                      />
+                      Setting Sail...
                     </>
                   ) : (
                     <>
@@ -409,7 +428,7 @@ const Skipper = () => {
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-2 duration-300" />
                     </>
                   )}
-                </button>
+                </motion.button>
               </div>
             </div>
           </div>

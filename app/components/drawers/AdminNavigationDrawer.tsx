@@ -197,7 +197,7 @@ const AdminNavigationDrawer = ({ isOpen, onClose, selectedPage, onPageChange }: 
               </div>
 
               <div className="text-xs text-gray-500 text-center mt-3 pt-3 border-t border-gray-800">
-                Modern Admin Dashboard v2.0
+                Coastal Referral Exchange Admin Dashboard v2.0
               </div>
             </motion.div>
           </motion.div>

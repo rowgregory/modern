@@ -1,5 +1,4 @@
-import { ClosedAndCredited } from './closedAndCredited'
-import { Face2Face } from './face2Face'
+import { Anchored, Parley } from '@prisma/client'
 
 // Base User interface matching your Prisma User model
 export interface User {
@@ -12,15 +11,14 @@ export interface User {
   email: string
   phone: string | null
   company: string
-  profession: string
+  industry: string
   location: string
   bio: string
   title: string
   website: string
   yearsInBusiness: string
-  industry: string
 
-  // Modern membership
+  // Coastal Referral Exchange membership
   chapterId: string
   chapter?: Chapter
   joinedAt: string | null
@@ -36,16 +34,18 @@ export interface User {
 
   // Verification & Security
   lastLoginAt: string | null
+  isAdmin: boolean
+  isSuperUser: boolean
 
   // NextAuth fields
   emailVerified: string | null
   image: string | null
 
   // Relationships (optional, loaded when needed)
-  requestedMeetings?: Face2Face[]
-  receivedMeetings?: Face2Face[]
-  givenCredits?: ClosedAndCredited[]
-  receivedCredits?: ClosedAndCredited[]
+  requestedMeetings?: Parley[]
+  receivedMeetings?: Parley[]
+  givenCredits?: Anchored[]
+  receivedCredits?: Anchored[]
   accounts?: Account[]
   sessions?: Session[]
   logs?: Log[]
@@ -89,30 +89,10 @@ export interface UserFormData {
   isActive: boolean
 }
 
-// User list item (minimal data for tables/cards)
-export interface UserListItem {
-  id: string
-  name: string
-  email: string
-  phone: string | null
-  company: string
-  profession: string
-  membershipStatus: MembershipStatus
-  joinedAt: string | null
-  expiresAt: string | null
-  lastLoginAt: string | null
-  isActive: boolean
-  chapter: {
-    id: string
-    name: string
-  }
-  interests: string[]
-}
-
 // User profile (for detailed views)
 export interface UserProfile extends User {
   chapter: Chapter
-  recentMeetings?: Face2Face[]
+  recentMeetings?: Parley[]
   totalMeetings?: number
   totalReferrals?: number
 }
@@ -142,7 +122,7 @@ export interface UserPagination {
 // User API responses
 export interface GetUsersResponse {
   success: boolean
-  members: UserListItem[]
+  members: User[]
   pagination: UserPagination
 }
 

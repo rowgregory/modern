@@ -1,11 +1,11 @@
 import { Reducer, createSlice } from '@reduxjs/toolkit'
 import { userApi } from '../services/userApi'
-import { UserFilters, UserListItem, UserPagination, UserStats, UserWithChapter } from '@/types/user'
+import { User, UserFilters, UserPagination, UserStats } from '@/types/user'
 
 export interface UserState {
   // Core data
-  users: UserListItem[]
-  user: UserWithChapter | null
+  users: User[]
+  user: User | null
   success: boolean
 
   // UI state
@@ -151,11 +151,15 @@ export const userSlice = createSlice({
         state.noUsers = payload.users.length === 0
         state.loading = false
       })
-      .addMatcher(userApi.endpoints.createUser.matchFulfilled, (state) => {
+      .addMatcher(userApi.endpoints.getMyProfile.matchFulfilled, (state, { payload }: any) => {
+        state.user = payload.user
+        state.loading = false
+      })
+      .addMatcher(userApi.endpoints.updateMyProfile.matchFulfilled, (state) => {
         state.success = true
         state.loading = false
       })
-      .addMatcher(userApi.endpoints.updateUserStatus.matchFulfilled, (state) => {
+      .addMatcher(userApi.endpoints.createUser.matchFulfilled, (state) => {
         state.success = true
         state.loading = false
       })
@@ -163,22 +167,23 @@ export const userSlice = createSlice({
         state.success = true
         state.loading = false
       })
-      .addMatcher(userApi.endpoints.updateMyProfile.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
+
       .addMatcher(userApi.endpoints.deleteUser.matchFulfilled, (state) => {
         state.success = true
         state.loading = false
       })
-      .addMatcher(userApi.endpoints.createExplorer.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.getExplorerByTempId.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
+      // .addMatcher(userApi.endpoints.updateUserStatus.matchFulfilled, (state) => {
+      //   state.success = true
+      //   state.loading = false
+      // })
+      // .addMatcher(userApi.endpoints.createSkipper.matchFulfilled, (state) => {
+      //   state.success = true
+      //   state.loading = false
+      // })
+      // .addMatcher(userApi.endpoints.getSkipperByUserId.matchFulfilled, (state) => {
+      //   state.success = true
+      //   state.loading = false
+      // })
       .addMatcher(
         (action) => action.type.endsWith('rejected') && action.payload?.data?.sliceName === 'userApi',
         (state, { payload }: any) => {

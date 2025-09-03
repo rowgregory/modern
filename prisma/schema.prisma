@@ -71,7 +71,6 @@ model User {
   email                 String  @unique
   phone                 String?
   company               String
-  profession            String
   location              String  @default("")
   yearsInBusiness       String  @default("")
   industry              String  @default("")
@@ -104,13 +103,13 @@ model User {
   emailVerified DateTime? // Add for NextAuth
   image         String?
 
-  // Face-to-face relationships
-  requestedMeetings FaceToFace[] @relation("FaceToFaceRequester")
-  receivedMeetings  FaceToFace[] @relation("FaceToFaceRecipient")
+  // Parley relationships
+  requestedMeetings Parley[] @relation("ParleyRequester")
+  receivedMeetings  Parley[] @relation("ParleyRecipient")
 
-  // Closed and credited relationships
-  givenCredits    ClosedAndCredited[] @relation("ClosedAndCreditedGiver")
-  receivedCredits ClosedAndCredited[] @relation("ClosedAndCreditedReceiver")
+  // Anchored relationships
+  givenCredits    Anchored[] @relation("AnchoredGiver")
+  receivedCredits Anchored[] @relation("AnchoredReceiver")
 
   accounts Account[]
   sessions Session[]
@@ -118,9 +117,10 @@ model User {
   logs Log[]
 
   notificationsRead NotificationRead[]
+  sentNotifications Notification[]     @relation("SentNotifications")
 }
 
-model FaceToFace {
+model Parley {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -129,14 +129,14 @@ model FaceToFace {
   scheduledAt DateTime
   duration    Int      @default(30) // minutes
   location    String? // optional meeting location
-  meetingType String   @default("FACE_TO_FACE") // FACE_TO_FACE, VIRTUAL, PHONE
+  meetingType String   @default("DECK_TO_DECK") // DECK_TO_DECK, VOYAGE_CALL, MESSAGE_IN_A_BOTTLE
 
-  // Participants (exactly 2 Modern users)
+  // Participants (exactly 2 Coastal Referral Exchange users)
   requesterId String
-  requester   User   @relation("FaceToFaceRequester", fields: [requesterId], references: [id])
+  requester   User   @relation("ParleyRequester", fields: [requesterId], references: [id])
 
   recipientId String
-  recipient   User   @relation("FaceToFaceRecipient", fields: [recipientId], references: [id])
+  recipient   User   @relation("ParleyRecipient", fields: [recipientId], references: [id])
 
   // Status tracking
   status String @default("REQUESTED") // REQUESTED, CONFIRMED, COMPLETED, CANCELLED
@@ -153,7 +153,7 @@ model FaceToFace {
   requesterNotes String? // private notes for requester
   recipientNotes String? // private notes for recipient
 
-  // Modern specific tracking
+  // Coastal Referral Exchange specific tracking
   chapterId String?
   chapter   Chapter? @relation(fields: [chapterId], references: [id])
 
@@ -163,18 +163,18 @@ model FaceToFace {
   @@index([status])
 }
 
-model ClosedAndCredited {
+model Anchored {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Who is giving the thank you
   giverId String
-  giver   User   @relation("ClosedAndCreditedGiver", fields: [giverId], references: [id])
+  giver   User   @relation("AnchoredGiver", fields: [giverId], references: [id])
 
   // Who is receiving the thank you (who provided the referral)
   receiverId String
-  receiver   User   @relation("ClosedAndCreditedReceiver", fields: [receiverId], references: [id])
+  receiver   User   @relation("AnchoredReceiver", fields: [receiverId], references: [id])
 
   // Business details
   businessValue Decimal @db.Decimal(10, 2) // monetary value of closed business
@@ -185,7 +185,7 @@ model ClosedAndCredited {
   // When the business was closed
   closedDate DateTime
 
-  // Modern tracking
+  // Coastal Referral Exchange tracking
   chapterId String
   chapter   Chapter @relation(fields: [chapterId], references: [id])
 
@@ -217,8 +217,8 @@ model Chapter {
 
   // Relationships
   users             User[]
-  faceToFaces       FaceToFace[]
-  closedAndCredited ClosedAndCredited[]
+  parleys           Parley[]
+  closedAndCredited Anchored[]
   notifications     Notification[]
 
   createdAt DateTime @default(now())
@@ -262,6 +262,9 @@ model Notification {
   readBy  NotificationRead[] // Relation to junction table
   chapter Chapter            @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
+  senderId String
+  sender   User   @relation("SentNotifications", fields: [senderId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -285,7 +288,8 @@ enum NotificationType {
   APPLICATION_REJECTED
   NEW_MEMBER
   SYSTEM_ALERT
-  FACE_TO_FACE_REQUEST
-  FACE_TO_FACE_CONFIRMED
-  FACE_TO_FACE_CANCELLED
+  PARLEY_REQUEST
+  PARLEY_CONFIRMED
+  PARLEY_CANCELLED
+  PARLEY_COMPLETED
 }

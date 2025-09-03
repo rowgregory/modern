@@ -22,10 +22,10 @@ export function validateUserData(data: any) {
     errors.push({ field: 'company', message: 'Company name too long' })
   }
 
-  if (!data.profession || typeof data.profession !== 'string' || data.profession.trim().length === 0) {
-    errors.push({ field: 'profession', message: 'Profession is required' })
-  } else if (data.profession.length > 100) {
-    errors.push({ field: 'profession', message: 'Profession too long' })
+  if (!data.industry || typeof data.industry !== 'string' || data.industry.trim().length === 0) {
+    errors.push({ field: 'industry', message: 'Industry is required' })
+  } else if (data.industry.length > 100) {
+    errors.push({ field: 'industry', message: 'Industry too long' })
   }
 
   if (!data.chapterId || typeof data.chapterId !== 'string' || data.chapterId.trim().length === 0) {
@@ -50,16 +50,6 @@ export function validateUserData(data: any) {
 
   if (data.expiresAt && isNaN(Date.parse(data.expiresAt))) {
     errors.push({ field: 'expiresAt', message: 'Invalid expiration date' })
-  }
-
-  // Validate interests array
-  if (data.interests && (!Array.isArray(data.interests) || !data.interests.every((i: any) => typeof i === 'string'))) {
-    errors.push({ field: 'interests', message: 'Interests must be an array of strings' })
-  }
-
-  // Validate boolean fields
-  if (data.isPublic !== undefined && typeof data.isPublic !== 'boolean') {
-    errors.push({ field: 'isPublic', message: 'isPublic must be a boolean' })
   }
 
   return errors

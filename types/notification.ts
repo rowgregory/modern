@@ -20,7 +20,7 @@ export interface Notification {
   title: string
   message: string
   type: NotificationType
-  isRead: boolean
+  isReadByUser: boolean
   entityId?: string | null
   entityType?: string | null
   readBy: NotificationRead[]

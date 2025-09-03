@@ -4,6 +4,13 @@ import { auth } from './app/lib/auth'
 // Routes that bypass authentication
 const publicRoutes = ['/auth/login', '/auth/callback']
 
+const protectedAPIRoutes = [
+  '/api/users/[chapterId]/get-users-list',
+  '/api/users/[chapterId]/[userId]/update-user',
+  '/api/users/[chapterId]/[userId]/delete-user',
+  '/api/settings/[chapterId]'
+]
+
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req
 
@@ -38,7 +45,16 @@ export async function middleware(req: NextRequest) {
 
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
   const isAuthAPIRoute = nextUrl.pathname.startsWith('/api/auth')
-  const isProtectedAPIRoute = nextUrl.pathname.startsWith('/api') && !isAuthAPIRoute
+
+  // Helper function to check if path matches any protected route pattern
+  const isProtectedAPIRoute =
+    protectedAPIRoutes.some((route) => {
+      // Convert route pattern to regex (replace [param] with wildcard)
+      const pattern = route.replace(/\[[\w-]+\]/g, '[^/]+')
+      const regex = new RegExp(`^${pattern}$`)
+      return regex.test(nextUrl.pathname)
+    }) && !isAuthAPIRoute
+
   const isProtectedPageRoute = nextUrl.pathname.startsWith('/member') || nextUrl.pathname.startsWith('/admin')
 
   // Handle page route redirects for logged in users

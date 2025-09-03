@@ -15,7 +15,7 @@ import {
   ArrowRight
 } from 'lucide-react'
 import Link from 'next/link'
-import LaunchAppButton from './components/LaunchAppButton'
+import LaunchAppButton from './components/common/LaunchAppButton'
 import ChartYourCourse from './components/home/ChartYourCourse'
 import CoreValues from './components/home/CoreValues'
 
@@ -38,7 +38,7 @@ const staggerContainer: any = {
   }
 }
 
-const modernValues: any = [
+const creValues: any = [
   {
     title: 'Momentum',
     description: 'in business',
@@ -115,7 +115,7 @@ const expectations: any = [
   'Be Professional — Represent yourself and the group with integrity, respect, and reliability'
 ]
 
-const ModernBusinessNetworkingLanding = () => {
+const Home = () => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
@@ -164,7 +164,7 @@ const ModernBusinessNetworkingLanding = () => {
       </motion.section>
 
       {/* Chart Your Course Section */}
-      <ChartYourCourse modernValues={modernValues} />
+      <ChartYourCourse creValues={creValues} />
 
       {/* Mission Section */}
       <motion.section className="py-20" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}>
@@ -172,10 +172,10 @@ const ModernBusinessNetworkingLanding = () => {
           <motion.div variants={fadeInUp} className="text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">Our Mission</h2>
             <p className="text-xl text-gray-200 leading-relaxed max-w-4xl mx-auto">
-              Modern Business Networking exists to help business owners grow financially through trusted, referral-based
-              connections. By fostering a supportive and high-energy environment, we empower our members to build
-              meaningful relationships, exchange quality referrals, and share best practices that drive measurable
-              results for their businesses and their communities.
+              Coastal Referral Exchange Networking exists to help business owners grow financially through trusted,
+              referral-based connections. By fostering a supportive and high-energy environment, we empower our members
+              to build meaningful relationships, exchange quality referrals, and share best practices that drive
+              measurable results for their businesses and their communities.
             </p>
           </motion.div>
         </div>
@@ -187,7 +187,7 @@ const ModernBusinessNetworkingLanding = () => {
           <motion.div variants={fadeInUp} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">Purpose Overview</h2>
             <p className="text-xl text-gray-200 leading-relaxed mb-8">
-              Modern Business Networking brings together a select group of business owners from the North Shore to meet
+              Coastal Referral Exchange brings together a select group of business owners from the North Shore to meet
               weekly with a clear goal: helping each other succeed through referrals and collaboration.
             </p>
           </motion.div>
@@ -200,8 +200,10 @@ const ModernBusinessNetworkingLanding = () => {
               <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/25">
                 <Handshake className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">Share Referrals</h3>
-              <p className="text-gray-300">That lead to closed business and increased revenue</p>
+              <h3 className="text-xl font-semibold text-white mb-2">Share Opportunities</h3>
+              <p className="text-gray-300">
+                Connect with the right people, exchange quality leads, and grow your business faster.
+              </p>
             </motion.div>
 
             <motion.div
@@ -290,4 +292,4 @@ const ModernBusinessNetworkingLanding = () => {
   )
 }
 
-export default ModernBusinessNetworkingLanding
+export default Home

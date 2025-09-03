@@ -1,20 +1,24 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Crown, Shield, ShipWheel } from 'lucide-react'
 import Link from 'next/link'
-import { useGetMyProfileQuery } from '@/app/redux/services/userApi'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
-import { useSession } from 'next-auth/react'
-import { adminNavLinks } from '@/app/lib/constants/navigation/adminNavLinks'
 import { itemVariants } from '../drawers/AdminNavigationDrawer'
 
-const FixedLeftNavigationPanel = ({ isNavigationCollapsed, setIsNavigationCollapsed, selectedPage }: any) => {
-  const session = useSession()
-  const { data: userObj } = useGetMyProfileQuery(
-    { chapterId, userId: session.data?.user.id },
-    { skip: !session.data?.user.id }
-  )
+interface IFixedLeftNavigationPanel {
+  isNavigationCollapsed: boolean
+  setIsNavigationCollapsed: (isNavigationCollapsed: boolean) => void
+  selectedPage: string
+  links: any
+  data: any
+}
 
+const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
+  isNavigationCollapsed,
+  setIsNavigationCollapsed,
+  selectedPage,
+  links,
+  data
+}: any) => {
   return (
     <motion.div
       initial={false}
@@ -22,21 +26,33 @@ const FixedLeftNavigationPanel = ({ isNavigationCollapsed, setIsNavigationCollap
         width: isNavigationCollapsed ? '80px' : '280px'
       }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-800 z-20 flex flex-col"
+      className="lg:fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-800 z-20 hidden lg:flex flex-col"
     >
       {/* Navigation Header */}
       <div className="p-4 border-b border-gray-800">
         <div className="flex items-center justify-between">
-          {!isNavigationCollapsed && (
+          {!isNavigationCollapsed ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="flex items-center space-x-3"
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-violet-400 rounded-lg"></div>
-              <span className="text-white font-bold text-lg">{userObj?.user?.name?.split(' ')[0]}</span>
+              <Link
+                href="/"
+                className="bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent uppercase text-2xl font-bold cursor-pointer hover:bg-gradient-to-r hover:from-teal-400 hover:via-blue-400 hover:to-cyan-400 flex items-center"
+              >
+                C
+                <span>
+                  <ShipWheel className="text-white w-5 h-5 shipwheel-storm" />
+                </span>
+                RE
+              </Link>
             </motion.div>
+          ) : (
+            <Link href="/">
+              <ShipWheel className="text-white w-5 h-5 shipwheel-storm flex flex-shrink-0" />
+            </Link>
           )}
           <button
             onClick={() => setIsNavigationCollapsed(!isNavigationCollapsed)}
@@ -50,7 +66,7 @@ const FixedLeftNavigationPanel = ({ isNavigationCollapsed, setIsNavigationCollap
       {/* Navigation Items */}
       <div className="flex-1 overflow-y-auto py-4">
         <nav className="space-y-2 px-3">
-          {adminNavLinks.map((item, index) => (
+          {links.map((item: any, index: number) => (
             <Link href={item.linkKey} key={item.id}>
               <motion.div
                 key={item.id}
@@ -59,7 +75,7 @@ const FixedLeftNavigationPanel = ({ isNavigationCollapsed, setIsNavigationCollap
                 animate="open"
                 custom={index}
                 className={`
-                  w-full flex items-center space-x-3 px-3 py-3 rounded-xl transition-all
+                  w-full flex items-center justify-center space-x-3 px-3 py-3 rounded-xl transition-all
                   ${
                     selectedPage === item.id
                       ? 'bg-gradient-to-r from-cyan-600/20 to-violet-600/20 text-cyan-400 border border-cyan-600/30'
@@ -71,14 +87,15 @@ const FixedLeftNavigationPanel = ({ isNavigationCollapsed, setIsNavigationCollap
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
                 {!isNavigationCollapsed && (
-                  <motion.span
+                  <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="font-medium"
+                    className="flex-1"
                   >
-                    {item.label}
-                  </motion.span>
+                    <div className="font-medium">{item.label}</div>
+                    {item.description && <div className="text-xs text-gray-500 mt-0.5">{item.description}</div>}
+                  </motion.div>
                 )}
               </motion.div>
             </Link>
@@ -87,7 +104,7 @@ const FixedLeftNavigationPanel = ({ isNavigationCollapsed, setIsNavigationCollap
       </div>
 
       {/* Navigation Footer */}
-      {!isNavigationCollapsed && (
+      {!isNavigationCollapsed ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -95,14 +112,37 @@ const FixedLeftNavigationPanel = ({ isNavigationCollapsed, setIsNavigationCollap
           className="p-4 border-t border-gray-800"
         >
           <div className="flex items-center space-x-3 p-3 bg-gray-800/50 rounded-xl">
-            <div className="w-8 h-8 bg-gradient-to-r from-violet-400 to-fuchsia-400 rounded-full flex items-center justify-center text-white font-bold">
-              {userObj?.user?.name?.charAt(0)}
+            <div className="w-8 h-8 bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-400 rounded-full flex items-center justify-center text-white font-bold">
+              {data?.user?.isSuperUser ? (
+                <Crown className="w-4 h-4" />
+              ) : data?.user?.isAdmin ? (
+                <Shield className="w-4 h-4" />
+              ) : (
+                data?.user?.name?.charAt(0)
+              )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">
-                {session.data?.user.isSuperUser ? 'Super User' : session.data?.user.isAdmin ? 'Admin' : 'Member'}
-              </p>
-              <p className="text-gray-400 text-xs truncate">{userObj?.user?.email}</p>
+              <p className="text-white text-sm font-medium truncate">{data?.user?.name}</p>
+              <p className="text-gray-400 text-xs truncate">{data?.user?.email}</p>
+            </div>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="p-4 border-t border-gray-800"
+        >
+          <div className="py-3 flex items-center justify-center bg-gray-800/50 rounded-xl">
+            <div className="w-8 h-8 bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-400 rounded-full flex items-center justify-center text-white font-bold">
+              {data?.user?.isSuperUser ? (
+                <Crown className="w-4 h-4" />
+              ) : data?.user?.isAdmin ? (
+                <Shield className="w-4 h-4" />
+              ) : (
+                data?.user?.name?.charAt(0)
+              )}
             </div>
           </div>
         </motion.div>

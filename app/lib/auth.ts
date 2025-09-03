@@ -144,15 +144,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      console.log('📋 Session callback - token userId:', token.userId)
-
       // Transfer data from token to session
       if (token.userId && typeof token.userId === 'string') {
         session.user.id = token.userId
         session.user.role = token.role as string
         session.user.isAdmin = token.isAdmin as boolean
         session.user.isSuperUser = token.isSuperUser as boolean
-        console.log('✅ Session populated with user data')
       } else {
         console.error('❌ Missing userId in token')
       }

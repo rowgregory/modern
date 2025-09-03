@@ -233,7 +233,7 @@ const ProjectBreakdown = () => {
         <div className="max-w-7xl mx-auto mb-12">
           <div className="text-center">
             <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-              Modern Networking{' '}
+              Coastal Referral Exchange{' '}
               <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                 Platform
               </span>

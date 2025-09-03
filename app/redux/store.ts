@@ -7,7 +7,7 @@ import { api } from './services/api'
 import { formReducer } from './features/formSlice'
 import { logReducer } from './features/logSlice'
 import { adminReducer } from './features/adminSlice'
-import { face2FaceReducer } from './features/face2FaceSlice'
+import { parleyReducer } from './features/parleySlice'
 import { userReducer } from './features/userSlice'
 import { toastReduer } from './features/toastSlice'
 import { settingsReducer } from './features/settingsSlice'
@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   log: logReducer,
   admin: adminReducer,
-  face2Face: face2FaceReducer,
+  parley: parleyReducer,
   toast: toastReduer,
   settings: settingsReducer,
   app: appReducer,
@@ -51,3 +51,5 @@ export const useNotificationSelector = () => useAppSelector((state) => state.not
 export const useAdminSelector = () => useAppSelector((state) => state.admin)
 export const useToastSelector = () => useAppSelector((state) => state.toast)
 export const useSettingsSelector = () => useAppSelector((state) => state.settings)
+export const useParleySelector = () => useAppSelector((state) => state.parley)
+export const useFormSelector = () => useAppSelector((state) => state.form)

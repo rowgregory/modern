@@ -1,17 +1,22 @@
 import Link from 'next/link'
 import React from 'react'
-import LaunchAppButton from '../LaunchAppButton'
+import LaunchAppButton from '../common/LaunchAppButton'
 import useCustomPathname from '@/hooks/useCustomPathname'
+import { ShipWheel } from 'lucide-react'
 
 const Header = () => {
   const path = useCustomPathname()
   return (
-    <div className="sticky top-0 z-50 flex items-center justify-between space-x-4 py-3 px-6 bg-[#121212]">
+    <div className="sticky top-0 z-50 flex items-center justify-between space-x-4 py-3 px-6 bg-[#121212] h-[74px]">
       <Link
         href="/"
-        className="bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent uppercase text-2xl font-bold cursor-pointer hover:bg-gradient-to-r hover:from-teal-400 hover:via-blue-400 hover:to-cyan-400"
+        className="bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent uppercase text-2xl font-bold cursor-pointer hover:bg-gradient-to-r hover:from-teal-400 hover:via-blue-400 hover:to-cyan-400 flex items-center"
       >
-        CORE
+        C
+        <span>
+          <ShipWheel className="text-white w-5 h-5 shipwheel-storm" />
+        </span>
+        RE
       </Link>
       <div className="absolute left-1/2 -translate-x-1/2 space-x-4">
         <Link
@@ -27,7 +32,7 @@ const Header = () => {
           Navigators
         </Link>
       </div>
-      <LaunchAppButton />
+      {path !== '/auth/login' && <LaunchAppButton />}
     </div>
   )
 }

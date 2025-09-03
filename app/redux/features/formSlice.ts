@@ -1,3 +1,4 @@
+import { initialParleyFormState } from '@/app/lib/constants/entities/initialParleyFormState'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export type Inputs = {
@@ -26,28 +27,30 @@ interface HandleInputProps {
   value: any
 }
 
-const memberInputs = {
+export const navigatorInputs = {
   name: '',
   email: '',
   phone: '',
   company: '',
-  profession: '',
+  industry: '',
   chapterId: '',
   joinedAt: new Date().toISOString().split('T')[0],
   expiresAt: '',
   membershipStatus: 'PENDING',
-  interests: [],
-  profileImage: '',
-  isPublic: true
+  isAdmin: true
 }
 
-const profileInputs = {
+const beaconInputs = {
   name: '',
   email: '',
   phone: '',
   profileImage: '',
   profileImageFilename: '',
-  profession: '',
+  industry: '',
+  bio: '',
+  yearsInBusiness: '',
+  businessLicenseNumber: '',
+  website: '',
   company: '',
   isPublic: false,
   interests: [],
@@ -63,20 +66,33 @@ const profileInputs = {
 const formInitialState = {
   isCreating: false,
   isEditing: false,
-  memberForm: {
-    inputs: memberInputs,
+  navigatorForm: {
+    inputs: navigatorInputs,
     errors: {}
   },
   settingsForm: {
     inputs: { name: '', location: '', meetingDay: '', meetingTime: '', meetingFrequency: '' },
     errors: {}
   },
-  profileForm: {
-    inputs: profileInputs,
+  beaconForm: {
+    inputs: beaconInputs,
     errors: {}
   },
-  explorerForm: {
-    inputs: { name: '', email: '', location: '', phone: '', company: '', profession: '', interests: [] },
+  skipperForm: {
+    inputs: {
+      name: '',
+      email: '',
+      location: '',
+      phone: '',
+      company: '',
+      industry: '',
+      membershipStatus: 'PENDING',
+      role: 'SKIPPER'
+    },
+    errors: {}
+  },
+  parleyForm: {
+    inputs: initialParleyFormState,
     errors: {}
   }
 } as any
@@ -164,41 +180,6 @@ const formSlice = createSlice({
         errors: {
           ...form?.errors
         }
-      }
-    },
-
-    handleFileUpload: (
-      state,
-      action: PayloadAction<{ formName: string; imageUrl: string | ArrayBuffer | null; file: File | null }>
-    ) => {
-      const { formName, imageUrl, file } = action.payload
-      state[formName] = {
-        ...state[formName],
-        inputs: {
-          ...state[formName]?.inputs,
-          imageUrl,
-          file
-        }
-      }
-    },
-    handleVideoUpload: (
-      state,
-      action: PayloadAction<{ formName: string; videoUrl: string | ArrayBuffer | null; videoFile: File | null }>
-    ) => {
-      const { formName, videoUrl, videoFile } = action.payload
-      state[formName] = {
-        ...state[formName],
-        inputs: {
-          ...state[formName]?.inputs,
-          videoUrl,
-          videoFile
-        }
-      }
-    },
-    setUploadProgress: (state, { payload }: any) => {
-      state.progress = payload
-      if ((state.progress = 100)) {
-        state.progress = -1
       }
     }
   }

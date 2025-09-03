@@ -1,47 +1,14 @@
 import { DeleteUserResponse, UserFilters, UserFormData, UpdateUserResponse } from '@/types/user'
 import { api } from './api'
-import { createOptimisticHandlers } from '@/app/lib/utils/api/createOptimisticHandlers'
 
 const BASE_URL = '/user'
-
-let userHandlers: any = null
-let handlersPromise: Promise<any> | null = null
-
-const getUserHandlers = async () => {
-  if (userHandlers) {
-    return userHandlers
-  }
-
-  if (!handlersPromise) {
-    handlersPromise = (async () => {
-      // Dynamic imports for ES modules
-      const [{ addUserToState, updateUserInState, removeUserFromState }] = await Promise.all([
-        import('../features/userSlice')
-      ])
-
-      const userConfig = {
-        addAction: addUserToState,
-        updateAction: updateUserInState,
-        removeAction: removeUserFromState,
-        responseKey: 'user',
-        getEntityFromState: (state: { user: { users: any[] } }, id: any) =>
-          state.user.users.find((user) => user.id === id)
-      }
-
-      userHandlers = createOptimisticHandlers(userConfig)
-      return userHandlers
-    })()
-  }
-
-  return handlersPromise
-}
 
 export const userApi = api.injectEndpoints({
   overrideExisting: true,
   endpoints: (build) => ({
     getUsers: build.query({
       query: (filters: UserFilters) => ({
-        url: `${BASE_URL}/${filters.chapterId}`,
+        url: `${BASE_URL}/${filters.chapterId}/get-users-list`,
         params: { ...filters }
       }),
       providesTags: (result) =>
@@ -54,7 +21,7 @@ export const userApi = api.injectEndpoints({
     }),
     getMyProfile: build.query({
       query: ({ chapterId, userId }) => ({
-        url: `${BASE_URL}/${chapterId}/${userId}/me`
+        url: `${BASE_URL}/${chapterId}/${userId}/me/get-my-profile`
       }),
       providesTags: (result, __, { chapterId }) =>
         result
@@ -67,7 +34,7 @@ export const userApi = api.injectEndpoints({
     }),
     updateMyProfile: build.mutation({
       query: ({ chapterId, userId, ...profileData }) => ({
-        url: `${BASE_URL}/${chapterId}/${userId}/me`,
+        url: `${BASE_URL}/${chapterId}/${userId}/me/update-my-profile`,
         method: 'PUT',
         body: profileData
       }),
@@ -80,22 +47,16 @@ export const userApi = api.injectEndpoints({
     }),
     createUser: build.mutation({
       query: (userData) => ({
-        url: `${BASE_URL}/${userData.chapterId}/create`,
+        url: `${BASE_URL}/${userData.chapterId}/create-user`,
         method: 'POST',
         body: userData
       }),
       invalidatesTags: [{ type: 'User', id: 'LIST' }]
     }),
-    updateUserStatus: build.mutation<UpdateUserResponse, { chapterId: string; id: string; status: string }>({
-      query: ({ chapterId, id, status }) => ({
-        url: `${BASE_URL}/${chapterId}/${id}/status`,
-        method: 'PATCH',
-        body: { usershipStatus: status }
-      }),
-      invalidatesTags: (_, __, { id }: { id: string }) => [
-        { type: 'User', id },
-        { type: 'User', id: 'LIST' }
-      ]
+    getUserById: build.query({
+      query: ({ chapterId, userId }) => ({
+        url: `${BASE_URL}/${chapterId}/${userId}/get-user-by-id`
+      })
     }),
     updateUser: build.mutation<UpdateUserResponse, { chapterId: string; userId: string; data: Partial<UserFormData> }>({
       query: ({ chapterId, userId, ...data }) => ({
@@ -108,28 +69,15 @@ export const userApi = api.injectEndpoints({
         { type: 'User', userId: 'LIST' }
       ]
     }),
-    deleteUser: build.mutation<DeleteUserResponse, { chapterId: string; id: string }>({
-      query: ({ chapterId, id }) => ({
-        url: `${BASE_URL}/${chapterId}/${id}/delete`,
+    deleteUser: build.mutation<DeleteUserResponse, { chapterId: string; userId: string }>({
+      query: ({ chapterId, userId }) => ({
+        url: `${BASE_URL}/${chapterId}/${userId}/delete`,
         method: 'DELETE'
       }),
-      invalidatesTags: [{ type: 'User', id: 'LIST' }]
-    }),
-    createExplorer: build.mutation({
-      query: ({ chapterId, ...rest }) => ({
-        url: `${BASE_URL}/${chapterId}/explorer`,
-        method: 'POST',
-        body: rest
-      }),
-      onQueryStarted: async (data: any, { dispatch, queryFulfilled }: any) => {
-        const handlers = await getUserHandlers()
-        await handlers.handleCreate(dispatch)(data, queryFulfilled)
-      }
-    }),
-    getExplorerByTempId: build.query({
-      query: ({ chapterId, tempId }) => ({
-        url: `${BASE_URL}/${chapterId}/explorer/${tempId}`
-      })
+      invalidatesTags: (_, __, { userId }: { userId: string }) => [
+        { type: 'User', userId },
+        { type: 'User', userId: 'LIST' }
+      ]
     })
   })
 })
@@ -139,9 +87,7 @@ export const {
   useGetMyProfileQuery,
   useUpdateMyProfileMutation,
   useCreateUserMutation,
-  useUpdateUserStatusMutation,
+  useGetUserByIdQuery,
   useUpdateUserMutation,
-  useDeleteUserMutation,
-  useCreateExplorerMutation,
-  useGetExplorerByTempIdQuery
+  useDeleteUserMutation
 } = userApi

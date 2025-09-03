@@ -55,9 +55,9 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
           disabled={disabled}
           className={`
           relative inline-flex items-center ${track} rounded-full transition-all duration-200 ease-in-out
-          focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 focus:ring-offset-gray-900
+          focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-900
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-          ${checked ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 shadow-lg' : 'bg-gray-600 hover:bg-gray-500'}
+          ${checked ? 'bg-gradient-to-r from-cyan-600 via-blue-600 to-teal-600 shadow-lg' : 'bg-gray-600 hover:bg-gray-500'}
         `}
           style={checked ? { boxShadow: '0 0 20px rgba(139, 92, 246, 0.4)' } : {}}
         >
@@ -76,7 +76,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
           >
             {/* Optional check/x icons */}
             {checked ? (
-              <svg className="w-3 h-3 text-violet-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-3 h-3 text-cyan-600" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -100,7 +100,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 blur-md opacity-50 -z-10"
+              className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-600 to-teal-600 blur-md opacity-50 -z-10"
             />
           )}
         </button>

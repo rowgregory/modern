@@ -18,13 +18,27 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
 
     // Parse request body
     const body = await req.json()
-    const { name, phone, company, profession, interests, isPublic, isAdmin, profileImage, profileImageFilename } = body
+    const {
+      name,
+      phone,
+      company,
+      industry,
+      interests,
+      isPublic,
+      isAdmin,
+      profileImage,
+      profileImageFilename,
+      bio,
+      yearsInBusiness,
+      website,
+      businessLicenseNumber
+    } = body
 
     // Validate required fields
-    if (!name || !company || !profession) {
+    if (!name || !company || !industry) {
       return NextResponse.json(
         {
-          error: 'Required fields: name, company, profession',
+          error: 'Required fields: name, company, industry',
           sliceName: sliceUser
         },
         { status: 400 }
@@ -43,7 +57,7 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
         email: true,
         phone: true,
         company: true,
-        profession: true,
+        industry: true,
         interests: true,
         isPublic: true,
         isActive: true,
@@ -66,7 +80,7 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
     const updateData: any = {
       name: name.trim(),
       company: company.trim(),
-      profession: profession.trim()
+      industry: industry.trim()
     }
 
     // Add optional fields if provided
@@ -76,6 +90,10 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
     if (isAdmin !== undefined) updateData.isAdmin = Boolean(isAdmin)
     if (profileImage !== undefined) updateData.profileImage = profileImage
     if (profileImageFilename !== undefined) updateData.profileImageFilename = profileImageFilename
+    if (bio !== undefined) updateData.bio = bio
+    if (website !== undefined) updateData.website = website
+    if (yearsInBusiness !== undefined) updateData.yearsInBusiness = yearsInBusiness
+    if (businessLicenseNumber !== undefined) updateData.businessLicenseNumber = businessLicenseNumber
 
     // Update the user
     const updatedUser = await prisma.user.update({
@@ -87,13 +105,17 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
         email: true,
         phone: true,
         company: true,
-        profession: true,
+        industry: true,
         role: true,
+        bio: true,
+        yearsInBusiness: true,
         interests: true,
         profileImage: true,
         profileImageFilename: true,
         isPublic: true,
         isActive: true,
+        isAdmin: true,
+        isSuperUser: true,
         membershipStatus: true,
         joinedAt: true,
         expiresAt: true,
@@ -123,7 +145,7 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
       updatedUser.name?.trim() &&
       updatedUser.email?.trim() &&
       updatedUser.company?.trim() &&
-      updatedUser.profession?.trim()
+      updatedUser.industry?.trim()
     )
 
     // Track what fields were changed
@@ -173,7 +195,7 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
             missingFields: [
               !updatedUser.name?.trim() && 'name',
               !updatedUser.company?.trim() && 'company',
-              !updatedUser.profession?.trim() && 'profession',
+              !updatedUser.industry?.trim() && 'industry',
               !updatedUser.phone?.trim() && 'phone'
             ].filter(Boolean)
           },

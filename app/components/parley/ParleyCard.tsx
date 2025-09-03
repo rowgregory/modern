@@ -1,0 +1,116 @@
+import React, { FC } from 'react'
+import { IParley } from '@/types/parley'
+import { motion } from 'framer-motion'
+import { XCircle } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { useUpdateParleyStatusMutation } from '@/app/redux/services/parleyApi'
+import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { useAppDispatch } from '@/app/redux/store'
+import { showToast } from '@/app/redux/features/toastSlice'
+import Header from './Header'
+import ParticipantsWithDirectionArrow from './ParticipantsWithDirectionArrow'
+import MeetingDetails from './MeetingDetails'
+import OutcomesForCompoletedMeetings from './OutcomesForCompoletedMeetings'
+import RequestedActionButtons from './RequestedActionButtons'
+import ConfirmedActionButtons from './ConfirmedActionButtons'
+
+const ParleyCard: FC<{ parley: IParley; index: number }> = ({ parley, index }) => {
+  const session = useSession()
+  const [updateStatus, { isLoading: isUpdating }] = useUpdateParleyStatusMutation()
+  const dispatch = useAppDispatch()
+
+  const handleStatusUpdate = async (id: string, status: string) => {
+    try {
+      await updateStatus({ chapterId, userId: session.data?.user?.id, parleyId: id, status }).unwrap()
+      dispatch(
+        showToast({
+          message: `Parley is Confirmed`,
+          type: 'success',
+          description: `Parley status update failed`
+        })
+      )
+    } catch {
+      dispatch(
+        showToast({
+          message: `Failed to Update`,
+          type: 'error',
+          description: `Parley status update failed`
+        })
+      )
+    }
+  }
+
+  return (
+    <motion.div
+      key={parley.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ delay: index * 0.05 }}
+      className={`backdrop-blur-sm border rounded-xl p-6 hover:border-gray-600 transition-all ${
+        parley.recipientId === session.data?.user?.id && parley.status === 'REQUESTED'
+          ? 'bg-cyan-800/20 border-cyan-400 border-2 shadow-lg shadow-cyan-500/20' // Thicker border + glow
+          : parley.status === 'CONFIRMED'
+            ? 'bg-emerald-800/20 border-emerald-600/50'
+            : parley.status === 'CANCELLED'
+              ? 'bg-red-800/20 border-red-600/50'
+              : parley.status === 'REQUESTED'
+                ? 'bg-cyan-800/20 border-cyan-600/50'
+                : parley.status === 'COMPLETED'
+                  ? 'bg-violet-800/20 border-violet-600/50'
+                  : 'bg-gray-800/50 border-gray-700'
+      }`}
+    >
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        {/* Main Info */}
+        <div className="flex-1 space-y-4">
+          <Header parley={parley} />
+
+          {/* Participants with direction arrow */}
+          <ParticipantsWithDirectionArrow parley={parley} />
+
+          {/* Meeting Details */}
+          <MeetingDetails parley={parley} />
+
+          {/* Outcomes (for completed meetings) */}
+          {parley.completed && <OutcomesForCompoletedMeetings parley={parley} />}
+
+          {/* Notes */}
+          {parley.notes && (
+            <div className="pt-2">
+              <p className="text-sm text-gray-400 italic">&quot;{parley.notes}&quot;</p>
+            </div>
+          )}
+
+          {/* Action Buttons - Show below notes for recipients when status is REQUESTED */}
+          {parley.recipientId === session.data?.user?.id && parley.status === 'REQUESTED' && (
+            <RequestedActionButtons handleStatusUpdate={handleStatusUpdate} isUpdating={isUpdating} parley={parley} />
+          )}
+
+          {/* Actions for CONFIRMED meetings - Both parties can mark as completed */}
+          {(parley.recipientId === session.data?.user?.id || parley.requesterId === session.data?.user?.id) &&
+            parley.status === 'CONFIRMED' && (
+              <ConfirmedActionButtons handleStatusUpdate={handleStatusUpdate} isUpdating={isUpdating} parley={parley} />
+            )}
+
+          {/* Status message for CANCELLED meetings */}
+          {parley.status === 'CANCELLED' && (
+            <div className="pt-4 border-t border-gray-700">
+              <div className="flex items-center space-x-2 px-4 py-3 bg-red-600/10 border border-red-600/30 rounded-lg">
+                <XCircle className="w-5 h-5 text-red-400" />
+                <div>
+                  <p className="text-red-300 text-sm font-medium">Meeting Cancelled</p>
+                  <p className="text-red-400/80 text-xs mt-1">
+                    This parley has been cancelled by one of the participants
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+export default ParleyCard

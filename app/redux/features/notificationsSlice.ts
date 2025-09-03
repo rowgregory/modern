@@ -16,9 +16,13 @@ export const notificationSlice = createSlice({
   initialState: initialNotificationState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addMatcher(notificationApi.endpoints.getNotifications.matchFulfilled, (state) => {
-      state.loading = false
-    })
+    builder
+      .addMatcher(notificationApi.endpoints.getNotifications.matchFulfilled, (state) => {
+        state.loading = false
+      })
+      .addMatcher(notificationApi.endpoints.markNotificationAsRead.matchFulfilled, (state) => {
+        state.loading = false
+      })
   }
 })
 

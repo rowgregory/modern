@@ -9,8 +9,16 @@ export const notificationApi = api.injectEndpoints({
     getNotifications: build.query<{ notification: Notification }, string>({
       query: (chapterId) => `${BASE_URL}/${chapterId}`,
       providesTags: (_, __, chapterId) => [{ type: 'Notification', id: chapterId }]
+    }),
+    markNotificationAsRead: build.mutation({
+      query: ({ chapterId, ...rest }) => ({
+        url: `${BASE_URL}/${chapterId}/mark-read`,
+        method: 'POST',
+        body: rest
+      }),
+      invalidatesTags: ['Notification']
     })
   })
 })
 
-export const { useGetNotificationsQuery } = notificationApi
+export const { useGetNotificationsQuery, useMarkNotificationAsReadMutation } = notificationApi

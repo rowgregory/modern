@@ -41,3 +41,31 @@ select:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 30px theme("colors.gray.800") inset !important;
   -webkit-text-fill-color: theme("colors.white") !important;
 }
+
+@keyframes shipwheelStorm {
+  0% {
+    transform: rotate(-5deg);
+  }
+  30% {
+    transform: rotate(7deg);
+  }
+  60% {
+    transform: rotate(-6deg);
+  }
+  100% {
+    transform: rotate(-5deg);
+  }
+}
+
+.shipwheel-storm {
+  animation: shipwheelStorm 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@theme {
+  --breakpoint-3xl: 1920px;
+}
+
+input[type="datetime-local"] {
+  color: white !important;
+}

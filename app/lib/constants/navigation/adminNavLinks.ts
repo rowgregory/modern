@@ -5,10 +5,10 @@ import {
   Users,
   ClipboardList,
   FileText,
-  User,
   Settings,
-  Handshake,
-  Footprints
+  TowerControl,
+  Anchor,
+  Sailboat
 } from 'lucide-react'
 
 export const adminNavLinks = [
@@ -16,56 +16,56 @@ export const adminNavLinks = [
     id: 'bridge',
     label: 'The Bridge',
     icon: Home,
-    description: 'Overview & Analytics',
+    description: 'Dashboard',
     linkKey: '/admin/bridge'
   },
   {
-    id: 'face-to-face',
-    label: 'Face-2-Face',
+    id: 'parley',
+    label: 'Parley',
     icon: Video,
-    description: 'Meeting Management',
-    linkKey: '/admin/face-2-face'
+    description: '1-2-1',
+    linkKey: '/admin/parley'
   },
   {
-    id: 'leads',
-    label: 'Leads',
+    id: 'treasure-maps',
+    label: 'Treasure Maps',
     icon: Target,
-    description: 'Prospect Pipeline',
-    linkKey: '/admin/leads'
+    description: 'Referrals',
+    linkKey: '/admin/treasure-maps'
   },
   {
-    id: 'closed-and-credited',
-    label: 'Closed & Credited',
-    icon: Handshake,
-    description: 'Business Acknowledged',
-    linkKey: '/admin/closed-and-credited'
+    id: 'anchored',
+    label: 'Anchored',
+    icon: Anchor,
+    description: 'Thank You For Closed Business',
+    linkKey: '/admin/anchored'
   },
   {
-    id: 'explorers',
-    label: 'Explorers',
-    icon: Footprints,
-    description: 'Business Acknowledged',
-    linkKey: '/admin/explorers'
+    id: 'skippers',
+    label: 'Skippers',
+    icon: Sailboat,
+    description: 'Visitors',
+    linkKey: '/admin/skippers'
   },
   {
-    id: 'profile',
-    label: 'Profile',
-    icon: User,
+    id: 'beacon',
+    label: 'Beacon',
+    icon: TowerControl,
     description: 'Account Settings',
-    linkKey: '/admin/profile'
+    linkKey: '/admin/beacon'
   },
   {
-    id: 'members',
-    label: 'Members',
+    id: 'navigators',
+    label: 'Navigators',
     icon: Users,
     description: 'Member Directory',
-    linkKey: '/admin/members'
+    linkKey: '/admin/navigators'
   },
   {
     id: 'applications',
     label: 'Applications',
     icon: ClipboardList,
-    description: 'Membership Requests',
+    description: 'Visitor Requests',
     linkKey: '/admin/applications'
   },
   {

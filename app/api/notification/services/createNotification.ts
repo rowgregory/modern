@@ -7,7 +7,8 @@ export async function createNotification({
   type,
   chapterId,
   entityId,
-  entityType
+  entityType,
+  senderId
 }: {
   title: string
   message: string
@@ -15,6 +16,7 @@ export async function createNotification({
   chapterId: string
   entityId?: string
   entityType?: string
+  senderId: string
 }) {
   try {
     const notification = await prisma.notification.create({
@@ -24,7 +26,8 @@ export async function createNotification({
         type,
         chapterId,
         entityId,
-        entityType
+        entityType,
+        senderId
       }
     })
 
