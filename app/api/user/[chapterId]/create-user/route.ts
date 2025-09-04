@@ -77,7 +77,7 @@ export async function POST(req: NextRequest, { params }: any) {
         ...(body?.location?.trim() && { location: body.location.trim() }),
         industry: body?.industry?.trim(),
         isLicensed: body?.isLicensed || false,
-        businessLicenseNumber: body?.businessLicenseNumber?.trim() || null,
+        ...(body?.location?.trim() && { location: body.location.trim() }),
         chapter: {
           connect: {
             id: chapterId
