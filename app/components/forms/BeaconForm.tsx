@@ -56,7 +56,22 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
   }
   return (
     <div className="p-8">
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-white">Chapter</h3>
+        {/* Chapter Information (Read-only) */}
+        <div className="space-y-2">
+          <label className="flex items-center space-x-3 text-sm font-medium text-gray-300">
+            <div className="p-1.5 bg-cyan-500/10 rounded-lg">
+              <MapPin className="w-4 h-4 text-cyan-400" />
+            </div>
+            <span>Chapter</span>
+          </label>
+          <div className="w-full bg-gray-800/30 border border-gray-700/30 text-gray-400 rounded-xl px-4 py-3 text-sm">
+            {inputs.chapter.name} - {inputs.chapter.location}
+          </div>
+        </div>
+      </div>
+      <div className="mt-8 grid lg:grid-cols-2 gap-8">
         {/* Basic Information */}
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
@@ -155,22 +170,6 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
             placeholder="e.g., BL-2025-1847392"
             error={errors.businessLicenseNumber}
           />
-        </div>
-      </div>
-
-      <div className="mt-8 space-y-4">
-        <h3 className="text-lg font-semibold text-white">Chapter</h3>
-        {/* Chapter Information (Read-only) */}
-        <div className="space-y-2">
-          <label className="flex items-center space-x-3 text-sm font-medium text-gray-300">
-            <div className="p-1.5 bg-violet-500/10 rounded-lg">
-              <MapPin className="w-4 h-4 text-violet-400" />
-            </div>
-            <span>Chapter</span>
-          </label>
-          <div className="w-full bg-gray-800/30 border border-gray-700/30 text-gray-400 rounded-xl px-4 py-3 text-sm">
-            {inputs.chapter.name} - {inputs.chapter.location}
-          </div>
         </div>
       </div>
 

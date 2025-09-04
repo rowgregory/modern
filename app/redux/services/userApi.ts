@@ -60,7 +60,7 @@ export const userApi = api.injectEndpoints({
     }),
     updateUser: build.mutation<UpdateUserResponse, { chapterId: string; userId: string; data: Partial<UserFormData> }>({
       query: ({ chapterId, userId, ...data }) => ({
-        url: `${BASE_URL}/${chapterId}/${userId}/update`,
+        url: `${BASE_URL}/${chapterId}/${userId}/update-user`,
         method: 'PUT',
         body: data
       }),

@@ -17,7 +17,7 @@ const MemberBeacon = () => {
   useBeaconForm(data)
   const dispatch = useAppDispatch()
   const { beaconForm, isEditing } = useFormSelector()
-  const { handleInput, setErrors, handleToggle } = createFormActions('beaconForm', dispatch)
+  const { handleInput, setErrors, handleToggle, handleUploadProgress } = createFormActions('beaconForm', dispatch)
   const inputs = beaconForm?.inputs
   const errors = beaconForm?.errors
 
@@ -32,6 +32,7 @@ const MemberBeacon = () => {
             onEditClick={() => dispatch(setIsEditing())}
             inputs={inputs}
             setErrors={setErrors}
+            handleUploadProgress={handleUploadProgress}
           />
         </div>
         <BeaconForm

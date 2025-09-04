@@ -1,7 +1,5 @@
-// app/api/users/route.ts
 import { sliceUser } from '@/app/lib/constants/api/sliceNames'
 import { handleApiError } from '@/app/lib/utils/api/handleApiError'
-import { createLog } from '@/app/lib/utils/api/createLog'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -53,15 +51,6 @@ export async function GET(req: NextRequest, { params }: any) {
         { status: 400 }
       )
     }
-
-    await createLog('info', 'User fetched by userId', {
-      location: ['app route - GET /api/user/[chapterId]/[userId]/get-user-by-id'],
-      message: `User fetched by userId`,
-      name: 'UserFetchedByTempId',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method
-    })
 
     return NextResponse.json(
       {

@@ -18,7 +18,7 @@ const LoginHeader = () => {
       </Link>
 
       <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent mb-2">
-        The Bridge
+        Step Aboard
       </h1>
       <p className="text-gray-400 text-lg">Access The Bridge to navigate your chapter dashboard</p>
     </motion.div>

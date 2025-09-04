@@ -93,8 +93,6 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
   const { user } = useUserSelector() as { user: User }
   const [markNotificationAsRead] = useMarkNotificationAsReadMutation()
 
-  console.log('USERL: ', user)
-
   const handleActionClick = (item: any) => {
     setIsActionsOpen(false)
     dispatch(item.open())

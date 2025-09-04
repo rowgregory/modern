@@ -3,9 +3,12 @@ import Picture from '../common/Picture'
 import MemberStatusBadge from '../member/MemberStatusBadge'
 import { useAppDispatch } from '@/app/redux/store'
 import { setInputs } from '@/app/redux/features/formSlice'
+import { FC } from 'react'
 
-interface BeaconHeaderProps {
+interface IBeaconHeader {
   inputs: {
+    fileToDisplay: string
+    fileToUpload: string
     name: string
     industry: string
     company: string
@@ -18,18 +21,19 @@ interface BeaconHeaderProps {
   isEditing: boolean
 }
 
-const BeaconHeader = ({ inputs, isEditing }: BeaconHeaderProps) => {
+const BeaconHeader: FC<IBeaconHeader> = ({ inputs, isEditing }) => {
   const dispatch = useAppDispatch()
   const handleImageUpload = (e: any) => {
     const file = e.target.files[0]
     if (file) {
-      // In a real app, you'd upload to a service like Cloudinary or S3
       const imageUrl = URL.createObjectURL(file)
       dispatch(
         setInputs({
-          formName: 'profileForm',
+          formName: 'beaconForm',
           data: {
-            profileImage: imageUrl
+            fileToDisplay: imageUrl,
+            fileToUpload: file,
+            fileToUploadType: file.type
           }
         })
       )
@@ -39,10 +43,10 @@ const BeaconHeader = ({ inputs, isEditing }: BeaconHeaderProps) => {
   return (
     <div className="flex items-center space-x-4">
       <div className="relative">
-        <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-blue-600 rounded-xl flex items-center justify-center">
-          {inputs.profileImage ? (
+        <div className="w-16 h-16 bg-gradient-to-br from-teal-500 via-cyan-600 to-blue-600 rounded-xl flex items-center justify-center">
+          {inputs?.profileImage || inputs?.fileToDisplay ? (
             <Picture
-              src={inputs.profileImage}
+              src={inputs?.profileImage || inputs?.fileToDisplay}
               alt="Beacon"
               className="w-full h-full object-cover rounded-xl"
               priority={false}
@@ -52,7 +56,7 @@ const BeaconHeader = ({ inputs, isEditing }: BeaconHeaderProps) => {
           )}
         </div>
         {isEditing && (
-          <label className="absolute -bottom-2 -right-2 p-2 bg-violet-600 rounded-lg cursor-pointer hover:bg-violet-700 transition-colors">
+          <label className="absolute -bottom-2 -right-2 p-2 bg-gradient-to-bl from-blue-600 via-cyan-600 to-teal-600  rounded-lg cursor-pointer hover:from-cyan-700 hover:via-teal-700 hover:to-blue-700 transition-colors shadow-2xl">
             <Camera className="w-4 h-4 text-white" />
             <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
           </label>
@@ -65,7 +69,7 @@ const BeaconHeader = ({ inputs, isEditing }: BeaconHeaderProps) => {
         </p>
         <div className="flex items-center space-x-4 mt-2">
           <MemberStatusBadge status={inputs.membershipStatus} isExpiring={inputs.isExpiringSoon} />
-          <span className="flex items-center space-x-1 text-xs text-violet-400">
+          <span className="flex items-center space-x-1 text-xs text-teal-400">
             {inputs.isPublic ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
             <span>{inputs.isPublic ? 'Public Beacon' : 'Private Beacon'}</span>
           </span>

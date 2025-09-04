@@ -118,8 +118,8 @@ const NavigatorForm: FC<INavigatorForm> = ({
                   <span className="text-white font-bold text-lg">L</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-lg">Lynnfluence Chapter</h3>
-                  <p className="text-sm text-cyan-300">This navigator will be added to Lynnfluence</p>
+                  <h3 className="font-bold text-white text-lg">Storm Watch Chapter</h3>
+                  <p className="text-sm text-cyan-300">This navigator will be added to Storm Watch</p>
                   <p className="text-xs text-gray-400 mt-1">Lynn, MA • Weekly Meetings</p>
                 </div>
               </div>

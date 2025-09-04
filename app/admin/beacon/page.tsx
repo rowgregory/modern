@@ -17,12 +17,12 @@ const AdminBeacon = () => {
   useBeaconForm(data)
   const dispatch = useAppDispatch()
   const { beaconForm, isEditing } = useFormSelector()
-  const { handleInput, setErrors, handleToggle } = createFormActions('beaconForm', dispatch)
+  const { handleInput, setErrors, handleToggle, handleUploadProgress } = createFormActions('beaconForm', dispatch)
   const inputs = beaconForm?.inputs
   const errors = beaconForm?.errors
 
   return (
-    <div className="bg-gray-900">
+    <div className="bg-gray-900 h-full">
       <div className="flex-1 p-6 overflow-y-auto max-w-7xl">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-y-6 px-8 py-6 border-b border-gray-700/50">
           <BeaconHeader inputs={inputs} isEditing={isEditing} />
@@ -32,6 +32,7 @@ const AdminBeacon = () => {
             onEditClick={() => dispatch(setIsEditing())}
             inputs={inputs}
             setErrors={setErrors}
+            handleUploadProgress={handleUploadProgress}
           />
         </div>
         <BeaconForm

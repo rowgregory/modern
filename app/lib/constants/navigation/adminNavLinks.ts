@@ -5,10 +5,10 @@ import {
   Users,
   ClipboardList,
   FileText,
-  Settings,
   TowerControl,
   Anchor,
-  Sailboat
+  Sailboat,
+  Sliders
 } from 'lucide-react'
 
 export const adminNavLinks = [
@@ -77,10 +77,10 @@ export const adminNavLinks = [
   },
 
   {
-    id: 'settings',
-    label: 'Settings',
-    icon: Settings,
+    id: 'rigging',
+    label: 'Rigging',
+    icon: Sliders,
     description: 'Chapter Configuration',
-    linkKey: '/admin/settings'
+    linkKey: '/admin/rigging'
   }
 ]

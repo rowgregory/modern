@@ -37,7 +37,7 @@ export const navigatorInputs = {
   joinedAt: new Date().toISOString().split('T')[0],
   expiresAt: '',
   membershipStatus: 'PENDING',
-  isAdmin: true
+  isAdmin: false
 }
 
 const beaconInputs = {
@@ -181,6 +181,9 @@ const formSlice = createSlice({
           ...form?.errors
         }
       }
+    },
+    setUploadProgress: (state, { payload }: any) => {
+      state.progress = payload
     }
   }
 })
@@ -195,7 +198,8 @@ export const createFormActions = (formName: string, dispatch: any) => ({
   handleSelect: (e: any) =>
     dispatch(formSlice.actions.handleSelect({ formName, name: e.target.name, value: e.target.value })),
   handleToggle: (e: any) =>
-    dispatch(formSlice.actions.handleToggle({ formName, name: e.target.name, checked: e.target.checked }))
+    dispatch(formSlice.actions.handleToggle({ formName, name: e.target.name, checked: e.target.checked })),
+  handleUploadProgress: (progress: any) => dispatch(formSlice.actions.setUploadProgress(progress))
 })
 
 export const {

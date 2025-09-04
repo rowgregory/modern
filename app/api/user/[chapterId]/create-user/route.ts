@@ -69,22 +69,22 @@ export async function POST(req: NextRequest, { params }: any) {
     // Create the user
     const createdUser = await prisma.user.create({
       data: {
-        name: body.name.trim(),
-        email: body.email.toLowerCase(),
-        phone: body.phone || null,
-        role: body.role,
-        company: body.company.trim(),
-        location: body.location.trim(),
-        industry: body.industry.trim(),
-        isLicensed: body.isLicensed || false,
-        businessLicenseNumber: body.businessLicenseNumber || '',
+        name: body?.name?.trim(),
+        email: body?.email?.toLowerCase(),
+        phone: body?.phone || null,
+        role: body.isAdmin ? 'ADMIN' : 'MEMBER',
+        company: body?.company?.trim(),
+        location: body?.location?.trim() || null,
+        industry: body?.industry?.trim(),
+        isLicensed: body?.isLicensed || false,
+        businessLicenseNumber: body?.businessLicenseNumber?.trim() || null,
         chapter: {
           connect: {
             id: chapterId
           }
         },
-        membershipStatus: body.membershipStatus || 'PENDING',
-        isAdmin: body.isAdmin !== undefined ? body.isAdmin : false,
+        membershipStatus: body?.membershipStatus || 'PENDING',
+        isAdmin: !!body.isAdmin,
         joinedAt,
         expiresAt
       },

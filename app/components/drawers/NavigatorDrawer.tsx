@@ -49,20 +49,18 @@ const NavigatorDrawer = () => {
       dispatch(
         showToast({
           type: 'success',
-          message: navigatorForm?.inputs?.isUpdating ? 'Member updated' : 'New Member Added',
-          description: `${memberData.name} ${navigatorForm?.inputs?.isUpdating ? 'has been updated!' : 'is now part of the team!'}`
+          message: navigatorForm?.inputs?.isUpdating ? 'Navigator updated' : 'New Navigator Added',
+          description: `${memberData.name} ${navigatorForm?.inputs?.isUpdating ? 'has been updated!' : 'is now part of the crew!'}`
         })
       )
     } catch {
       dispatch(
         showToast({
           type: 'error',
-          message: `Error ${navigatorForm?.inputs?.isUpdating ? 'updating' : 'adding'} member`,
+          message: `Error ${navigatorForm?.inputs?.isUpdating ? 'updating' : 'adding'} navigator`,
           description: `There was an error ${navigatorForm?.inputs?.isUpdating ? 'updating' : 'creating'} ${navigatorForm?.inputs?.name}`
         })
       )
-    } finally {
-      dispatch(clearInputs({ formName: 'navigatorForm' }))
     }
   }
 
