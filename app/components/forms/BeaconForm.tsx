@@ -26,6 +26,44 @@ import { Textarea } from '@/app/components/ui/TextArea'
 import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 import { IBeaconForm } from '@/types/forms'
 
+const PREDEFINED_INTERESTS = [
+  'Real Estate',
+  'Technology',
+  'Healthcare',
+  'Finance',
+  'Marketing',
+  'Sales',
+  'Construction',
+  'Legal Services',
+  'Accounting',
+  'Insurance',
+  'Consulting',
+  'Education',
+  'Retail',
+  'Manufacturing',
+  'Transportation',
+  'Food & Beverage',
+  'Photography',
+  'Design',
+  'Entertainment',
+  'Sports & Fitness',
+  'Travel',
+  'Non-Profit',
+  'Government',
+  'Agriculture',
+  'Energy',
+  'Telecommunications',
+  'Media',
+  'Banking',
+  'Investment',
+  'Human Resources',
+  'Project Management',
+  'Data Analytics',
+  'Cybersecurity',
+  'Software Development',
+  'Digital Marketing'
+]
+
 const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, handleToggle }) => {
   const [newInterest, setNewInterest] = useState('')
   const dispatch = useAppDispatch()
@@ -34,7 +72,7 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
     if (newInterest.trim() && !inputs.interests.includes(newInterest.trim())) {
       dispatch(
         setInputs({
-          formName: 'profileForm',
+          formName: 'beaconForm',
           data: {
             interests: [...inputs.interests, newInterest.trim()]
           }
@@ -47,7 +85,7 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
   const removeInterest = (interest: string) => {
     dispatch(
       setInputs({
-        formName: 'profileForm',
+        formName: 'beaconForm',
         data: {
           interests: inputs.interests.filter((i: string) => i !== interest)
         }
@@ -119,7 +157,7 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
             value={inputs.website}
             onChange={handleInput}
             disabled={!isEditing}
-            placeholder="https://www.yourcompany.com"
+            placeholder="e.g., https://sqysh.io"
             error={errors.website}
           />
         </div>
@@ -197,6 +235,8 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-300 mb-2 block">Your Interests</label>
+
+            {/* Current Interests */}
             <motion.div
               className="flex flex-wrap gap-2 mb-3"
               variants={containerVariants}
@@ -207,11 +247,11 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
                 <motion.span
                   key={index}
                   variants={itemVariants}
-                  className="inline-flex items-center space-x-2 bg-violet-500/10 border border-violet-500/20 text-violet-300 px-3 py-1.5 rounded-lg text-sm"
+                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-cyan-500/20 to-violet-500/20 border border-cyan-500/20 text-cyan-300 px-3 py-1.5 rounded-lg text-sm"
                 >
                   <span>{interest}</span>
                   {isEditing && (
-                    <button onClick={() => removeInterest(interest)} className="text-violet-400 hover:text-violet-300">
+                    <button onClick={() => removeInterest(interest)} className="text-cyan-400 hover:text-cyan-300">
                       <Trash2 className="w-3 h-3" />
                     </button>
                   )}
@@ -220,22 +260,46 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
             </motion.div>
 
             {isEditing && (
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  value={newInterest}
-                  onChange={(e) => setNewInterest(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && addInterest()}
-                  placeholder="Add new interest"
-                  className="flex-1 bg-gray-800/50 border border-gray-700/50 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50"
-                />
-                <button
-                  onClick={addInterest}
-                  className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
+              <>
+                {/* Predefined Interests */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-400 mb-2">Quick Add (click to add):</h4>
+                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                    {PREDEFINED_INTERESTS.filter((interest) => !inputs.interests.includes(interest)).map((interest) => (
+                      <button
+                        key={interest}
+                        onClick={() => {
+                          // Add the predefined interest
+                          const updatedInterests = [...inputs.interests, interest]
+                          dispatch(setInputs({ formName: 'beaconForm', data: { interests: updatedInterests } }))
+                        }}
+                        className="inline-flex items-center space-x-1 bg-gray-700/30 hover:bg-cyan-500/20 border border-gray-600/50 hover:border-cyan-500/30 text-gray-300 hover:text-cyan-300 px-2 py-1 rounded text-xs transition-colors"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>{interest}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Custom Interest Input */}
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={newInterest}
+                    onChange={(e) => setNewInterest(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && addInterest()}
+                    placeholder="Add custom interest"
+                    className="flex-1 bg-gray-800/50 border border-gray-700/50 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  />
+                  <button
+                    onClick={addInterest}
+                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-sm transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </>
             )}
           </div>
         </div>

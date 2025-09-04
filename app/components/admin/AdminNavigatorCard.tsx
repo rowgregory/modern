@@ -4,7 +4,7 @@ import { useAppDispatch } from '@/app/redux/store'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { setOpenAddUserDrawer } from '@/app/redux/features/userSlice'
 import { User } from '@/types/user'
-import { Building, Crown, Edit, Mail, Phone, Trash2 } from 'lucide-react'
+import { Building, Crown, Edit, Mail, Phone } from 'lucide-react'
 import { formatDate } from '@/app/lib/utils/date/formatDate'
 import { getNavigatorStatusIcon } from '@/app/lib/utils/navigator/getNavigatorStatusIcon'
 import getNavigatorStatusColor from '@/app/lib/utils/navigator/getNavigatorStatusColor'
@@ -160,13 +160,6 @@ const AdminNavigatorCard: FC<{ navigator: User; index: number; viewMode: string 
             className="px-3 py-2 bg-gray-700/50 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 transition-all text-sm"
           >
             <Edit className="w-4 h-4" />
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-3 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-all text-sm"
-          >
-            <Trash2 className="w-4 h-4" />
           </motion.button>
         </div>
       </div>
