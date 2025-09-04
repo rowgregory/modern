@@ -74,7 +74,7 @@ export async function POST(req: NextRequest, { params }: any) {
         phone: body?.phone || null,
         role: body.isAdmin ? 'ADMIN' : 'MEMBER',
         company: body?.company?.trim(),
-        location: body?.location?.trim() || null,
+        ...(body?.location?.trim() && { location: body.location.trim() }),
         industry: body?.industry?.trim(),
         isLicensed: body?.isLicensed || false,
         businessLicenseNumber: body?.businessLicenseNumber?.trim() || null,
