@@ -40,6 +40,9 @@ export async function getMyProfile(req: NextRequest, chapterId: string, userId: 
         lastLoginAt: true,
         createdAt: true,
         updatedAt: true,
+        isAdmin: true,
+        isSuperUser: true,
+        isLicensed: true,
         chapter: {
           select: {
             id: true,
