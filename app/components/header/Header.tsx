@@ -20,10 +20,10 @@ const Header = () => {
       </Link>
       <div className="absolute left-1/2 -translate-x-1/2 space-x-4">
         <Link
-          href="/skipper"
-          className={`${path === '/skipper' ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300`}
+          href="/swabbie"
+          className={`${path === '/swabbie' ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300`}
         >
-          Skipper Application
+          Application
         </Link>
         <Link
           href="/navigators"

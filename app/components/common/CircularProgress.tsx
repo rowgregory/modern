@@ -1,4 +1,4 @@
-const CircularProgress = ({ percentage, label, value, color = 'rgb(34, 197, 94)' }: any) => {
+const CircularProgress = ({ percentage, value, color = 'rgb(34, 197, 94)' }: any) => {
   const radius = 45
   const circumference = radius * 2 * Math.PI
   const strokeDasharray = `${circumference} ${circumference}`
@@ -23,7 +23,6 @@ const CircularProgress = ({ percentage, label, value, color = 'rgb(34, 197, 94)'
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="text-xl font-bold text-white">{value}</div>
-        <div className="text-xs text-gray-400 uppercase tracking-wide text-center">{label}</div>
       </div>
     </div>
   )

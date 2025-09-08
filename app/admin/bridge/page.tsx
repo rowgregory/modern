@@ -62,7 +62,7 @@ const AdminBridge = () => {
               <span className="text-gray-400 text-sm font-medium">Session</span>
               <MoreHorizontal className="w-4 h-4 text-gray-500" />
             </div>
-            <CircularProgress percentage={85} value="85%" label="ENGAGEMENT" color="rgb(34, 197, 94)" />
+            <CircularProgress percentage={85} value="85%" color="rgb(34, 197, 94)" />
           </div>
 
           {/* Member Engagement */}

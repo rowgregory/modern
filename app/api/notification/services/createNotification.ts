@@ -8,7 +8,8 @@ export async function createNotification({
   chapterId,
   entityId,
   entityType,
-  senderId
+  senderId,
+  recipientIds
 }: {
   title: string
   message: string
@@ -17,6 +18,7 @@ export async function createNotification({
   entityId?: string
   entityType?: string
   senderId: string
+  recipientIds?: string[]
 }) {
   try {
     const notification = await prisma.notification.create({
@@ -30,6 +32,17 @@ export async function createNotification({
         senderId
       }
     })
+
+    // If specific recipients are provided, create NotificationRead entries
+    if (recipientIds && recipientIds.length > 0) {
+      await prisma.notificationRead.createMany({
+        data: recipientIds.map((userId) => ({
+          notificationId: notification.id,
+          userId,
+          readAt: new Date() // Delivered, but not read yet
+        }))
+      })
+    }
 
     return { success: true, notification }
   } catch {

@@ -8,12 +8,12 @@ import {
   Calendar,
   FileText,
   Handshake,
+  Layers3,
   MoreHorizontal,
   Sailboat,
-  Target,
+  Scroll,
   TrendingUp,
-  Users,
-  Video
+  Users
 } from 'lucide-react'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import QuickActionButton from '@/app/components/bridge/QuickActionButton'
@@ -23,6 +23,9 @@ import { IParley } from '@/types/parley'
 import { User } from '@/types/user'
 import { useGetUsersQuery } from '@/app/redux/services/userApi'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
+import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
+import { useAppDispatch } from '@/app/redux/store'
 
 const weeklyActivity = [
   { day: 'Mon', f2f: 34, leads: 28, meetings: 12 },
@@ -35,10 +38,11 @@ const weeklyActivity = [
 ]
 
 const MemberBridge = () => {
+  useGetUsersQuery({ chapterId }) as { data: { users: User[] | null } }
   const userStats = {} as any
   const recentConnections = [] as any
   const upcomingParleys = [] as any
-  useGetUsersQuery({ chapterId }) as { data: { users: User[] | null } }
+  const dispatch = useAppDispatch()
 
   return (
     <div className="bg-gray-900">
@@ -47,7 +51,7 @@ const MemberBridge = () => {
         {/* Main Content Area */}
         <div className="flex-1 p-6 overflow-y-auto">
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <StatCard
               title="PARLEYS"
               value="147"
@@ -106,23 +110,25 @@ const MemberBridge = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <QuickActionButton
                 title="Schedule Parley"
-                icon={Video}
-                color="from-cyan-500 to-cyan-600 text-white rounded-lg hover:from-cyan-400 hover:to-cyan-500"
+                icon={Scroll}
+                color="from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-400 hover:to-teal-500"
+                onClick={setOpenParleyDrawer}
               />
               <QuickActionButton
                 title="Generate Treasure Map"
-                icon={Target}
-                color="from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-400 hover:to-blue-500"
+                icon={Layers3}
+                color="from-cyan-500 to-cyan-600 text-white rounded-lg hover:from-cyan-400 hover:to-cyan-500"
               />
               <QuickActionButton
                 title="Log Anchored"
                 icon={Anchor}
-                color="from-violet-500 to-violet-600 text-white rounded-lg hover:from-violet-400 hover:to-violet-500"
+                color="from-sky-500 to-sky-600 text-white rounded-lg hover:from-sky-400 hover:to-sky-500"
+                onClick={() => dispatch(setOpenAnchorDrawer())}
               />
               <QuickActionButton
-                title="Invite Skipper"
+                title="Invite Swabbie"
                 icon={Sailboat}
-                color="from-pink-500 to-pink-600 text-white rounded-lg hover:from-pink-400 hover:to-pink-500"
+                color="from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-400 hover:to-blue-500"
               />
             </div>
           </div>
@@ -136,7 +142,7 @@ const MemberBridge = () => {
               <span className="text-gray-400 text-sm font-medium">My Activity</span>
               <MoreHorizontal className="w-4 h-4 text-gray-500" />
             </div>
-            <CircularProgress percentage={72} value="72%" label="NETWORKING SCORE" color="rgb(139, 92, 246)" />
+            <CircularProgress percentage={72} value="72%" color="rgb(139, 92, 246)" />
           </div>
 
           {/* Upcoming Parleys */}

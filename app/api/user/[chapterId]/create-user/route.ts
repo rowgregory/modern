@@ -74,19 +74,20 @@ export async function POST(req: NextRequest, { params }: any) {
         phone: body?.phone || null,
         role: body.isAdmin ? 'ADMIN' : 'MEMBER',
         company: body?.company?.trim(),
-        ...(body?.location?.trim() && { location: body.location.trim() }),
         industry: body?.industry?.trim(),
         isLicensed: body?.isLicensed || false,
+        membershipStatus: body?.membershipStatus || 'PENDING',
+        isAdmin: !!body.isAdmin,
+        joinedAt,
+        expiresAt,
         ...(body?.location?.trim() && { location: body.location.trim() }),
+        ...(body?.location?.trim() && { location: body.location.trim() }),
+        ...(body?.businessLicenseNumber?.trim() && { businessLicenseNumber: body.businessLicenseNumber.trim() }),
         chapter: {
           connect: {
             id: chapterId
           }
-        },
-        membershipStatus: body?.membershipStatus || 'PENDING',
-        isAdmin: !!body.isAdmin,
-        joinedAt,
-        expiresAt
+        }
       },
       include: {
         chapter: {

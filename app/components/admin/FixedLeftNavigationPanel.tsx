@@ -94,7 +94,11 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
                     className="flex-1"
                   >
                     <div className="font-medium">{item.label}</div>
-                    {item.description && <div className="text-xs text-gray-500 mt-0.5">{item.description}</div>}
+                    {item.description && (
+                      <div className={`${selectedPage === item.id ? 'text-cyan-700' : 'text-gray-400'} text-xs mt-0.5`}>
+                        {item.description}
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </motion.div>

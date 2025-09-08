@@ -1,0 +1,108 @@
+import { motion, AnimatePresence } from 'framer-motion'
+import { X } from 'lucide-react'
+import { useAppDispatch, useFormSelector, useTreasureMapSelector } from '@/app/redux/store'
+import Backdrop from '../common/Backdrop'
+import Drawer from '../common/Drawer'
+// import { useSession } from 'next-auth/react'
+import { setCloseTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
+// import { createFormActions } from '@/app/redux/features/formSlice'
+// import { showToast } from '@/app/redux/features/toastSlice'
+// import { chapterId } from '@/app/lib/constants/api/chapterId'
+// import { useCreateTreasureMapMutation, useUpdateTreasureMapMutation } from '@/app/redux/services/treasureMapApi'
+// import validateTreasureMapForm from '../forms/validations/validateTreasureMapForm'
+
+const TreasureMapDrawer = () => {
+  // const session = useSession()
+  const dispatch = useAppDispatch()
+  const onClose = () => dispatch(setCloseTreasureMapDrawer())
+  const { treasureMapForm } = useFormSelector()
+  // const inputs = treasureMapForm?.inputs
+  // const errors = treasureMapForm?.errors
+  // const { handleInput, setErrors } = createFormActions('treasureMapForm', dispatch)
+  // const [createTreasureMap, { isLoading: isCreating }] = useCreateTreasureMapMutation()
+  // const [updateTreasureMap, { isLoading: isUpdating }] = useUpdateTreasureMapMutation()
+  // const isLoading = isCreating || isUpdating
+  // const user = session?.data?.user
+  const { treasureMapDrawer } = useTreasureMapSelector()
+
+  // const handleSubmit = async (e: { preventDefault: () => void }) => {
+  //   e.preventDefault()
+
+  //   if (!validateTreasureMapForm(treasureMapForm?.inputs, setErrors)) return
+
+  //   try {
+  //     const swabbieData = {
+  //       ...treasureMapForm?.inputs,
+  //       chapterId,
+  //       userId: user?.id
+  //     }
+
+  //     if (inputs?.isUpdating) {
+  //       await updateTreasureMap({ userId: inputs?.id, ...swabbieData }).unwrap()
+  //     } else {
+  //       await createTreasureMap({ ...swabbieData }).unwrap()
+  //     }
+
+  //     onClose()
+
+  //     dispatch(
+  //       showToast({
+  //         type: 'success',
+  //         message: `${isUpdating ? 'Update' : 'Create'} Treasure Map Success`,
+  //         description: `Treasure Map ${isUpdating ? 'updated' : 'created'} successfully.`
+  //       })
+  //     )
+  //   } catch (error: any) {
+  //     dispatch(
+  //       showToast({
+  //         type: 'error',
+  //         message: `${isUpdating ? 'Update' : 'Create'} Treasure Map Failed`,
+  //         description: error.message || 'Unable to process request.'
+  //       })
+  //     )
+  //   }
+  // }
+
+  return (
+    <AnimatePresence>
+      {treasureMapDrawer && (
+        <>
+          {/* Backdrop Overlay */}
+          <Backdrop onClose={onClose} />
+
+          {/* Drawer */}
+          <Drawer>
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-700/50">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
+                <h2 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent">
+                  {treasureMapForm?.inputs?.isUpdating ? 'Update Treasure Map' : 'Generate Treasure Map'}
+                </h2>
+              </motion.div>
+
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={onClose}
+                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-all"
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+              >
+                <X className="w-5 h-5" />
+              </motion.button>
+            </div>
+            {/* TreasureMap Form */}
+            <div className="text-white p-6">Coming Soon</div>
+          </Drawer>
+        </>
+      )}
+    </AnimatePresence>
+  )
+}
+
+export default TreasureMapDrawer

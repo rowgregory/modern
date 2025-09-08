@@ -57,7 +57,7 @@ const ParleyDrawer = () => {
         scheduledAt: scheduledAt.toISOString(),
         duration: parseInt(inputs?.duration),
         chapterId,
-        userId: session.data?.user.id,
+        userId: user?.id,
         status: inputs?.status
       }
 

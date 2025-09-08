@@ -1,51 +1,51 @@
 import {
-  Home,
-  Video,
-  Target,
   Users,
   ClipboardList,
   FileText,
   TowerControl,
   Anchor,
-  Sailboat,
-  Sliders
+  Sliders,
+  Ship,
+  Scroll,
+  Layers,
+  Wrench
 } from 'lucide-react'
 
 export const adminNavLinks = [
   {
     id: 'bridge',
-    label: 'The Bridge',
-    icon: Home,
+    label: 'Bridge',
+    icon: Ship,
     description: 'Dashboard',
     linkKey: '/admin/bridge'
   },
   {
     id: 'parley',
     label: 'Parley',
-    icon: Video,
+    icon: Scroll,
     description: '1-2-1',
     linkKey: '/admin/parley'
   },
   {
     id: 'treasure-maps',
     label: 'Treasure Maps',
-    icon: Target,
+    icon: Layers,
     description: 'Referrals',
     linkKey: '/admin/treasure-maps'
   },
   {
-    id: 'anchored',
-    label: 'Anchored',
+    id: 'anchors',
+    label: 'Anchors',
     icon: Anchor,
     description: 'Thank You For Closed Business',
-    linkKey: '/admin/anchored'
+    linkKey: '/admin/anchors'
   },
   {
-    id: 'skippers',
-    label: 'Skippers',
-    icon: Sailboat,
+    id: 'swabbies',
+    label: 'Swabbies',
+    icon: Wrench,
     description: 'Visitors',
-    linkKey: '/admin/skippers'
+    linkKey: '/admin/swabbies'
   },
   {
     id: 'beacon',

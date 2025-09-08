@@ -78,7 +78,7 @@ const formInitialState = {
     inputs: beaconInputs,
     errors: {}
   },
-  skipperForm: {
+  swabbieForm: {
     inputs: {
       name: '',
       email: '',
@@ -94,7 +94,8 @@ const formInitialState = {
   parleyForm: {
     inputs: initialParleyFormState,
     errors: {}
-  }
+  },
+  anchorForm: { inputs: {}, errors: {} }
 } as any
 
 const formSlice = createSlice({

@@ -4,8 +4,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Users2, User2Icon } from 'lucide-react'
 import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
-import { useGetUsersQuery } from '@/app/redux/services/userApi'
-import { User } from 'next-auth'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { useGetParleysQuery } from '@/app/redux/services/parleyApi'
 import { IParley } from '@/types/parley'
@@ -21,7 +19,6 @@ const AdminParleys = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
-  useGetUsersQuery({ chapterId }) as { data: { users: User[] | null } }
   const { data } = useGetParleysQuery({ chapterId }) as { data: { parleys: IParley[] } }
   const parleys = data?.parleys
   const [showMyParleysOnly, setShowMyParleysOnly] = useState(false)

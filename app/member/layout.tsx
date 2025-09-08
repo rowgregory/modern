@@ -11,6 +11,9 @@ import { memberNavLinks } from '../lib/constants/navigation/memberNavLinks'
 import { useSession } from 'next-auth/react'
 import { useGetMyProfileQuery } from '../redux/services/userApi'
 import { chapterId } from '../lib/constants/api/chapterId'
+import AnchorDrawer from '../components/drawers/AnchorDrawer'
+import SwabbieDrawer from '../components/drawers/SwabbieDrawer'
+import TreasureMapDrawer from '../components/drawers/TreasureMapDrawer'
 
 const MemberLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
@@ -24,8 +27,7 @@ const MemberLayout: FC<{ children: ReactNode }> = ({ children }) => {
     const lastSegment = pathSegments[pathSegments.length - 1]
 
     // Handle special cases for multi-word routes
-    if (path.includes('/parley')) return 'parley'
-    if (path.includes('/anchored')) return 'anchored'
+    if (path.includes('/treasure-maps')) return 'treasure-maps'
 
     // Find matching navigation item
     const matchingItem = memberNavLinks.find((item) => item.linkKey === path || item.id === lastSegment)
@@ -39,6 +41,9 @@ const MemberLayout: FC<{ children: ReactNode }> = ({ children }) => {
     <>
       <NavigatorDrawer />
       <ParleyDrawer />
+      <AnchorDrawer />
+      <SwabbieDrawer />
+      <TreasureMapDrawer />
       <div className="min-h-screen bg-gray-950 flex">
         {/* Fixed Left Navigation Panel */}
         <FixedLeftNavigationPanel

@@ -39,7 +39,21 @@ export async function GET(req: NextRequest, { params }: any) {
         ...where,
         NOT: {
           senderId: userAuth.user.id // 👈 exclude notifications sent by the logged-in user
-        }
+        },
+        OR: [
+          // 1. Targeted notifications where you're a recipient
+          {
+            readBy: {
+              some: { userId: userAuth.user.id } // You have a NotificationRead entry
+            }
+          },
+          // 2. Broadcast notifications (no specific recipients)
+          {
+            readBy: {
+              none: {} // No NotificationRead entries exist = visible to all
+            }
+          }
+        ]
       },
       include: {
         readBy: {
@@ -65,13 +79,32 @@ export async function GET(req: NextRequest, { params }: any) {
     // Count unread for current user
     const unreadCount = await prisma.notification.count({
       where: {
-        ...where,
+        chapterId,
         NOT: {
           senderId: userAuth.user.id
         },
-        readBy: {
-          none: { userId: userAuth.user.id } // Notifications with NO read record for this user
-        }
+        OR: [
+          // Targeted notifications where user is recipient but hasn't been marked as read
+          {
+            readBy: {
+              some: {
+                userId: userAuth.user.id,
+                isRead: false
+              }
+            }
+          },
+          // Broadcast notifications with no read record for this user
+          {
+            readBy: {
+              none: {}
+            },
+            ...(!userAuth.user.isAdmin && {
+              entityType: {
+                notIn: adminOnlyApplications
+              }
+            })
+          }
+        ]
       }
     })
 

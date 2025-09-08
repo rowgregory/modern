@@ -44,9 +44,9 @@ const BeaconHeader: FC<IBeaconHeader> = ({ inputs, isEditing }) => {
     <div className="flex items-center space-x-4">
       <div className="relative">
         <div className="w-16 h-16 bg-gradient-to-br from-teal-500 via-cyan-600 to-blue-600 rounded-xl flex items-center justify-center">
-          {inputs?.profileImage || inputs?.fileToDisplay ? (
+          {inputs?.fileToDisplay || inputs?.profileImage ? (
             <Picture
-              src={inputs?.profileImage || inputs?.fileToDisplay}
+              src={inputs?.fileToDisplay || inputs?.profileImage || ''}
               alt="Beacon"
               className="w-full h-full object-cover rounded-xl"
               priority={false}

@@ -107,9 +107,13 @@ model User {
   requestedMeetings Parley[] @relation("ParleyRequester")
   receivedMeetings  Parley[] @relation("ParleyRecipient")
 
-  // Anchored relationships
-  givenCredits    Anchored[] @relation("AnchoredGiver")
-  receivedCredits Anchored[] @relation("AnchoredReceiver")
+  // Anchor relationships
+  givenCredits    Anchor[] @relation("AnchorGiver")
+  receivedCredits Anchor[] @relation("AnchorReceiver")
+
+  // TreasureMap relationships
+  giver    TreasureMap[] @relation("TreasureMapGiver")
+  receiver TreasureMap[] @relation("TreasureMapReceiver")
 
   accounts Account[]
   sessions Session[]
@@ -163,18 +167,18 @@ model Parley {
   @@index([status])
 }
 
-model Anchored {
+model Anchor {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Who is giving the thank you
   giverId String
-  giver   User   @relation("AnchoredGiver", fields: [giverId], references: [id])
+  giver   User   @relation("AnchorGiver", fields: [giverId], references: [id])
 
   // Who is receiving the thank you (who provided the referral)
   receiverId String
-  receiver   User   @relation("AnchoredReceiver", fields: [receiverId], references: [id])
+  receiver   User   @relation("AnchorReceiver", fields: [receiverId], references: [id])
 
   // Business details
   businessValue Decimal @db.Decimal(10, 2) // monetary value of closed business
@@ -216,10 +220,11 @@ model Chapter {
   meetingFrequency String @default("WEEKLY") // e.g., "WEEKLY"
 
   // Relationships
-  users             User[]
-  parleys           Parley[]
-  closedAndCredited Anchored[]
-  notifications     Notification[]
+  users         User[]
+  parleys       Parley[]
+  anchors       Anchor[]
+  treasureMaps  TreasureMap[]
+  notifications Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -274,12 +279,55 @@ model NotificationRead {
   id             String   @id @default(cuid())
   notificationId String
   userId         String
+  isRead         Boolean  @default(false)
   readAt         DateTime @default(now())
 
   notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([notificationId, userId])
+}
+
+model TreasureMap {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Who is giving the referral
+  giverId String
+  giver   User   @relation("TreasureMapGiver", fields: [giverId], references: [id])
+
+  // Who is receiving the referral  
+  receiverId String
+  receiver   User   @relation("TreasureMapReceiver", fields: [receiverId], references: [id])
+
+  // Referral details
+  clientName    String // Name of the client being referred
+  clientEmail   String? // Optional client contact
+  clientPhone   String? // Optional client contact
+  serviceNeeded String // What service/product the client needs
+
+  // Status tracking
+  status String @default("GIVEN") // GIVEN, ACCEPTED, CONTACTED, CLOSED, DECLINED
+
+  // Follow-up tracking
+  contactedAt DateTime? // When receiver contacted the client
+  closedAt    DateTime? // When business was closed
+
+  // Notes
+  notes         String? // General notes about the referral
+  giverNotes    String? // Private notes for giver
+  receiverNotes String? // Private notes for receiver
+
+  // Coastal Referral Exchange tracking
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+
+  @@index([chapterId])
+  @@index([giverId])
+  @@index([receiverId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 enum NotificationType {
@@ -292,4 +340,7 @@ enum NotificationType {
   PARLEY_CONFIRMED
   PARLEY_CANCELLED
   PARLEY_COMPLETED
+  ANCHOR_REPORTED
+  ANCHOR_VERIFIED
+  ANCHOR_DISPUTED
 }

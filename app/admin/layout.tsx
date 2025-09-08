@@ -8,14 +8,18 @@ import NavigatorDrawer from '../components/drawers/NavigatorDrawer'
 import FixedLeftNavigationPanel from '../components/admin/FixedLeftNavigationPanel'
 import FixedHeader from '../components/admin/FixedHeader'
 import ParleyDrawer from '../components/drawers/ParleyDrawer'
-import { useGetMyProfileQuery } from '../redux/services/userApi'
+import { useGetMyProfileQuery, useGetUsersQuery } from '../redux/services/userApi'
 import { chapterId } from '../lib/constants/api/chapterId'
 import { useSession } from 'next-auth/react'
+import { User } from '@prisma/client'
+import AnchorDrawer from '../components/drawers/AnchorDrawer'
+import SwabbieDrawer from '../components/drawers/SwabbieDrawer'
 
 const AdminLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
   const path = useCustomPathname()
   const session = useSession()
+  useGetUsersQuery({ chapterId }) as { data: { users: User[] | null } }
   const { data } = useGetMyProfileQuery({ chapterId, userId: session.data?.user.id }, { skip: !session.data?.user.id })
 
   // Get current page from path
@@ -38,6 +42,8 @@ const AdminLayout: FC<{ children: ReactNode }> = ({ children }) => {
     <>
       <NavigatorDrawer />
       <ParleyDrawer />
+      <AnchorDrawer />
+      <SwabbieDrawer />
       <div className="min-h-screen bg-gray-950 flex">
         {/* Fixed Left Navigation Panel */}
         <FixedLeftNavigationPanel

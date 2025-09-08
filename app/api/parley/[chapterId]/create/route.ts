@@ -135,7 +135,8 @@ export async function POST(req: NextRequest, { params }: any) {
         parley.scheduledAt,
         chapterId,
         parley.id,
-        userAuth.user.id
+        userAuth.user.id,
+        parley.recipientId
       )
     } else {
       notificationFactory.parley.request(
@@ -143,7 +144,8 @@ export async function POST(req: NextRequest, { params }: any) {
         parley.scheduledAt,
         chapterId,
         parley.id,
-        userAuth.user.id
+        userAuth.user.id,
+        parley.recipientId
       )
     }
 

@@ -13,6 +13,8 @@ import { toastReduer } from './features/toastSlice'
 import { settingsReducer } from './features/settingsSlice'
 import { appReducer } from './features/appSlice'
 import { notificationReducer } from './features/notificationsSlice'
+import { anchorReducer } from './features/anchorSlice'
+import { treasureMapReducer } from './features/treasureMapSlice'
 
 const rootReducer = combineReducers({
   form: formReducer,
@@ -24,6 +26,8 @@ const rootReducer = combineReducers({
   settings: settingsReducer,
   app: appReducer,
   notification: notificationReducer,
+  anchor: anchorReducer,
+  treasureMap: treasureMapReducer,
   [api.reducerPath]: api.reducer
 })
 
@@ -53,3 +57,5 @@ export const useToastSelector = () => useAppSelector((state) => state.toast)
 export const useSettingsSelector = () => useAppSelector((state) => state.settings)
 export const useParleySelector = () => useAppSelector((state) => state.parley)
 export const useFormSelector = () => useAppSelector((state) => state.form)
+export const useAnchorSelector = () => useAppSelector((state) => state.anchor)
+export const useTreasureMapSelector = () => useAppSelector((state) => state.treasureMap)

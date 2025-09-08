@@ -1,7 +1,7 @@
 import { useAppDispatch } from '@/app/redux/store'
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Users } from 'lucide-react'
+import { Anchor, Plus, Users } from 'lucide-react'
 
 const EmptyState: FC<{
   searchQuery: string
@@ -15,7 +15,11 @@ const EmptyState: FC<{
   const dispatch = useAppDispatch()
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
-      <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+      {title === 'Anchor' ? (
+        <Anchor className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+      ) : (
+        <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+      )}
       <h3 className="text-xl font-semibold text-gray-400 mb-2">No {title}s found</h3>
       <p className="text-gray-500 mb-6">
         {searchQuery || statusFilter !== 'all' || typeFilter !== 'all'

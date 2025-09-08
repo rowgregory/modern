@@ -1,4 +1,4 @@
-import { Anchored, Parley } from '@prisma/client'
+import { Anchor, Parley } from '@prisma/client'
 
 // Base User interface matching your Prisma User model
 export interface User {
@@ -44,8 +44,8 @@ export interface User {
   // Relationships (optional, loaded when needed)
   requestedMeetings?: Parley[]
   receivedMeetings?: Parley[]
-  givenCredits?: Anchored[]
-  receivedCredits?: Anchored[]
+  givenCredits?: Anchor[]
+  receivedCredits?: Anchor[]
   accounts?: Account[]
   sessions?: Session[]
   logs?: Log[]

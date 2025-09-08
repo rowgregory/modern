@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { motion } from 'framer-motion'
 import {
   User,
@@ -23,102 +23,30 @@ import { useCreateUserMutation } from '../redux/services/userApi'
 import { chapterId } from '../lib/constants/api/chapterId'
 import { showToast } from '../redux/features/toastSlice'
 import { Switch } from '../components/ui/Switch'
-import validateSkipperForm from '../components/forms/validations/validateSkipperForm'
+import validateSwabbieForm from '../components/forms/validations/validateSwabbieForm'
+import StormEffects from '../components/common/StormEffects'
 
-const StormEffects = () => {
-  const [isClient, setIsClient] = useState(false)
-
-  useEffect(() => {
-    if (!isClient) {
-      setIsClient(true)
-    }
-  }, [isClient])
-
-  if (!isClient) return
-
-  return (
-    <>
-      {/* Storm Background Effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Lightning flashes */}
-        <motion.div
-          animate={{
-            opacity: [0, 0.4, 0, 0.2, 0, 0.6, 0],
-            scale: [1, 1.01, 1]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            repeatDelay: 3,
-            times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1]
-          }}
-          className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-300/20 via-cyan-200/10 to-transparent pointer-events-none"
-        />
-
-        {/* Rain effect */}
-        <div className="absolute inset-0 opacity-30">
-          {[...Array(50)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-px h-16 bg-gradient-to-b from-cyan-200/60 to-transparent"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `-10%`
-              }}
-              animate={{
-                y: [0, 800],
-                opacity: [0, 0.8, 0]
-              }}
-              transition={{
-                duration: Math.random() * 1.5 + 1,
-                repeat: Infinity,
-                delay: Math.random() * 3,
-                ease: 'linear'
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Animated waves at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 overflow-hidden">
-          <motion.div
-            animate={{ x: [-100, 0] }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="absolute bottom-0 left-0 w-[200%] h-full bg-gradient-to-r from-cyan-900/20 via-slate-700/30 to-cyan-900/20"
-            style={{
-              clipPath: 'polygon(0 60%, 25% 80%, 50% 60%, 75% 85%, 100% 65%, 100% 100%, 0% 100%)'
-            }}
-          />
-        </div>
-      </div>
-    </>
-  )
-}
-
-const Skipper = () => {
+const Swabbies = () => {
   const dispatch = useAppDispatch()
-  const { handleInput, handleToggle, setErrors } = createFormActions('skipperForm', dispatch)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { skipperForm } = useAppSelector((state: RootState) => state.form)
+  const { handleInput, handleToggle, setErrors } = createFormActions('swabbieForm', dispatch)
+  const { swabbieForm } = useAppSelector((state: RootState) => state.form)
   const { push } = useRouter()
-  const [createSkipper] = useCreateUserMutation() as any
+  const [createSkipper, { isLoading }] = useCreateUserMutation() as any
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
-    if (!validateSkipperForm(skipperForm.inputs, setErrors)) return
+    if (!validateSwabbieForm(swabbieForm.inputs, setErrors)) return
 
     try {
-      setIsSubmitting(true)
+      const result = await createSkipper({ chapterId, ...swabbieForm.inputs }).unwrap()
 
-      const result = await createSkipper({ chapterId, ...skipperForm.inputs }).unwrap()
-
-      push(`/skipper/port?skipperId=${result.user.id}`)
+      push(`/swabbie/port?skipperId=${result.user.id}`)
       dispatch(
         showToast({
           type: 'success',
           message: 'Application submitted successfully!',
-          description: `Thank you for your interest, ${skipperForm.inputs.firstName}!`
+          description: `Thank you for your interest, ${swabbieForm.inputs.firstName}!`
         })
       )
     } catch (error: any) {
@@ -129,8 +57,6 @@ const Skipper = () => {
           description: error?.data?.message || 'Something went wrong. Please try again.'
         })
       )
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -172,7 +98,7 @@ const Skipper = () => {
                 <div className="bg-gradient-to-r from-cyan-600 to-blue-600 p-2 rounded-lg mr-4 shadow-lg shadow-cyan-900/50">
                   <User className="w-5 h-5 text-white" />
                 </div>
-                <h2 className="text-2xl font-semibold text-white">Captain&apos;s Details</h2>
+                <h2 className="text-2xl font-semibold text-white">Swabbie Details</h2>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -183,7 +109,7 @@ const Skipper = () => {
                   <input
                     type="text"
                     name="name"
-                    value={skipperForm.inputs.name || ''}
+                    value={swabbieForm.inputs.name || ''}
                     onChange={handleInput}
                     required
                     className={InputStyle}
@@ -198,7 +124,7 @@ const Skipper = () => {
                   <input
                     type="email"
                     name="email"
-                    value={skipperForm.inputs.email || ''}
+                    value={swabbieForm.inputs.email || ''}
                     onChange={handleInput}
                     required
                     className={InputStyle}
@@ -211,7 +137,7 @@ const Skipper = () => {
                   <input
                     type="text"
                     name="location"
-                    value={skipperForm.inputs.location || ''}
+                    value={swabbieForm.inputs.location || ''}
                     onChange={handleInput}
                     className={InputStyle}
                     placeholder="Boston Harbor"
@@ -223,7 +149,7 @@ const Skipper = () => {
                   <input
                     type="tel"
                     name="phone"
-                    value={skipperForm.inputs.phone || ''}
+                    value={swabbieForm.inputs.phone || ''}
                     onChange={handleInput}
                     className={InputStyle}
                     placeholder="(555) 123-SHIP"
@@ -249,7 +175,7 @@ const Skipper = () => {
                   <input
                     type="text"
                     name="company"
-                    value={skipperForm.inputs.company || ''}
+                    value={swabbieForm.inputs.company || ''}
                     onChange={handleInput}
                     required
                     className={InputStyle}
@@ -264,7 +190,7 @@ const Skipper = () => {
                   <input
                     type="text"
                     name="industry"
-                    value={skipperForm.inputs.industry || ''}
+                    value={swabbieForm.inputs.industry || ''}
                     onChange={handleInput}
                     required
                     className={InputStyle}
@@ -279,7 +205,7 @@ const Skipper = () => {
                   <div className="mt-1">
                     <Switch
                       name="isLicensed"
-                      checked={skipperForm?.inputs.isLicensed ?? false}
+                      checked={swabbieForm?.inputs.isLicensed ?? false}
                       onChange={handleToggle}
                       label="Do you hold a Professional License?"
                     />
@@ -291,14 +217,14 @@ const Skipper = () => {
                   <input
                     type="text"
                     name="businessLicenseNumber"
-                    value={skipperForm.inputs.businessLicenseNumber || ''}
+                    value={swabbieForm.inputs.businessLicenseNumber || ''}
                     onChange={handleInput}
-                    disabled={!skipperForm?.inputs?.isLicensed}
+                    disabled={!swabbieForm?.inputs?.isLicensed}
                     className={`${InputStyle} ${
-                      !skipperForm?.inputs?.isLicensed ? 'opacity-50 cursor-not-allowed bg-slate-700/30' : ''
+                      !swabbieForm?.inputs?.isLicensed ? 'opacity-50 cursor-not-allowed bg-slate-700/30' : ''
                     }`}
                     placeholder={
-                      skipperForm?.inputs?.isLicensed
+                      swabbieForm?.inputs?.isLicensed
                         ? 'Your professional license number'
                         : 'Enable license to enter number'
                     }
@@ -408,12 +334,12 @@ const Skipper = () => {
                 </p>
                 <motion.button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-600 px-8 py-3 rounded-lg font-semibold text-white transition-all inline-flex items-center gap-2 disabled:cursor-not-allowed cursor-pointer group whitespace-nowrap shadow-lg shadow-cyan-900/50"
                 >
-                  {isSubmitting ? (
+                  {isLoading ? (
                     <>
                       <motion.div
                         animate={{ rotate: 360 }}
@@ -438,4 +364,4 @@ const Skipper = () => {
   )
 }
 
-export default Skipper
+export default Swabbies

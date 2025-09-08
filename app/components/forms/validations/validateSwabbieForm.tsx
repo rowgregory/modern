@@ -1,13 +1,13 @@
 import isValidEmail from '@/app/regex/isValidEmail'
 
-interface SkipperFormInputs {
+interface SSwabbieFormInputs {
   name: string
   email: string
   company: string
   industry: string
 }
 
-const validateSkipperForm = (inputs: SkipperFormInputs, setErrors: (newErrors: any) => void) => {
+const validateSwabbieForm = (inputs: SSwabbieFormInputs, setErrors: (newErrors: any) => void) => {
   const newErrors: any = {}
 
   if (!inputs?.name?.trim()) {
@@ -30,8 +30,8 @@ const validateSkipperForm = (inputs: SkipperFormInputs, setErrors: (newErrors: a
   return Object.keys(newErrors).length === 0
 }
 
-export const isSkipperFormValid = (inputs: any) => {
+export const isSSwabbieFormValid = (inputs: any) => {
   return inputs?.name && inputs?.email && inputs?.company && inputs?.industry
 }
 
-export default validateSkipperForm
+export default validateSwabbieForm

@@ -10,14 +10,14 @@ import {
   Users,
   BarChart3,
   Calendar,
-  Target,
-  Footprints,
   Bell,
   Anchor,
-  LogOut
+  LogOut,
+  Layers3,
+  Sailboat
 } from 'lucide-react'
 import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
-import { setOpenAddUserDrawer } from '@/app/redux/features/userSlice'
+import { setOpenAddUserDrawer, setOpenSwabbieDrawer } from '@/app/redux/features/userSlice'
 import { Notification } from '@/types/notification'
 import { navigatorInputs, setInputs } from '@/app/redux/features/formSlice'
 import { initialParleyFormState } from '@/app/lib/constants/entities/initialParleyFormState'
@@ -25,6 +25,10 @@ import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { User } from '@/types/user'
 import { showToast } from '@/app/redux/features/toastSlice'
+import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
+import { initialAnchorFormState } from '@/app/lib/constants/anchor'
+import { setOpenTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
+import { initialTreasureMapFormState } from '@/types/treasure-map'
 
 const actionItems = (isAdmin: boolean) => [
   {
@@ -38,25 +42,25 @@ const actionItems = (isAdmin: boolean) => [
   {
     action: 'create-treasure-map',
     label: 'Generate Treasure Map',
-    icon: Target,
-    open: () => {},
+    icon: Layers3,
+    open: setOpenTreasureMapDrawer,
     formName: 'treasureMapForm',
-    initial: {}
+    initial: initialTreasureMapFormState
   },
   {
-    action: 'anchored',
-    label: 'Log Anchored',
+    action: 'anchor',
+    label: 'Drop Anchor',
     icon: Anchor,
-    open: () => {},
-    formName: 'anchoredForm',
-    initial: {}
+    open: setOpenAnchorDrawer,
+    formName: 'anchorForm',
+    initial: initialAnchorFormState
   },
   {
-    action: 'add-skipper',
-    label: 'Invite Skipper',
-    icon: Footprints,
-    open: () => {},
-    formName: 'skipperForm',
+    action: 'add-swabbie',
+    label: 'Invite Swabbie',
+    icon: Sailboat,
+    open: setOpenSwabbieDrawer,
+    formName: 'swabbieForm',
     initial: {}
   },
   ...(isAdmin
@@ -193,7 +197,7 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
                   </div>
 
                   <div className="max-h-96 overflow-y-auto">
-                    {notifications.length === 0 ? (
+                    {notifications?.length === 0 ? (
                       <div className="p-4 text-center text-gray-400">No notifications</div>
                     ) : (
                       notifications.slice(0, 5).map((notification: Notification) => (
@@ -238,16 +242,18 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
           </div>
 
           {/* Timeframe Selector */}
-          <select
-            value={selectedTimeframe}
-            onChange={(e) => setSelectedTimeframe(e.target.value)}
-            className="px-4 py-2 bg-gray-800 border border-gray-700 text-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all text-sm focus:outline-none"
-          >
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="quarter">This Quarter</option>
-            <option value="year">This Year</option>
-          </select>
+          {(user?.isAdmin || user?.isSuperUser) && (
+            <select
+              value={selectedTimeframe}
+              onChange={(e) => setSelectedTimeframe(e.target.value)}
+              className="px-4 py-2 bg-gray-800 border border-gray-700 text-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all text-sm focus:outline-none"
+            >
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="quarter">This Quarter</option>
+              <option value="year">This Year</option>
+            </select>
+          )}
 
           {/* Actions Dropdown */}
           <div className="relative">
@@ -275,11 +281,8 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
                     {actionItems(user?.isAdmin).map((item, i) => (
                       <motion.button
                         key={i}
-                        whileHover={{ backgroundColor: 'rgba(139, 92, 246, 0.1)' }}
-                        onClick={() => {
-                          handleActionClick(item)
-                        }}
-                        className="w-full px-4 py-3 text-left text-gray-200 hover:text-white transition-all flex items-center space-x-3"
+                        onClick={() => handleActionClick(item)}
+                        className="w-full px-4 py-3 text-left text-gray-200 hover:text-white transition-all flex items-center space-x-3 hover:bg-cyan-600/10"
                       >
                         <item.icon className="w-4 h-4 text-cyan-400" />
                         <span className="font-medium text-sm">{item.label}</span>

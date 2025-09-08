@@ -14,8 +14,8 @@ export interface UserState {
   addUserDrawer: boolean
   editUserDrawer: boolean
   viewUserDrawer: boolean
-  manageUsersDrawer: boolean
   noUsers: boolean
+  swabbieDrawer: boolean
 
   // Filtering & Search
   filters: UserFilters
@@ -44,8 +44,8 @@ export const initialUserState: UserState = {
   addUserDrawer: false,
   editUserDrawer: false,
   viewUserDrawer: false,
-  manageUsersDrawer: false,
   noUsers: false,
+  swabbieDrawer: false,
 
   // Filtering & Search
   filters: {
@@ -89,11 +89,11 @@ export const userSlice = createSlice({
   name: 'user',
   initialState: initialUserState,
   reducers: {
-    setOpenManageUsersDrawer: (state) => {
-      state.manageUsersDrawer = true
+    setOpenSwabbieDrawer: (state) => {
+      state.swabbieDrawer = true
     },
-    setCloseManageUsersDrawer: (state) => {
-      state.manageUsersDrawer = false
+    setCloseSwabbieDrawer: (state) => {
+      state.swabbieDrawer = false
     },
     setOpenAddUserDrawer: (state) => {
       state.addUserDrawer = true
@@ -197,8 +197,8 @@ export const userSlice = createSlice({
 export const userReducer = userSlice.reducer as Reducer<UserState>
 
 export const {
-  setOpenManageUsersDrawer,
-  setCloseManageUsersDrawer,
+  setOpenSwabbieDrawer,
+  setCloseSwabbieDrawer,
   setOpenAddUserDrawer,
   setCloseAddUserDrawer,
   resetUser,

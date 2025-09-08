@@ -1,9 +1,9 @@
-import { Video, Target, TowerControl, Ship, Sailboat, Anchor } from 'lucide-react'
+import { TowerControl, Ship, Anchor, Scroll, Layers, Sailboat } from 'lucide-react'
 
 export const memberNavLinks = [
   {
     id: 'bridge',
-    label: 'The Bridge',
+    label: 'Bridge',
     icon: Ship,
     description: 'Dashboard',
     linkKey: '/member/bridge'
@@ -11,36 +11,36 @@ export const memberNavLinks = [
   {
     id: 'parley',
     label: 'Parley',
-    icon: Video,
+    icon: Scroll,
     description: '1-2-1',
     linkKey: '/member/parley'
   },
   {
     id: 'treasure-maps',
     label: 'Treasure Maps',
-    icon: Target,
+    icon: Layers,
     description: 'Referrals',
     linkKey: '/member/treasure-maps'
   },
   {
-    id: 'anchored',
-    label: 'Anchored',
+    id: 'anchors',
+    label: 'Anchors',
     icon: Anchor,
     description: 'Thank You For Closed Business',
-    linkKey: '/member/anchored'
+    linkKey: '/member/anchors'
   },
   {
-    id: 'skippers',
-    label: 'Skippers',
+    id: 'swabbies',
+    label: 'Swabbies',
     icon: Sailboat,
     description: 'Visitors',
-    linkKey: '/member/skippers'
+    linkKey: '/member/swabbies'
   },
   {
     id: 'beacon',
     label: 'Beacon',
     icon: TowerControl,
-    description: 'Personal Settings',
+    description: 'Account Settings',
     linkKey: '/member/beacon'
   }
 ]

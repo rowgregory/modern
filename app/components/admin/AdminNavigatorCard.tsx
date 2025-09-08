@@ -8,6 +8,7 @@ import { Building, Crown, Edit, Mail, Phone } from 'lucide-react'
 import { formatDate } from '@/app/lib/utils/date/formatDate'
 import { getNavigatorStatusIcon } from '@/app/lib/utils/navigator/getNavigatorStatusIcon'
 import getNavigatorStatusColor from '@/app/lib/utils/navigator/getNavigatorStatusColor'
+import Picture from '../common/Picture'
 
 const getInitials = (name: string) => {
   return name
@@ -54,9 +55,13 @@ const AdminNavigatorCard: FC<{ navigator: User; index: number; viewMode: string 
         {/* Avatar and Basic Info */}
         <div className={`${viewMode === 'list' ? 'flex items-center space-x-4' : 'flex items-center space-x-4'}`}>
           <div className="relative">
-            <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full flex items-center justify-center text-white font-semibold">
-              {getInitials(navigator.name)}
-            </div>
+            {navigator?.profileImage ? (
+              <Picture src={navigator?.profileImage} priority={false} className="w-12 h-12 rounded-full object-cover" />
+            ) : (
+              <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full flex items-center justify-center text-white font-semibold">
+                {getInitials(navigator.name)}
+              </div>
+            )}
             {navigator.membershipStatus === 'ACTIVE' && navigator.isActive && (
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-gray-800 rounded-full"></div>
             )}

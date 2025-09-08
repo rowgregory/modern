@@ -20,7 +20,7 @@ import {
   Briefcase,
   Calendar,
   MoreVertical,
-  Ship
+  Sailboat
 } from 'lucide-react'
 import { User } from '@prisma/client'
 import { formatDate } from '@/app/lib/utils/date/formatDate'
@@ -61,7 +61,7 @@ const ApplicationCard: FC<{ application: User }> = ({ application }) => {
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="h-12 w-12 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-full flex items-center justify-center shadow-lg shadow-cyan-900/50">
-            <Ship className="h-6 w-6 text-white" />
+            <Sailboat className="h-6 w-6 text-white" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white">{application.name}</h3>
