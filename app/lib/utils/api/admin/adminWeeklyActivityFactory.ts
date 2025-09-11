@@ -1,0 +1,46 @@
+import prisma from '@/prisma/client'
+import { now } from '../../date/formatDate'
+
+export const adminWeeklyActivityFactory = {
+  chart: async () => {
+    // Force start of the week = Monday
+    const dayOfWeek = now.getDay() // 0 = Sunday, 1 = Monday...
+    const diffToMonday = (dayOfWeek + 6) % 7 // convert so Monday = 0
+    const weekStart = new Date(now)
+    weekStart.setDate(now.getDate() - diffToMonday)
+    weekStart.setHours(0, 0, 0, 0)
+
+    const daysShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+    const weeklyActivity = []
+
+    for (let i = 0; i < 7; i++) {
+      const dayStart = new Date(weekStart)
+      dayStart.setDate(weekStart.getDate() + i)
+
+      const dayEnd = new Date(dayStart)
+      dayEnd.setDate(dayStart.getDate() + 1)
+
+      const parleys = await prisma.parley.count({
+        where: { createdAt: { gte: dayStart, lt: dayEnd } }
+      })
+
+      const treasureMaps = await prisma.treasureMap.count({
+        where: { createdAt: { gte: dayStart, lt: dayEnd } }
+      })
+
+      const anchors = await prisma.anchor.count({
+        where: { createdAt: { gte: dayStart, lt: dayEnd } }
+      })
+
+      weeklyActivity.push({
+        day: daysShort[dayStart.getDay()],
+        parleys,
+        treasureMaps,
+        anchors
+      })
+    }
+
+    return { weeklyActivity }
+  }
+}

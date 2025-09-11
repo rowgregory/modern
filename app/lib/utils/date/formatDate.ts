@@ -108,3 +108,17 @@ export const formatDateForInput = (isoString: string): string => {
 
   return `${year}-${month}-${day}`
 }
+
+// COMMON VARIABLES
+export const now = new Date()
+
+// Current month
+export const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+export const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+
+// Last month
+export const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+export const startOfThisMonthCopy = new Date(now.getFullYear(), now.getMonth(), 1) // for clarity
+
+export const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+export const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)

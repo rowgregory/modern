@@ -15,6 +15,7 @@ import { appReducer } from './features/appSlice'
 import { notificationReducer } from './features/notificationsSlice'
 import { anchorReducer } from './features/anchorSlice'
 import { treasureMapReducer } from './features/treasureMapSlice'
+import { dashboardReducer } from './features/dashboardSlice'
 
 const rootReducer = combineReducers({
   form: formReducer,
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   notification: notificationReducer,
   anchor: anchorReducer,
   treasureMap: treasureMapReducer,
+  dashboard: dashboardReducer,
   [api.reducerPath]: api.reducer
 })
 
@@ -59,3 +61,4 @@ export const useParleySelector = () => useAppSelector((state) => state.parley)
 export const useFormSelector = () => useAppSelector((state) => state.form)
 export const useAnchorSelector = () => useAppSelector((state) => state.anchor)
 export const useTreasureMapSelector = () => useAppSelector((state) => state.treasureMap)
+export const useDashboardSelector = () => useAppSelector((state) => state.dashboard)

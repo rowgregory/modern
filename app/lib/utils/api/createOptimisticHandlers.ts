@@ -78,7 +78,6 @@ export const createOptimisticHandlers = (entityConfig: {
       const originalEntity = getEntityFromState(currentState, id)
 
       if (!originalEntity) {
-        console.error('Original entity not found for ID:', id)
         return
       }
 

@@ -1,19 +1,20 @@
-import React from 'react'
+import React, { FC } from 'react'
+import TooltipWrapper from '../../common/TooltipWrapper'
+import { MoreHorizontal } from 'lucide-react'
 
-const memberEngagement = [
-  { range: '90-100%', count: 23, color: 'bg-green-500' },
-  { range: '70-89%', count: 31, color: 'bg-blue-500' },
-  { range: '50-69%', count: 18, color: 'bg-yellow-500' },
-  { range: '30-49%', count: 9, color: 'bg-orange-500' },
-  { range: '0-29%', count: 6, color: 'bg-red-500' }
-]
-
-const MemberEngagement = () => {
+const MemberEngagement: FC<{ buckets: any[] }> = ({ buckets }) => {
   return (
     <div className="mb-8">
-      <h3 className="text-white font-semibold mb-4">Member Engagement</h3>
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-white font-semibold">Member Engagement</h3>
+        <TooltipWrapper
+          tooltip={`Engagement tracks individual user activity across all six possible actions: sending/receiving treasure maps, giving/receiving anchors, and requesting/receiving parleys. Each user's total actions are counted and converted to a percentage (with 3 total actions representing 100% engagement). Users are then grouped into engagement buckets ranging from highly engaged (90-100%) to low engagement (0-29%), providing a distribution view of community participation levels.`}
+        >
+          <MoreHorizontal className="text-gray-400 text-sm font-medium" />
+        </TooltipWrapper>
+      </div>
       <div className="space-y-3">
-        {memberEngagement.map((item, index) => (
+        {buckets?.map((item, index) => (
           <div key={index} className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className={`w-3 h-3 rounded-full ${item.color}`}></div>

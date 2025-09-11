@@ -2,7 +2,7 @@ const CircularProgress = ({ percentage, value, color = 'rgb(34, 197, 94)' }: any
   const radius = 45
   const circumference = radius * 2 * Math.PI
   const strokeDasharray = `${circumference} ${circumference}`
-  const strokeDashoffset = circumference - (percentage / 100) * circumference
+  const strokeDashoffset = circumference - ((percentage || 0) / 100) * circumference
 
   return (
     <div className="relative flex items-center justify-center">
@@ -22,7 +22,11 @@ const CircularProgress = ({ percentage, value, color = 'rgb(34, 197, 94)' }: any
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-xl font-bold text-white">{value}</div>
+        {!value ? (
+          <div className="w-5 h-5 border-2 border-t-0 rounded-full border-cyan-400 animate-spin" />
+        ) : (
+          <div className="text-xl font-bold text-white">{value}%</div>
+        )}
       </div>
     </div>
   )
