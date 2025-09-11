@@ -11,7 +11,7 @@ const Navigators = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIndustry, setSelectedIndustry] = useState('All')
   const [expandedMember, setExpandedMember] = useState(null) as any
-  const { data } = useGetUsersQuery({ chapterId }) as { data: { users: User[] } }
+  const { data } = useGetUsersQuery({ chapterId, membershipStatus: 'ACTIVE' }) as { data: { users: User[] } }
   const navigators = data?.users ?? []
 
   const industries = ['All', ...new Set(navigators?.map?.((navigator) => navigator.industry))]

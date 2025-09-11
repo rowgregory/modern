@@ -1,15 +1,4 @@
-import {
-  Users,
-  ClipboardList,
-  FileText,
-  TowerControl,
-  Anchor,
-  Sliders,
-  Ship,
-  Scroll,
-  Layers,
-  Wrench
-} from 'lucide-react'
+import { Users, ClipboardList, FileText, TowerControl, Anchor, Sliders, Ship, Scroll, Layers } from 'lucide-react'
 
 export const adminNavLinks = [
   {
@@ -39,13 +28,6 @@ export const adminNavLinks = [
     icon: Anchor,
     description: 'Thank You For Closed Business',
     linkKey: '/admin/anchors'
-  },
-  {
-    id: 'swabbies',
-    label: 'Swabbies',
-    icon: Wrench,
-    description: 'Visitors',
-    linkKey: '/admin/swabbies'
   },
   {
     id: 'beacon',

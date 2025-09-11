@@ -1,67 +1,70 @@
+'use client'
+
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { useAppDispatch, useFormSelector, useTreasureMapSelector } from '@/app/redux/store'
 import Backdrop from '../common/Backdrop'
 import Drawer from '../common/Drawer'
-// import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { setCloseTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
-// import { createFormActions } from '@/app/redux/features/formSlice'
-// import { showToast } from '@/app/redux/features/toastSlice'
-// import { chapterId } from '@/app/lib/constants/api/chapterId'
-// import { useCreateTreasureMapMutation, useUpdateTreasureMapMutation } from '@/app/redux/services/treasureMapApi'
-// import validateTreasureMapForm from '../forms/validations/validateTreasureMapForm'
+import TreasureMapForm from '../forms/TreasureMapForm'
+import { createFormActions } from '@/app/redux/features/formSlice'
+import { showToast } from '@/app/redux/features/toastSlice'
+import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { useCreateTreasureMapMutation, useUpdateTreasureMapMutation } from '@/app/redux/services/treasureMapApi'
+import validateTreasureMapForm from '../forms/validations/validateTreasureMapForm'
 
 const TreasureMapDrawer = () => {
-  // const session = useSession()
+  const session = useSession()
   const dispatch = useAppDispatch()
   const onClose = () => dispatch(setCloseTreasureMapDrawer())
   const { treasureMapForm } = useFormSelector()
-  // const inputs = treasureMapForm?.inputs
-  // const errors = treasureMapForm?.errors
-  // const { handleInput, setErrors } = createFormActions('treasureMapForm', dispatch)
-  // const [createTreasureMap, { isLoading: isCreating }] = useCreateTreasureMapMutation()
-  // const [updateTreasureMap, { isLoading: isUpdating }] = useUpdateTreasureMapMutation()
-  // const isLoading = isCreating || isUpdating
-  // const user = session?.data?.user
+  const inputs = treasureMapForm?.inputs
+  const errors = treasureMapForm?.errors
+  const { handleInput, setErrors } = createFormActions('treasureMapForm', dispatch)
+  const [createTreasureMap, { isLoading: isCreating }] = useCreateTreasureMapMutation()
+  const [updateTreasureMap, { isLoading: isUpdating }] = useUpdateTreasureMapMutation()
+  const isLoading = isCreating || isUpdating
+  const user = session?.data?.user
   const { treasureMapDrawer } = useTreasureMapSelector()
 
-  // const handleSubmit = async (e: { preventDefault: () => void }) => {
-  //   e.preventDefault()
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault()
 
-  //   if (!validateTreasureMapForm(treasureMapForm?.inputs, setErrors)) return
+    if (!validateTreasureMapForm(treasureMapForm?.inputs, setErrors)) return
 
-  //   try {
-  //     const swabbieData = {
-  //       ...treasureMapForm?.inputs,
-  //       chapterId,
-  //       userId: user?.id
-  //     }
+    try {
+      const treasureMapData = {
+        ...treasureMapForm?.inputs,
+        chapterId,
+        userId: user?.id
+      }
 
-  //     if (inputs?.isUpdating) {
-  //       await updateTreasureMap({ userId: inputs?.id, ...swabbieData }).unwrap()
-  //     } else {
-  //       await createTreasureMap({ ...swabbieData }).unwrap()
-  //     }
+      if (inputs?.isUpdating) {
+        await updateTreasureMap({ treasureMapId: inputs?.id, ...treasureMapData }).unwrap()
+      } else {
+        await createTreasureMap({ ...treasureMapData }).unwrap()
+      }
 
-  //     onClose()
+      onClose()
 
-  //     dispatch(
-  //       showToast({
-  //         type: 'success',
-  //         message: `${isUpdating ? 'Update' : 'Create'} Treasure Map Success`,
-  //         description: `Treasure Map ${isUpdating ? 'updated' : 'created'} successfully.`
-  //       })
-  //     )
-  //   } catch (error: any) {
-  //     dispatch(
-  //       showToast({
-  //         type: 'error',
-  //         message: `${isUpdating ? 'Update' : 'Create'} Treasure Map Failed`,
-  //         description: error.message || 'Unable to process request.'
-  //       })
-  //     )
-  //   }
-  // }
+      dispatch(
+        showToast({
+          type: 'success',
+          message: `${isUpdating ? 'Update' : 'Create'} Treasure Map Success`,
+          description: `Treasure Map ${isUpdating ? 'updated' : 'created'} successfully.`
+        })
+      )
+    } catch (error: any) {
+      dispatch(
+        showToast({
+          type: 'error',
+          message: `${isUpdating ? 'Update' : 'Create'} Treasure Map Failed`,
+          description: error?.data?.message
+        })
+      )
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -97,7 +100,15 @@ const TreasureMapDrawer = () => {
               </motion.button>
             </div>
             {/* TreasureMap Form */}
-            <div className="text-white p-6">Coming Soon</div>
+            <TreasureMapForm
+              inputs={inputs}
+              errors={errors}
+              handleInput={handleInput}
+              handleSubmit={handleSubmit}
+              isLoading={isLoading}
+              user={user}
+              isUpdating={inputs?.isUpdating}
+            />
           </Drawer>
         </>
       )}

@@ -14,6 +14,8 @@ import { useSession } from 'next-auth/react'
 import { User } from '@prisma/client'
 import AnchorDrawer from '../components/drawers/AnchorDrawer'
 import SwabbieDrawer from '../components/drawers/SwabbieDrawer'
+import getCurrentPageId from '../lib/utils/common/getCurrentPageId'
+import TreasureMapDrawer from '../components/drawers/TreasureMapDrawer'
 
 const AdminLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
@@ -21,22 +23,7 @@ const AdminLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const session = useSession()
   useGetUsersQuery({ chapterId }) as { data: { users: User[] | null } }
   const { data } = useGetMyProfileQuery({ chapterId, userId: session.data?.user.id }, { skip: !session.data?.user.id })
-
-  // Get current page from path
-  const getCurrentPageId = () => {
-    const pathSegments = path.split('/').filter(Boolean)
-    const lastSegment = pathSegments[pathSegments.length - 1]
-
-    // Handle special cases for multi-word routes
-    if (path.includes('/treasure-maps')) return 'treasure-maps'
-
-    // Find matching navigation item
-    const matchingItem = adminNavLinks.find((item) => item.linkKey === path || item.id === lastSegment)
-
-    return matchingItem?.id || 'dashboard'
-  }
-
-  const selectedPage = getCurrentPageId()
+  const selectedPage = getCurrentPageId(path, adminNavLinks)
 
   return (
     <>
@@ -44,6 +31,7 @@ const AdminLayout: FC<{ children: ReactNode }> = ({ children }) => {
       <ParleyDrawer />
       <AnchorDrawer />
       <SwabbieDrawer />
+      <TreasureMapDrawer />
       <div className="min-h-screen bg-gray-950 flex">
         {/* Fixed Left Navigation Panel */}
         <FixedLeftNavigationPanel

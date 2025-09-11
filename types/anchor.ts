@@ -26,4 +26,8 @@ export interface IAnchor {
     industry: string
     profileImage: string
   }
+  chapter: {
+    id: string
+    name: string
+  }
 }

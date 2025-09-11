@@ -59,7 +59,8 @@ export async function POST(req: NextRequest, { params }: any) {
         notes,
         chapterId,
         giverId,
-        receiverId
+        receiverId,
+        status
       },
       include: {
         giver: {

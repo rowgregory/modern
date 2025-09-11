@@ -12,7 +12,7 @@ const NavigatorCard: FC<INavigatorCard> = ({ navigator, setExpandedMember, expan
   return (
     <div className="bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-700">
       {/* Member Image */}
-      <div className="h-48 bg-gradient-to-br from-blue-500 to-teal-500 relative overflow-hidden">
+      <div className="h-60 bg-gradient-to-br from-blue-500 to-teal-500 relative overflow-hidden">
         <Picture
           priority={false}
           src={navigator?.profileImage}
@@ -76,7 +76,7 @@ const NavigatorCard: FC<INavigatorCard> = ({ navigator, setExpandedMember, expan
               <Mail className="w-5 h-5" />
             </a>
             <a
-              href={`https://${navigator?.website}`}
+              href={navigator?.website}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 hover:text-blue-300 transition-colors"
@@ -134,7 +134,7 @@ const NavigatorCard: FC<INavigatorCard> = ({ navigator, setExpandedMember, expan
                 <div className="flex items-center text-gray-300">
                   <Globe className="w-4 h-4 mr-2 text-blue-400" />
                   <a
-                    href={`https://${navigator?.website}`}
+                    href={navigator?.website}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-blue-400"

@@ -20,6 +20,7 @@ enum MembershipStatus {
   SUSPENDED // Suspended by admin
   EXPIRED // Membership expired
   CANCELLED // Cancelled by member
+  REJECTED
 
   @@map("membership_status")
 }

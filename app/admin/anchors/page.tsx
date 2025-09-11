@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Search, Users2, User2Icon } from 'lucide-react'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { useSession } from 'next-auth/react'
 import EmptyState from '@/app/components/common/EmptyState'
-// import AnchorCard from '@/app/components/anchor/AnchorCard'
+import AnchorCard from '@/app/components/anchor/AnchorCard'
 import getAnchorStatusIcon from '@/app/lib/utils/anchor/getAnchorStatusIcon'
 import { useGetAnchorsQuery } from '@/app/redux/services/anchorApi'
 import { IAnchor } from '@/types/anchor'
@@ -142,13 +142,13 @@ const AdminAnchors = () => {
         </div>
 
         {/* Anchor List */}
-        {/* <div className="grid grid-cols-1 2xl:grid-cols-2 3xl:grid-cols-3 gap-7">
-            <AnimatePresence>
-              {filteredAnchors?.map((anchor, index) => (
-                <AnchorCard key={index} anchor={anchor} index={index} />
-              ))}
-            </AnimatePresence>
-          </div> */}
+        <div className="grid grid-cols-1 2xl:grid-cols-2 3xl:grid-cols-3 gap-7">
+          <AnimatePresence>
+            {filteredAnchors?.map((anchor, index) => (
+              <AnchorCard key={index} anchor={anchor} index={index} />
+            ))}
+          </AnimatePresence>
+        </div>
         {/* Empty State */}
         {filteredAnchors?.length === 0 && (
           <EmptyState

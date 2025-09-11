@@ -70,8 +70,6 @@ const markNotificationAsRead = async (notificationId: string, userId: string): P
       }
     }
   } catch (error) {
-    console.error('Error marking notification as read:', error)
-
     // Handle specific Prisma errors
     if (error instanceof Error && error.message.includes('Foreign key constraint')) {
       return {

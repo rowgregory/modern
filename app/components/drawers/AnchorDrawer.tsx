@@ -63,8 +63,6 @@ const AnchorDrawer = () => {
         userId: user?.id
       }
 
-      console.log('Submitting anchor data:', submitData)
-
       if (inputs?.isUpdating) {
         await updateAnchor({ ...submitData, anchorId: anchorForm?.inputs?.id }).unwrap()
       } else {

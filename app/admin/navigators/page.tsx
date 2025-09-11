@@ -40,9 +40,9 @@ const Navigators = () => {
           className="flex-1 p-6 overflow-y-auto space-y-8"
         >
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {navigatorStatusOptions(users)
-              .slice(1, 5)
+              .slice(1, 6)
               .map((status, index) => (
                 <motion.div
                   key={status.value}

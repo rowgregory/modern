@@ -9,6 +9,7 @@ import { formatDate } from '@/app/lib/utils/date/formatDate'
 import { getNavigatorStatusIcon } from '@/app/lib/utils/navigator/getNavigatorStatusIcon'
 import getNavigatorStatusColor from '@/app/lib/utils/navigator/getNavigatorStatusColor'
 import Picture from '../common/Picture'
+import { useRouter } from 'next/navigation'
 
 const getInitials = (name: string) => {
   return name
@@ -34,12 +35,17 @@ const AdminNavigatorCard: FC<{ navigator: User; index: number; viewMode: string 
   const dispatch = useAppDispatch()
   const daysUntilExpiration = getDaysUntilExpiration(navigator.expiresAt ?? '')
   const isExpiringSoon = daysUntilExpiration <= 30 && daysUntilExpiration > 0
+  const { push } = useRouter()
 
   return (
     <motion.div
       onClick={() => {
-        dispatch(setInputs({ formName: 'navigatorForm', data: { ...navigator, isUpdating: true } }))
-        dispatch(setOpenAddUserDrawer())
+        if (navigator?.membershipStatus === 'ACTIVE') {
+          dispatch(setInputs({ formName: 'navigatorForm', data: { ...navigator, isUpdating: true } }))
+          dispatch(setOpenAddUserDrawer())
+        } else if (navigator?.membershipStatus === 'PENDING') {
+          push('/admin/applications')
+        }
       }}
       key={navigator.id}
       initial={{ opacity: 0, y: 20 }}
@@ -158,15 +164,17 @@ const AdminNavigatorCard: FC<{ navigator: User; index: number; viewMode: string 
           </div>
         )}
 
-        <div className="flex space-x-2">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-3 py-2 bg-gray-700/50 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 transition-all text-sm"
-          >
-            <Edit className="w-4 h-4" />
-          </motion.button>
-        </div>
+        {navigator?.membershipStatus === 'ACTIVE' && (
+          <div className="flex space-x-2">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-3 py-2 bg-gray-700/50 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 transition-all text-sm"
+            >
+              <Edit className="w-4 h-4" />
+            </motion.button>
+          </div>
+        )}
       </div>
     </motion.div>
   )

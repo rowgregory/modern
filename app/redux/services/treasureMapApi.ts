@@ -7,43 +7,30 @@ export const treasureMapApi = api.injectEndpoints({
   endpoints: (build) => ({
     getTreasureMaps: build.query({
       query: ({ chapterId }) => `${BASE_URL}/${chapterId}/get-treasure-maps-list`,
-      providesTags: (_, __, { chapterId }) => [{ type: 'Treasure-Map' as const, id: chapterId }]
+      providesTags: ['Treasure-Map']
     }),
 
     getMyTreasureMaps: build.query({
       query: ({ chapterId, userId }) => `${BASE_URL}/${chapterId}/${userId}/get-my-treasure-maps`,
-      providesTags: (result, __, { chapterId, userId }) => [
-        { type: 'Treasure-Map' as const, id: `${chapterId}-${userId}` },
-        ...(result?.treasureMaps || []).map((treasureMap: { id: any }) => ({
-          type: 'Treasure-Map' as const,
-          id: treasureMap.id
-        }))
-      ]
+      providesTags: ['Treasure-Map']
     }),
 
     createTreasureMap: build.mutation({
-      query: ({ chapterId, ...treasureMap }) => ({
-        url: `${BASE_URL}/${chapterId}/create-treasure-map`,
+      query: ({ chapterId, userId, ...treasureMap }) => ({
+        url: `${BASE_URL}/${chapterId}/${userId}/create-treasure-map`,
         method: 'POST',
         body: treasureMap
       }),
-      invalidatesTags: (_, __, { chapterId, requesterId, recipientId }) => [
-        { type: 'Treasure-Map' as const, id: chapterId },
-        { type: 'Treasure-Map' as const, id: `${chapterId}-${requesterId}` },
-        { type: 'Treasure-Map' as const, id: `${chapterId}-${recipientId}` }
-      ]
+      invalidatesTags: ['Treasure-Map']
     }),
 
     updateTreasureMap: build.mutation({
-      query: ({ chapterId, userId, treasureMapId, ...updateData }) => ({
+      query: ({ chapterId, userId, ...updateData }) => ({
         url: `${BASE_URL}/${chapterId}/${userId}/update-treasure-map`,
         method: 'PUT',
-        body: { treasureMapId, ...updateData }
+        body: updateData
       }),
-      invalidatesTags: (_, __, { chapterId, userId }) => [
-        { type: 'Treasure-Map' as const, id: chapterId },
-        { type: 'Treasure-Map' as const, id: `${chapterId}-${userId}` }
-      ]
+      invalidatesTags: ['Treasure-Map']
     }),
 
     updateTreasureMapStatus: build.mutation({
@@ -52,17 +39,7 @@ export const treasureMapApi = api.injectEndpoints({
         method: 'PATCH',
         body: { treasureMapId, status }
       }),
-      invalidatesTags: (result, __, { chapterId, userId }) => [
-        { type: 'Treasure-Map' as const, id: chapterId },
-        { type: 'Treasure-Map' as const, id: `${chapterId}-${userId}` },
-        // Also invalidate the other participant's cache
-        ...(result?.treasureMap
-          ? [
-              { type: 'Treasure-Map' as const, id: `${chapterId}-${result.treasureMap.requesterId}` },
-              { type: 'Treasure-Map' as const, id: `${chapterId}-${result.treasureMap.recipientId}` }
-            ]
-          : [])
-      ]
+      invalidatesTags: ['Treasure-Map']
     })
   })
 })

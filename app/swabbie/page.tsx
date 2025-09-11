@@ -276,7 +276,7 @@ const Swabbies = () => {
                 <div className="space-y-3">
                   <div className="flex items-center text-slate-300">
                     <Waves className="w-3 h-3 text-cyan-400 mr-3" />
-                    <span>Weekly business breakfast meetings (7:30 AM)</span>
+                    <span>Weekly business breakfast meetings (7:00 AM)</span>
                   </div>
                   <div className="flex items-center text-slate-300">
                     <Anchor className="w-3 h-3 text-emerald-400 mr-3" />

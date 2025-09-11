@@ -2,6 +2,7 @@ import React from 'react'
 import { Calendar, DollarSign, Building, FileText, AlertCircle, CheckCircle, Anchor } from 'lucide-react'
 import { useUserSelector } from '@/app/redux/store'
 import { motion } from 'framer-motion'
+import { formatDateForInput } from '@/app/lib/utils/date/formatDate'
 
 const statusOptions = ['REPORTED', 'VERIFIED']
 
@@ -133,7 +134,7 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
             <input
               type="date"
               name="closedDate"
-              value={inputs?.closedDate || ''}
+              value={formatDateForInput(inputs?.closedDate) || ''}
               onChange={handleInput}
               max={new Date().toISOString().split('T')[0]}
               className={`w-full bg-gray-800/50 border rounded-lg px-3 py-2.5 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 ${errors?.closedDate ? 'border-red-500' : 'border-gray-600'}`}

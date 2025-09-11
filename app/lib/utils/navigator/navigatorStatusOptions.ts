@@ -11,6 +11,11 @@ const navigatorStatusOptions = (users: User[]) => [
     count: users.filter((m) => m.membershipStatus === 'INACTIVE').length
   },
   {
+    value: 'REJECTED',
+    label: 'Rejected',
+    count: users.filter((m) => m.membershipStatus === 'REJECTED').length
+  },
+  {
     value: 'SUSPENDED',
     label: 'Suspended',
     count: users.filter((m) => m.membershipStatus === 'SUSPENDED').length

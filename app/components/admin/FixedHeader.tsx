@@ -1,30 +1,18 @@
 import { useAppDispatch, useUserSelector } from '@/app/redux/store'
 import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useGetNotificationsQuery, useMarkNotificationAsReadMutation } from '@/app/redux/services/notificationApi'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
-import {
-  Plus,
-  ChevronDown,
-  Download,
-  Users,
-  BarChart3,
-  Calendar,
-  Bell,
-  Anchor,
-  LogOut,
-  Layers3,
-  Sailboat
-} from 'lucide-react'
+// import { useGetNotificationsQuery } from '@/app/redux/services/notificationApi'
+// import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { Plus, ChevronDown, Users, BarChart3, Calendar, Anchor, LogOut, Layers3, Sailboat } from 'lucide-react'
 import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
 import { setOpenAddUserDrawer, setOpenSwabbieDrawer } from '@/app/redux/features/userSlice'
-import { Notification } from '@/types/notification'
+// import { Notification } from '@/types/notification'
 import { navigatorInputs, setInputs } from '@/app/redux/features/formSlice'
 import { initialParleyFormState } from '@/app/lib/constants/entities/initialParleyFormState'
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { User } from '@/types/user'
-import { showToast } from '@/app/redux/features/toastSlice'
+// import { showToast } from '@/app/redux/features/toastSlice'
 import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
 import { initialAnchorFormState } from '@/app/lib/constants/anchor'
 import { setOpenTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
@@ -41,7 +29,7 @@ const actionItems = (isAdmin: boolean) => [
   },
   {
     action: 'create-treasure-map',
-    label: 'Generate Treasure Map',
+    label: 'Send Treasure Map',
     icon: Layers3,
     open: setOpenTreasureMapDrawer,
     formName: 'treasureMapForm',
@@ -86,16 +74,16 @@ const actionItems = (isAdmin: boolean) => [
 const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
   const dispatch = useAppDispatch()
   const [isActionsOpen, setIsActionsOpen] = useState(false)
-  const [selectedTimeframe, setSelectedTimeframe] = useState('week')
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
-  const { data } = useGetNotificationsQuery(chapterId) as { data: any }
+  // const [selectedTimeframe, setSelectedTimeframe] = useState('week')
+  // const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  // const { data } = useGetNotificationsQuery(chapterId) as { data: any }
   const { push } = useRouter()
-  const notifications = data?.notifications
-  const unreadCount = data?.unreadCount
+  // const notifications = data?.notifications
+  // const unreadCount = data?.unreadCount
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [isMarking, setIsMarking] = useState<Record<string, boolean>>({})
+  // const [isMarking, setIsMarking] = useState<Record<string, boolean>>({})
   const { user } = useUserSelector() as { user: User }
-  const [markNotificationAsRead] = useMarkNotificationAsReadMutation()
+  // const [markNotificationAsRead] = useMarkNotificationAsReadMutation()
 
   const handleActionClick = (item: any) => {
     setIsActionsOpen(false)
@@ -108,22 +96,22 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
     return item?.label || page
   }
 
-  const markAsRead = async (notificationId: string) => {
-    try {
-      setIsMarking({ [notificationId]: true })
-      await markNotificationAsRead({ chapterId, notificationId, userId: user.id }).unwrap()
-    } catch {
-      dispatch(
-        showToast({
-          type: 'error',
-          message: 'Failed to mark notification as read',
-          description: 'Notification Update Failed'
-        })
-      )
-    } finally {
-      setIsMarking({ [notificationId]: false })
-    }
-  }
+  // const markAsRead = async (notificationId: string) => {
+  //   try {
+  //     setIsMarking({ [notificationId]: true })
+  //     await markNotificationAsRead({ chapterId, notificationId, userId: user.id }).unwrap()
+  //   } catch {
+  //     dispatch(
+  //       showToast({
+  //         type: 'error',
+  //         message: 'Failed to mark notification as read',
+  //         description: 'Notification Update Failed'
+  //       })
+  //     )
+  //   } finally {
+  //     setIsMarking({ [notificationId]: false })
+  //   }
+  // }
 
   const handleLogout = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -165,7 +153,7 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
         {/* Header Right */}
         <div className="flex items-center space-x-4">
           {/* Notification Bell */}
-          <div className="relative">
+          {/* <div className="relative">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -173,7 +161,7 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
               className="relative p-2 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 transition-all"
             >
               <Bell className="w-5 h-5 text-gray-400" />
-              {/* Red dot for unread notifications */}
+        
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                   {unreadCount > 9 ? '9+' : unreadCount}
@@ -181,7 +169,7 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
               )}
             </motion.button>
 
-            {/* Notification Dropdown */}
+        
             <AnimatePresence>
               {isNotificationsOpen && (
                 <motion.div
@@ -239,10 +227,10 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </div> */}
 
           {/* Timeframe Selector */}
-          {(user?.isAdmin || user?.isSuperUser) && (
+          {/* {(user?.isAdmin || user?.isSuperUser) && (
             <select
               value={selectedTimeframe}
               onChange={(e) => setSelectedTimeframe(e.target.value)}
@@ -253,7 +241,7 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
               <option value="quarter">This Quarter</option>
               <option value="year">This Year</option>
             </select>
-          )}
+          )} */}
 
           {/* Actions Dropdown */}
           <div className="relative">
@@ -295,14 +283,14 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
           </div>
 
           {/* Export Button */}
-          <motion.button
+          {/* <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="px-4 py-2 bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 text-white rounded-lg hover:from-teal-500 hover:via-blue-500 hover:to-teal-500 transition-all flex items-center space-x-2 font-medium shadow-lg text-sm"
           >
             <Download className="w-4 h-4" />
             <span className="hidden lg:inline">Export</span>
-          </motion.button>
+          </motion.button> */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

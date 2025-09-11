@@ -16,6 +16,24 @@ interface ITreasureMap {
   giverNotes: string | null
   receiverNotes: string | null
   chapterId: string
+  giver: {
+    id: string
+    name: string
+    company: string
+    industry: string
+    profileImage: string
+  }
+  receiver: {
+    id: string
+    name: string
+    company: string
+    industry: string
+    profileImage: string
+  }
+  chapter: {
+    id: string
+    name: string
+  }
 }
 
 // Form state for creating/editing treasure maps

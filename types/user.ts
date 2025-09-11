@@ -52,7 +52,7 @@ export interface User {
 }
 
 // Usership status enum
-export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'EXPIRED' | 'SUSPENDED'
+export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'EXPIRED' | 'SUSPENDED' | 'REJECTED'
 
 // Chapter interface (basic version)
 export interface Chapter {

@@ -9,33 +9,21 @@ import FixedHeader from '../components/admin/FixedHeader'
 import ParleyDrawer from '../components/drawers/ParleyDrawer'
 import { memberNavLinks } from '../lib/constants/navigation/memberNavLinks'
 import { useSession } from 'next-auth/react'
-import { useGetMyProfileQuery } from '../redux/services/userApi'
+import { useGetMyProfileQuery, useGetUsersQuery } from '../redux/services/userApi'
 import { chapterId } from '../lib/constants/api/chapterId'
 import AnchorDrawer from '../components/drawers/AnchorDrawer'
 import SwabbieDrawer from '../components/drawers/SwabbieDrawer'
 import TreasureMapDrawer from '../components/drawers/TreasureMapDrawer'
+import { User } from '@prisma/client'
+import getCurrentPageId from '../lib/utils/common/getCurrentPageId'
 
 const MemberLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
   const path = useCustomPathname()
   const session = useSession()
+  useGetUsersQuery({ chapterId }) as { data: { users: User[] | null } }
   const { data } = useGetMyProfileQuery({ chapterId, userId: session.data?.user.id }, { skip: !session.data?.user.id })
-
-  // Get current page from path
-  const getCurrentPageId = () => {
-    const pathSegments = path.split('/').filter(Boolean)
-    const lastSegment = pathSegments[pathSegments.length - 1]
-
-    // Handle special cases for multi-word routes
-    if (path.includes('/treasure-maps')) return 'treasure-maps'
-
-    // Find matching navigation item
-    const matchingItem = memberNavLinks.find((item) => item.linkKey === path || item.id === lastSegment)
-
-    return matchingItem?.id || 'dashboard'
-  }
-
-  const selectedPage = getCurrentPageId()
+  const selectedPage = getCurrentPageId(path, memberNavLinks)
 
   return (
     <>
