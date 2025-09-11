@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 // import { useGetNotificationsQuery } from '@/app/redux/services/notificationApi'
 // import { chapterId } from '@/app/lib/constants/api/chapterId'
-import { Plus, ChevronDown, Users, BarChart3, Calendar, Anchor, LogOut, Layers3, Sailboat } from 'lucide-react'
+import { Plus, ChevronDown, Users, BarChart3, Calendar, Anchor, LogOut, Layers3, Sailboat, Menu } from 'lucide-react'
 import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
 import { setOpenAddUserDrawer, setOpenSwabbieDrawer } from '@/app/redux/features/userSlice'
 // import { Notification } from '@/types/notification'
@@ -17,6 +17,7 @@ import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
 import { initialAnchorFormState } from '@/app/lib/constants/anchor'
 import { setOpenTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
 import { initialTreasureMapFormState } from '@/types/treasure-map'
+import { setOpenMobileNavigation } from '@/app/redux/features/appSlice'
 
 const actionItems = (isAdmin: boolean) => [
   {
@@ -244,6 +245,15 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
           )} */}
 
           {/* Actions Dropdown */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => dispatch(setOpenMobileNavigation())}
+            className="relative p-2 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 transition-all"
+          >
+            <Menu className="w-5 h-5 text-gray-400" />
+          </motion.button>
+
           <div className="relative">
             <motion.button
               whileHover={{ scale: 1.05 }}

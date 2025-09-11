@@ -4,18 +4,14 @@ import React, { FC, ReactNode, useState } from 'react'
 import { motion } from 'framer-motion'
 import { adminNavLinks } from '../lib/constants/navigation/adminNavLinks'
 import useCustomPathname from '@/hooks/useCustomPathname'
-import NavigatorDrawer from '../components/drawers/NavigatorDrawer'
 import FixedLeftNavigationPanel from '../components/admin/FixedLeftNavigationPanel'
 import FixedHeader from '../components/admin/FixedHeader'
-import ParleyDrawer from '../components/drawers/ParleyDrawer'
 import { useGetMyProfileQuery, useGetUsersQuery } from '../redux/services/userApi'
 import { chapterId } from '../lib/constants/api/chapterId'
 import { useSession } from 'next-auth/react'
 import { User } from '@prisma/client'
-import AnchorDrawer from '../components/drawers/AnchorDrawer'
-import SwabbieDrawer from '../components/drawers/SwabbieDrawer'
 import getCurrentPageId from '../lib/utils/common/getCurrentPageId'
-import TreasureMapDrawer from '../components/drawers/TreasureMapDrawer'
+import MobileNavigationDrawer from '../components/drawers/MobileNavigationDrawer'
 
 const AdminLayout: FC<{ children: ReactNode }> = ({ children }) => {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
@@ -27,11 +23,7 @@ const AdminLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <>
-      <NavigatorDrawer />
-      <ParleyDrawer />
-      <AnchorDrawer />
-      <SwabbieDrawer />
-      <TreasureMapDrawer />
+      <MobileNavigationDrawer links={adminNavLinks} />
       <div className="min-h-screen bg-gray-950 flex">
         {/* Fixed Left Navigation Panel */}
         <FixedLeftNavigationPanel

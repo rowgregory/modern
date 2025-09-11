@@ -25,7 +25,7 @@ export interface ParleyMeeting {
     email: string
     phone: string | null
     company: string
-    profession: string
+    industry: string
   }
   recipientId: string
   recipient: {
@@ -34,7 +34,7 @@ export interface ParleyMeeting {
     email: string
     phone: string | null
     company: string
-    profession: string
+    industry: string
   }
   status: 'REQUESTED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
   completed: boolean

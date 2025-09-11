@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
-import { overlayVariants } from '../drawers/AdminNavigationDrawer'
+import { overlayVariants } from '../drawers/MobileNavigationDrawer'
 
 const Backdrop: FC<{ onClose: () => void }> = ({ onClose }) => {
   return (

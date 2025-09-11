@@ -1,8 +1,12 @@
 import { adminNavLinks } from '@/app/lib/constants/navigation/adminNavLinks'
-import { useAppDispatch } from '@/app/redux/store'
+import getCurrentPageId from '@/app/lib/utils/common/getCurrentPageId'
+import { setCloseMobileNavigation } from '@/app/redux/features/appSlice'
+import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
+import useCustomPathname from '@/hooks/useCustomPathname'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, User, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import { FC } from 'react'
 
 const drawerVariants = {
   closed: {
@@ -54,17 +58,16 @@ export const itemVariants = {
   })
 }
 
-const AdminNavigationDrawer = ({ isOpen, onClose, selectedPage, onPageChange }: any) => {
+const MobileNavigationDrawer: FC<{ links: any }> = ({ links }) => {
   const dispatch = useAppDispatch()
-  const close = () => dispatch(onClose())
-  const handleItemClick = (pageId: string) => {
-    onPageChange(pageId)
-    close()
-  }
+  const close = () => dispatch(setCloseMobileNavigation())
+  const { mobileNavigation } = useAppSelector((state: RootState) => state.app)
+  const path = useCustomPathname()
+  const selectedPage = getCurrentPageId(path, adminNavLinks)
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {mobileNavigation && (
         <>
           {/* Backdrop Overlay */}
           <motion.div
@@ -117,7 +120,7 @@ const AdminNavigationDrawer = ({ isOpen, onClose, selectedPage, onPageChange }: 
             {/* Navigation Items */}
             <nav className="flex-1 overflow-y-auto py-4 px-2">
               <div className="space-y-1">
-                {adminNavLinks.map((item, index) => (
+                {links.map((item: any, index: number) => (
                   <Link key={item.id} href={item.linkKey}>
                     <motion.div
                       key={item.id}
@@ -130,7 +133,6 @@ const AdminNavigationDrawer = ({ isOpen, onClose, selectedPage, onPageChange }: 
                         transition: { duration: 0.2 }
                       }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => handleItemClick(item.id)}
                       className={`group w-full flex items-center justify-between p-4 rounded-xl font-medium transition-all duration-300 text-left ${
                         selectedPage === item.id
                           ? 'bg-gradient-to-r from-violet-600/20 to-fuchsia-600/20 text-white border border-violet-500/30 shadow-lg'
@@ -207,4 +209,6 @@ const AdminNavigationDrawer = ({ isOpen, onClose, selectedPage, onPageChange }: 
   )
 }
 
-export default AdminNavigationDrawer
+export default MobileNavigationDrawer
+
+// Directors report

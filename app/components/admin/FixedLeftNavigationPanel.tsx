@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Crown, Shield, ShipWheel } from 'lucide-react'
 import Link from 'next/link'
-import { itemVariants } from '../drawers/AdminNavigationDrawer'
+import { itemVariants } from '../drawers/MobileNavigationDrawer'
 
 interface IFixedLeftNavigationPanel {
   isNavigationCollapsed: boolean
