@@ -69,7 +69,7 @@ const AdminBridge = () => {
           {/* Session Info */}
           <div className="mb-8">
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-gray-400 text-sm font-medium">Session</span>
+              <h3 className="text-white font-semibold">Participation</h3>
               <TooltipWrapper
                 tooltip={`Participation measures how well active members are meeting expected weekly activity levels across treasure maps, anchors, and parleys. Each member gets a compliance score for each activity type (capped at 100% if they exceed expectations), and these three scores are averaged together. The final percentage represents the average compliance rate across all active members, showing overall community engagement relative to expected participation levels.`}
               >
