@@ -1,17 +1,17 @@
-import getMeetingTypeIcon from '@/app/lib/utils/parley/getParleyMeetingIconType'
 import { IParley } from '@/types/parley'
 import { FC } from 'react'
 import { useSession } from 'next-auth/react'
 import { ArrowDown } from 'lucide-react'
 import getParleyStatusColor from '@/app/lib/utils/parley/getParleyStatusColor'
 import getParleyStatusIcon from '@/app/lib/utils/parley/getParleyStatusIcon'
+import getParleyMeetingIconType from '@/app/lib/utils/parley/getParleyMeetingIconType'
 
 const Header: FC<{ parley: IParley }> = ({ parley }) => {
   const session = useSession()
   const isIncomingRequest = parley.recipientId === session.data?.user?.id && parley.status === 'REQUESTED'
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Incoming Request Banner */}
       {isIncomingRequest && (
         <div className="flex items-center space-x-2 px-3 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
@@ -20,22 +20,39 @@ const Header: FC<{ parley: IParley }> = ({ parley }) => {
         </div>
       )}
 
-      {/* Original Header Content */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center space-x-3">
-          <div
-            className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center space-x-1 ${getParleyStatusColor(parley.status)}`}
-          >
-            {getParleyStatusIcon(parley.status)}
-            <span>{parley.status.toLowerCase()}</span>
+      {/* Main Header with Large Icon */}
+      <div className="flex items-center space-x-4">
+        {/* Large Meeting Type Icon */}
+        <div className="flex-shrink-0">
+          <div className="w-12 h-12 flex items-center justify-center bg-gray-800/50 border border-gray-600 rounded-xl">
+            <div className="w-8 h-8">{getParleyMeetingIconType(parley.meetingType).icon}</div>
           </div>
-          <div className="flex items-center space-x-1 text-gray-400 text-sm">
-            {getMeetingTypeIcon(parley.meetingType).icon}
-            <span> {getMeetingTypeIcon(parley.meetingType).text}</span>
-          </div>
-          <div className="text-xs text-gray-500">{parley.duration} min</div>
         </div>
-        <div className="text-sm text-gray-400">Created {new Date(parley.createdAt).toLocaleDateString()}</div>
+
+        {/* Meeting Info */}
+        <div className="flex-1 space-y-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <div
+              className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center space-x-1 ${getParleyStatusColor(parley.status)}`}
+            >
+              {getParleyStatusIcon(parley.status)}
+              <span>{parley.status.toLowerCase()}</span>
+            </div>
+
+            <div className="flex items-center space-x-2 text-gray-400 text-sm">
+              <span className="font-medium">{getParleyMeetingIconType(parley.meetingType).text}</span>
+              <span>•</span>
+              <span>{parley.duration} min</span>
+            </div>
+          </div>
+
+          {/* Small Description */}
+
+          <p className="text-xs text-gray-500 line-clamp-1">{getParleyMeetingIconType(parley.meetingType).desc}</p>
+        </div>
+
+        {/* Date */}
+        <div className="flex-shrink-0 text-xs text-gray-500">{new Date(parley.createdAt).toLocaleDateString()}</div>
       </div>
     </div>
   )

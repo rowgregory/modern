@@ -19,7 +19,6 @@ const Anchors = () => {
   const userId = session.data?.user?.id
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [typeFilter, setTypeFilter] = useState('all')
   const { data } = useGetMyAnchorsQuery({ chapterId, userId }) as { data: { anchors: IAnchor[] } }
   const anchors = data?.anchors
 
@@ -111,17 +110,6 @@ const Anchors = () => {
                 </option>
               ))}
             </select>
-
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all"
-            >
-              <option value="all">All Types</option>
-              <option value="DECK_TO_DECK">Deck-to-Deck</option>
-              <option value="VOYAGE_CALL">Voyage Call</option>
-              <option value="MESSAGE_IN_A_BOTTLE">Message In a Bottle</option>
-            </select>
           </div>
         </div>
 
@@ -138,11 +126,12 @@ const Anchors = () => {
           <EmptyState
             searchQuery={searchQuery}
             statusFilter={statusFilter}
-            typeFilter={typeFilter}
+            typeFilter=""
             title="Anchor"
             advice="Drop your first anchor to get started"
             func={setOpenAnchorDrawer}
             action="Drop Anchor"
+            formName="anchorForm"
           />
         )}
       </motion.div>

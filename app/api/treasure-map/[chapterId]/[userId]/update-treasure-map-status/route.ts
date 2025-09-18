@@ -6,7 +6,6 @@ export async function PATCH(req: NextRequest, { params }: any) {
   try {
     const parameters = await params
     const chapterId = parameters.chapterId
-    const userId = parameters.userId
     const body = await req.json()
 
     const { treasureMapId, status } = body
@@ -64,16 +63,16 @@ export async function PATCH(req: NextRequest, { params }: any) {
     }
 
     // Check if user has permission to update this parley
-    const canUpdate = existingTreasureMap.giverId === userId || existingTreasureMap.receiverId === userId
-    if (!canUpdate) {
-      return NextResponse.json(
-        {
-          error: 'Forbidden',
-          message: 'You do not have permission to update this Treasure Map'
-        },
-        { status: 403 }
-      )
-    }
+    // const canUpdate = existingTreasureMap.giverId === userId || existingTreasureMap.receiverId === userId
+    // if (!canUpdate) {
+    //   return NextResponse.json(
+    //     {
+    //       error: 'Forbidden',
+    //       message: 'You do not have permission to update this Treasure Map'
+    //     },
+    //     { status: 403 }
+    //   )
+    // }
 
     // Prepare update data
     const updateData: any = {

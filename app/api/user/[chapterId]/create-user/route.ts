@@ -4,6 +4,10 @@ import { createLog } from '@/app/lib/utils/api/createLog'
 import { validateUserData } from '@/app/lib/utils/api/validations/validateUserData'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
+import swabbiePendingTemplate from '@/app/lib/email-templates/swabbie-pending'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: NextRequest, { params }: any) {
   try {
@@ -72,18 +76,21 @@ export async function POST(req: NextRequest, { params }: any) {
         name: body?.name?.trim(),
         email: body?.email?.toLowerCase(),
         phone: body?.phone || null,
-        role: body.isAdmin ? 'ADMIN' : body?.membershipStatus ? 'SWABBIE' : 'MEMBER',
+        role: body.isAdmin ? 'ADMIN' : body?.hasCompletedApplication ? 'SWABBIE' : 'MEMBER',
         company: body?.company?.trim(),
         industry: body?.industry?.trim(),
         isLicensed: body?.isLicensed || false,
         membershipStatus: body?.membershipStatus || 'PENDING',
         isAdmin: !!body.isAdmin,
         isPublic: false,
+        isActive: false,
         joinedAt,
         expiresAt,
         ...(body?.location?.trim() && { location: body.location.trim() }),
         ...(body?.location?.trim() && { location: body.location.trim() }),
         ...(body?.businessLicenseNumber?.trim() && { businessLicenseNumber: body.businessLicenseNumber.trim() }),
+        hasCompletedApplication: body.hasCompletedApplication,
+        ...(body?.isAddedByAdmin && { addedBy: body?.userId }),
         chapter: {
           connect: {
             id: chapterId
@@ -100,9 +107,23 @@ export async function POST(req: NextRequest, { params }: any) {
       }
     })
 
+    if (createdUser.membershipStatus === 'PENDING') {
+      const nodeEnv = process.env.NODE_ENV
+      const baseUrl = nodeEnv === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+      const portPath = `/swabbie/port?swabbieId=${createdUser.id}`
+      const fullPortUrl = `${baseUrl}${portPath}`
+
+      await resend.emails.send({
+        from: `Pending <no-reply@coastal-referral-exchange.com>`,
+        to: [createdUser.email],
+        subject: `Your Coastal Referral application is pending initial review`,
+        html: swabbiePendingTemplate(createdUser.name, 'Storm Watch', fullPortUrl)
+      })
+    }
+
     await createLog('info', 'New user created', {
       location: ['app route - POST /api/member/[chapterId]/create'],
-      message: `New member created by admin`,
+      message: `New user created by admin`,
       name: 'NewMemberCreatedByAdmin',
       timestamp: new Date().toISOString(),
       url: req.url,
@@ -120,7 +141,7 @@ export async function POST(req: NextRequest, { params }: any) {
     return await handleApiError({
       error,
       req,
-      action: 'Member created',
+      action: 'User created',
       sliceName: sliceUser
     })
   }

@@ -1,3 +1,4 @@
+import HiddenCoveSVG from '@/public/svg/HiddenCoveSVG'
 import { TowerControl, Ship, Anchor, Scroll, Layers, Sailboat } from 'lucide-react'
 
 export const memberNavLinks = [
@@ -42,5 +43,12 @@ export const memberNavLinks = [
     icon: TowerControl,
     description: 'Account Settings',
     linkKey: '/member/beacon'
+  },
+  {
+    id: 'hidden-cove',
+    label: 'Hidden Cove',
+    icon: HiddenCoveSVG,
+    description: 'Special tools, features, and perks waiting to be discovered',
+    linkKey: '/member/hidden-cove'
   }
 ]

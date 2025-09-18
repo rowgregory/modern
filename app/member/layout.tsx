@@ -36,9 +36,8 @@ const MemberLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
         {/* Main Content Area */}
         <div
-          className="flex-1 flex flex-col"
+          className={`${isNavigationCollapsed ? 'lg:ml-20' : 'lg:ml-[280px]'} flex-1 flex flex-col`}
           style={{
-            marginLeft: isNavigationCollapsed ? '80px' : '280px',
             transition: 'margin-left 0.3s ease-in-out'
           }}
         >

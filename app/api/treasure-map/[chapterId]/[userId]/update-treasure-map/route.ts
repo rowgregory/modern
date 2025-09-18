@@ -11,10 +11,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<RouteP
   try {
     const parameters = await params
     const chapterId = parameters.chapterId
-    const userId = parameters.userId
     const body = await req.json()
 
-    const { treasureMapId, clientName, clientEmail, clientPhone, serviceNeeded, notes, giverNotes, receiverId } = body
+    const {
+      treasureMapId,
+      clientName,
+      clientEmail,
+      clientPhone,
+      serviceNeeded,
+      notes,
+      giverNotes,
+      receiverId,
+      giverId,
+      isThirdParty
+    } = body
 
     if (!treasureMapId) {
       return NextResponse.json(
@@ -52,18 +62,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<RouteP
       )
     }
 
-    // Check permissions - only requester or recipient can update
-    const canUpdate: boolean = existingTreasureMap.giverId === userId || existingTreasureMap.receiverId === userId
-    if (!canUpdate) {
-      return NextResponse.json(
-        {
-          error: 'Forbidden',
-          message: 'You do not have permission to update this treasure map'
-        },
-        { status: 403 }
-      )
-    }
-
     // Build update data object, only including provided fields
     const updateData: any = {
       updatedAt: new Date()
@@ -90,6 +88,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<RouteP
     }
     if (receiverId !== undefined) {
       updateData.receiverId = receiverId
+    }
+    if (giverId !== undefined) {
+      updateData.giverId = giverId
+    }
+    if (isThirdParty !== undefined) {
+      updateData.isThirdParty = isThirdParty
     }
 
     // Update the parley

@@ -2,6 +2,17 @@ import { Anchor, Parley } from '@prisma/client'
 
 // Base User interface matching your Prisma User model
 export interface User {
+  addedBy: string | undefined
+  isFinalDecisionMade: any
+  rejectionReason: string
+  finalDecisionAt: any
+  backgroundCheckCompletedAt: any
+  initialReviewCompletedAt: any
+  isBackgroudCheckCompleted: any
+  isInitialReviewCompleted: any
+  rejectedStep: any
+  rejectedAt: string
+  hasCompletedApplication: boolean
   id: string
   createdAt: string
   updatedAt: string
@@ -49,10 +60,19 @@ export interface User {
   accounts?: Account[]
   sessions?: Session[]
   logs?: Log[]
+  signals?: Log[]
 }
 
 // Usership status enum
-export type MembershipStatus = 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'EXPIRED' | 'SUSPENDED' | 'REJECTED'
+export type MembershipStatus =
+  | 'PENDING'
+  | 'ACTIVE'
+  | 'INACTIVE'
+  | 'EXPIRED'
+  | 'SUSPENDED'
+  | 'REJECTED'
+  | 'INITIAL_REVIEW'
+  | 'BACKGROUND_CHECK'
 
 // Chapter interface (basic version)
 export interface Chapter {
@@ -64,6 +84,9 @@ export interface Chapter {
   meetingFrequency: string
   createdAt: string
   updatedAt: string
+  hasUnlockedMuster: boolean
+  hasUnlockedBooty: boolean
+  hasUnlockedGrog: boolean
 }
 
 // User with chapter details (for display)

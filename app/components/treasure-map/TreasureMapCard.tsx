@@ -33,10 +33,10 @@ const getStatusIcon = (status: string) => {
   switch (status) {
     case 'GIVEN':
       return <MapPin className="w-4 h-4" />
-    case 'ACCEPTED':
-      return <CheckCircle className="w-4 h-4" />
     case 'CONTACTED':
       return <Phone className="w-4 h-4" />
+    case 'ACCEPTED':
+      return <CheckCircle className="w-4 h-4" />
     case 'CLOSED':
       return <CheckCircle className="w-4 h-4" />
     case 'DECLINED':
@@ -283,8 +283,8 @@ const TreasureMapCard: FC<{ treasureMap: ITreasureMap; index: number }> = ({ tre
           <div className="grid grid-cols-3 gap-2">
             {[
               { value: 'GIVEN', color: 'bg-yellow-600' },
-              { value: 'ACCEPTED', color: 'bg-blue-600' },
               { value: 'CONTACTED', color: 'bg-purple-600' },
+              { value: 'ACCEPTED', color: 'bg-blue-600' },
               { value: 'CLOSED', color: 'bg-green-600' },
               { value: 'DECLINED', color: 'bg-red-600' }
             ].map((status) => (

@@ -11,27 +11,14 @@ const magicLinkTemplate = (url: string) => `
     
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 32px;">
-      <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #0ea5e9, #0284c7); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; position: relative;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-          <path d="M4 20L20 4M20 4v12M20 4H8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M8 8L12 12L8 16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="6" cy="18" r="2" stroke="white" stroke-width="2" fill="none"/>
-          <circle cx="18" cy="6" r="2" stroke="white" stroke-width="2" fill="none"/>
-        </svg>
-        <div style="position: absolute; bottom: -2px; right: -2px; width: 24px; height: 24px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
-            <path d="M20 6 9 17l-5-5"/>
-          </svg>
-        </div>
-      </div>
       <h1 style="margin: 0; color: #0f172a; font-size: 28px; font-weight: 700; letter-spacing: -0.025em;">Welcome to Coastal Referral Exchange</h1>
-      <p style="margin: 12px 0 0 0; color: #475569; font-size: 16px; line-height: 1.5;">Your secure access link is ready. Connect with your business network today.</p>
+      <p style="margin: 12px 0 0 0; color: #475569; font-size: 16px; line-height: 1.5;">Your boarding link is ready. Hoist the sails and connect with the crew.</p>
     </div>
 
     <!-- Sign In Button -->
     <div style="text-align: center; margin: 36px 0;">
       <a href="${url}" style="display: inline-block; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; text-decoration: none; padding: 16px 32px; border-radius: 10px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.3); transition: all 0.2s; border: none;">
-        🌊 Access Your Network
+        Access The Bridge
       </a>
     </div>
 
@@ -64,7 +51,7 @@ const magicLinkTemplate = (url: string) => `
         </svg>
       </div>
       <p style="margin: 0; color: #64748b; font-size: 12px; line-height: 1.4;">
-        🕒 This secure link expires in 15 minutes for your protection.<br>
+        This secure link expires in 15 minutes for your protection.<br>
         If you didn't request access to Coastal Referral Exchange, please disregard this email.
       </p>
       <p style="margin: 16px 0 0 0; color: #94a3b8; font-size: 11px;">

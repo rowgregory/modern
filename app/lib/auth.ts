@@ -16,9 +16,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   adapter: PrismaAdapter(prisma),
   pages: {
-    error: '/auth/error',
-    signIn: '/auth/login',
-    verifyRequest: '/auth/verify-request'
+    error: '/auth/login'
   },
   providers: [
     {
@@ -31,29 +29,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         console.log('Sending magic link to:', email)
         console.log('🔗 Magic link URL:', url)
         console.log('PROVIDER:', provider)
-
         try {
           const result = await resend.emails.send({
-            from: provider.from!,
+            from: `Navigator Access <${provider.from!}>`,
             to: email,
-            subject: 'Access The Bridge',
+            subject: 'Your Bridge Awaits — Click to Enter, Navigator',
             html: magicLinkTemplate(url)
           })
 
-          console.log('RESULT: ', result)
-
-          setTimeout(async () => {
-            try {
-              const tokens = await prisma.verificationToken.findMany({
-                where: { identifier: email }
-              })
-              console.log('🎫 Tokens in DB after email sent:', tokens.length)
-            } catch (err) {
-              console.error('Error checking tokens:', err)
-            }
-          }, 1000)
+          await createLog('info', 'Success magic link set', {
+            location: ['auth.ts - session callback - info'],
+            name: 'SessionbackError',
+            timestamp: new Date().toISOString(),
+            email,
+            result
+          })
         } catch (error) {
-          console.error('Failed to send verification email:', error)
+          await createLog('warning', 'Failed to send verification email', {
+            location: ['auth.ts - send verification request'],
+            name: 'FailedToSendMagicLink',
+            timestamp: new Date().toISOString(),
+            error: error instanceof Error ? error.message : 'Unknown error'
+          })
           throw error
         }
       }
@@ -63,14 +60,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account, email: emailData }) {
       // If this is just the initial email sending request, allow it
       if (emailData?.verificationRequest) {
-        console.log('📧 This is a verification request (sending email) - allowing')
         return true
       }
 
       // This is the actual sign-in attempt (user clicked the magic link)
       if (account?.provider === 'email') {
-        console.log('🔗 This is a magic link click - token already validated by NextAuth')
-
         try {
           // Check if user exists in database
           const dbUser = await prisma.user.findUnique({
@@ -79,12 +73,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           // If user doesn't exist, reject sign-in (BNI members must be pre-created)
           if (!dbUser) {
-            console.log('❌ User not found in database - rejecting sign-in')
             await createLog('warning', 'Sign-in attempt by non-member', {
               location: ['auth.ts - signIn callback - user not found'],
               name: 'NonMemberSignInAttempt',
               timestamp: new Date().toISOString(),
               email: user.email
+            })
+            return false
+          }
+
+          // Check if user is active (optional business rule)
+          if (dbUser.membershipStatus !== 'ACTIVE') {
+            await createLog('warning', 'Sign-in attempt by inactive member', {
+              location: ['auth.ts - signIn callback'],
+              name: 'InactiveMemberSignInAttempt',
+              userId: dbUser.id,
+              email: user.email,
+              membershipStatus: dbUser.membershipStatus,
+              timestamp: new Date().toISOString()
             })
             return false
           }
@@ -108,7 +114,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           return true
         } catch (error) {
-          console.error('❌ Error handling email provider sign-in:', error)
           await createLog('error', 'Sign-in callback error', {
             location: ['auth.ts - signIn callback - error'],
             name: 'SignInCallbackError',
@@ -138,7 +143,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.isSuperUser = dbUser.isSuperUser
           }
         } catch (error) {
-          console.error('❌ Failed to fetch user for JWT:', error)
+          await createLog('error', 'Sign-in callback error', {
+            location: ['auth.ts - jwt callback - error'],
+            name: 'JWTbackError',
+            timestamp: new Date().toISOString(),
+            email: user.email,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          })
         }
       }
       return token
@@ -151,7 +162,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.isAdmin = token.isAdmin as boolean
         session.user.isSuperUser = token.isSuperUser as boolean
       } else {
-        console.error('❌ Missing userId in token')
+        await createLog('error', 'Sign-in callback error', {
+          location: ['auth.ts - session callback - error'],
+          name: 'SessionbackError',
+          timestamp: new Date().toISOString(),
+          email: session.user.email,
+          error: 'Session callback error - missing userId in token'
+        })
       }
 
       return session

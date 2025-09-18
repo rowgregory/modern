@@ -108,6 +108,7 @@ const TreasureMapDrawer = () => {
               isLoading={isLoading}
               user={user}
               isUpdating={inputs?.isUpdating}
+              onClose={onClose}
             />
           </Drawer>
         </>

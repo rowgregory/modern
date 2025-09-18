@@ -125,6 +125,7 @@ const MemberParleys = () => {
                 <option value="DECK_TO_DECK">Deck-to-Deck</option>
                 <option value="VOYAGE_CALL">Voyage Call</option>
                 <option value="MESSAGE_IN_A_BOTTLE">Message In a Bottle</option>
+                <option value="LANTERN_LIGHT">Lantern Light</option>
               </select>
             </div>
           </div>
@@ -147,6 +148,7 @@ const MemberParleys = () => {
               advice="Schedule your first parley to get started"
               func={setOpenParleyDrawer}
               action="Schedule Parley"
+              formName="parleyForm"
             />
           )}
         </motion.div>

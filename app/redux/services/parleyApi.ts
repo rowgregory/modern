@@ -7,18 +7,12 @@ export const parleyApi = api.injectEndpoints({
   endpoints: (build) => ({
     getParleys: build.query({
       query: ({ chapterId }) => `${BASE_URL}/${chapterId}`,
-      providesTags: (_, __, { chapterId }) => [{ type: 'Parley' as const, id: chapterId }]
+      providesTags: ['Parley']
     }),
 
     getMyParleys: build.query({
       query: ({ chapterId, userId }) => `${BASE_URL}/${chapterId}/${userId}`,
-      providesTags: (result, __, { chapterId, userId }) => [
-        { type: 'Parley' as const, id: `${chapterId}-${userId}` },
-        ...(result?.parleys || []).map((parley: { id: any }) => ({
-          type: 'Parley' as const,
-          id: parley.id
-        }))
-      ]
+      providesTags: ['Parley']
     }),
 
     createParley: build.mutation({
@@ -27,11 +21,7 @@ export const parleyApi = api.injectEndpoints({
         method: 'POST',
         body: parley
       }),
-      invalidatesTags: (_, __, { chapterId, requesterId, recipientId }) => [
-        { type: 'Parley' as const, id: chapterId },
-        { type: 'Parley' as const, id: `${chapterId}-${requesterId}` },
-        { type: 'Parley' as const, id: `${chapterId}-${recipientId}` }
-      ]
+      invalidatesTags: ['Parley', 'Dashboard']
     }),
 
     updateParley: build.mutation({
@@ -40,10 +30,7 @@ export const parleyApi = api.injectEndpoints({
         method: 'PUT',
         body: { parleyId, ...updateData }
       }),
-      invalidatesTags: (_, __, { chapterId, userId }) => [
-        { type: 'Parley' as const, id: chapterId },
-        { type: 'Parley' as const, id: `${chapterId}-${userId}` }
-      ]
+      invalidatesTags: ['Parley', 'Dashboard']
     }),
 
     updateParleyStatus: build.mutation({
@@ -52,17 +39,7 @@ export const parleyApi = api.injectEndpoints({
         method: 'PATCH',
         body: { parleyId, status }
       }),
-      invalidatesTags: (result, __, { chapterId, userId }) => [
-        { type: 'Parley' as const, id: chapterId },
-        { type: 'Parley' as const, id: `${chapterId}-${userId}` },
-        // Also invalidate the other participant's cache
-        ...(result?.parley
-          ? [
-              { type: 'Parley' as const, id: `${chapterId}-${result.parley.requesterId}` },
-              { type: 'Parley' as const, id: `${chapterId}-${result.parley.recipientId}` }
-            ]
-          : [])
-      ]
+      invalidatesTags: ['Parley', 'Dashboard']
     })
   })
 })

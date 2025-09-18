@@ -1,61 +1,21 @@
 'use client'
 
 import React from 'react'
-import { motion } from 'framer-motion'
-import {
-  Users,
-  Search,
-  Mail,
-  Phone,
-  MapPin,
-  Building2,
-  Briefcase,
-  Calendar,
-  Clock,
-  AlertCircle,
-  Ban,
-  Sailboat,
-  User
-} from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Search, Mail, Phone, MapPin, Building2, Briefcase, Calendar, Sailboat, User } from 'lucide-react'
 import { useUserSelector } from '@/app/redux/store'
-import { User as IUser } from '@/types/user'
-
-const statusIcons: any = {
-  PENDING: Clock,
-  REJECTED: Ban
-}
-
-const getStatusColor = (status: any) => {
-  switch (status) {
-    case 'PENDING':
-      return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20'
-    case 'REJECTED':
-      return 'text-red-400 bg-red-400/10 border-red-400/20'
-    default:
-      return 'text-gray-400 bg-gray-400/10 border-gray-400/20'
-  }
-}
-
-const getStatusOptions = (users: IUser[]) => [
-  { value: 'all', label: 'All Status', count: users.length },
-  { value: 'PENDING', label: 'Pending', count: users.filter((s) => s.membershipStatus === 'PENDING').length },
-  {
-    value: 'REJECTED',
-    label: 'Rejected',
-    count: users.filter((s) => s.membershipStatus === 'REJECTED').length
-  }
-]
-
-const formatDate = (dateString: string | number | Date) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
+import { formatDate } from '@/app/lib/utils/date/formatDate'
+import getApplicationStatusOptions from '@/app/lib/utils/application/getApplicationStatusOptions'
+import getApplicationStatusColor from '@/app/lib/utils/application/getApplicationStatusColor'
+import getApplicationStatusIcon from '@/app/lib/utils/application/getApplicationStatusIcon'
+import { statusIcons } from '@/app/components/swabbie/SwabbieCard'
+import { useSession } from 'next-auth/react'
+import EmptyState from '@/app/components/common/EmptyState'
+import { setOpenSwabbieDrawer } from '@/app/redux/features/userSlice'
+import Link from 'next/link'
 
 const SwabbieCard = ({ swabbie, index }: any) => {
-  const StatusIcon = statusIcons[swabbie.membershipStatus] || AlertCircle
+  const StatusIcon: any = statusIcons[swabbie.membershipStatus]
   const isRejected = swabbie.membershipStatus === 'SUSPENDED' || swabbie.membershipStatus === 'CANCELLED'
 
   return (
@@ -87,7 +47,7 @@ const SwabbieCard = ({ swabbie, index }: any) => {
         </div>
         <div className="flex items-center space-x-2">
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(swabbie.membershipStatus)}`}
+            className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getApplicationStatusColor(swabbie.membershipStatus)}`}
           >
             <StatusIcon className="h-3 w-3" />
             {swabbie.membershipStatus}
@@ -144,7 +104,7 @@ const SwabbieCard = ({ swabbie, index }: any) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-gray-600/30">
+      <div className="flex items-center justify-between py-4 border-y border-gray-600/30 mb-5">
         <div className="flex items-center space-x-2">
           <div className={`h-2 w-2 rounded-full ${swabbie.isLicensed ? 'bg-emerald-400' : 'bg-gray-400'}`} />
           <span className="text-xs text-gray-300">
@@ -158,52 +118,65 @@ const SwabbieCard = ({ swabbie, index }: any) => {
           </div>
         </div>
       </div>
+
+      <Link
+        href={`/swabbie/port?swabbieId=${swabbie.id}`}
+        className="px-4 py-2 text-xs text-blue-400 border border-blue-500/30 rounded hover:bg-blue-600/10 transition-colors duration-200"
+      >
+        <span>Visit {swabbie.name}&apos;s Dockside Dashboard</span>
+      </Link>
     </motion.div>
   )
 }
 
 const SwabbiesPage = () => {
+  const session = useSession()
+  const { users } = useUserSelector()
   const [searchQuery, setSearchQuery] = React.useState('')
   const [statusFilter, setStatusFilter] = React.useState('all')
-  const [sortBy, setSortBy] = React.useState('newest')
-  const { users } = useUserSelector()
 
   const filteredSwabbies = users
     ?.filter((user) => {
-      // Only show PENDING and REJECTED (SUSPENDED/CANCELLED) users
-      const isApplicationStatus = ['PENDING', 'REJECTED'].includes(user.membershipStatus)
+      const hasCompletedApplication = user.hasCompletedApplication === true
+
+      const isAddedByLoggedInUser = user.addedBy === session.data?.user.id
+
+      const isApplicationStatus =
+        ['PENDING', 'INITIAL_REVIEW', 'BACKGROUND_CHECK', 'REJECTED'].includes(user.membershipStatus) ||
+        (user.membershipStatus === 'ACTIVE' && hasCompletedApplication)
 
       const matchesSearch = searchQuery === '' || user.name.toLowerCase().includes(searchQuery.toLowerCase())
 
       const matchesStatus = statusFilter === 'all' || user.membershipStatus === statusFilter
 
-      return isApplicationStatus && matchesSearch && matchesStatus
+      return isApplicationStatus && matchesSearch && matchesStatus && isAddedByLoggedInUser
     })
     .sort((a, b) => {
-      switch (sortBy) {
-        case 'newest':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        case 'oldest':
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        case 'name':
-          return a.name.localeCompare(b.name)
-        case 'company':
-          return a.company.localeCompare(b.company)
-        default:
-          return 0
-      }
+      // Get current user ID
+      const currentUserId = session.data?.user?.id
+
+      // Check if user is recipient in each user
+      const aIsRecipient = a.id === currentUserId
+      const bIsRecipient = b.id === currentUserId
+
+      // If one is recipient and other isn't, prioritize the recipient one
+      if (aIsRecipient && !bIsRecipient) return -1
+      if (!aIsRecipient && bIsRecipient) return 1
+
+      // If both or neither are recipient, sort by creation date (newest first)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })
 
   return (
-    <div className="bg-gray-900 h-full">
+    <div className="bg-gray-900 flex h-full">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex-1 p-6 overflow-y-auto space-y-6"
       >
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
-          {getStatusOptions(users)
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {getApplicationStatusOptions(users)
             .slice(1)
             .map((status, index) => (
               <motion.div
@@ -211,90 +184,78 @@ const SwabbiesPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-4"
+                className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6"
               >
-                <div className="text-center">
-                  <p className="text-gray-400 text-sm">{status.label}</p>
-                  <p className="text-2xl font-bold text-white">{status.count}</p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">{status.label}</p>
+                    <p className="text-2xl font-bold text-white">{status.count}</p>
+                  </div>
+                  <div className={`p-3 rounded-lg ${getApplicationStatusColor(status.value)}`}>
+                    {getApplicationStatusIcon(status.value)}
+                  </div>
                 </div>
               </motion.div>
             ))}
         </div>
 
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 mb-6"
-        >
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder="Search by name, company, or navigator..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                />
-              </div>
-            </div>
-
-            {/* Status Filter */}
-            <div className="min-w-[200px]">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              >
-                {getStatusOptions(users).map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label} ({option.count})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Sort */}
-            <div className="min-w-[150px]">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="name">Name A-Z</option>
-                <option value="company">Company A-Z</option>
-              </select>
-            </div>
+        {/* Filters and Search */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search by navigator name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all"
+            />
           </div>
-        </motion.div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap gap-2">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all"
+            >
+              {getApplicationStatusOptions(filteredSwabbies).map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label} ({option.count})
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         {/* Results Count */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mb-6">
+        {/* <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mb-6">
           <p className="text-gray-400">
             Showing {filteredSwabbies.length} of {filteredSwabbies?.length} swabbies
           </p>
-        </motion.div>
+        </motion.div> */}
 
         {/* Swabbies Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredSwabbies.map((swabbie, index) => (
-            <SwabbieCard key={swabbie.id} swabbie={swabbie} index={index} />
-          ))}
+        <div className="grid grid-cols-1 2xl:grid-cols-2 3xl:grid-cols-3 gap-7">
+          <AnimatePresence>
+            {filteredSwabbies.map((swabbie, index) => (
+              <SwabbieCard key={swabbie.id} swabbie={swabbie} index={index} />
+            ))}
+          </AnimatePresence>
         </div>
 
         {/* Empty State */}
         {filteredSwabbies.length === 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
-            <Users className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-400 mb-2">No swabbies found</h3>
-            <p className="text-gray-500">Try adjusting your search or filter criteria</p>
-          </motion.div>
+          <EmptyState
+            searchQuery={searchQuery}
+            statusFilter={statusFilter}
+            typeFilter={''}
+            title="Swabbie'"
+            advice="No Swabbie yet — chart the course and find yer crew."
+            func={setOpenSwabbieDrawer}
+            action="Swabbie"
+          />
         )}
       </motion.div>
     </div>

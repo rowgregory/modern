@@ -1,10 +1,10 @@
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import TooltipWrapper from '../../common/TooltipWrapper'
+import TooltipWrapper from '../common/TooltipWrapper'
 import { MoreHorizontal } from 'lucide-react'
 
-const AdminWeeklyActivityChart: FC<{ weeklyActivity: any[] }> = ({ weeklyActivity }) => {
+const WeeklyActivityChart: FC<{ weeklyActivity: any[] }> = ({ weeklyActivity }) => {
   return (
     <motion.div
       className="lg:col-span-2 bg-gray-800/50 rounded-xl p-6 border border-gray-700 mb-8"
@@ -110,4 +110,4 @@ const AdminWeeklyActivityChart: FC<{ weeklyActivity: any[] }> = ({ weeklyActivit
   )
 }
 
-export default AdminWeeklyActivityChart
+export default WeeklyActivityChart

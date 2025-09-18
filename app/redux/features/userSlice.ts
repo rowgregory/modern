@@ -30,6 +30,8 @@ export interface UserState {
   // Error handling
   error: string | null
   fieldErrors: Array<{ field: string; message: string }>
+
+  signals: any
 }
 
 export const initialUserState: UserState = {
@@ -82,7 +84,8 @@ export const initialUserState: UserState = {
 
   // Error handling
   error: null,
-  fieldErrors: []
+  fieldErrors: [],
+  signals: []
 }
 
 export const userSlice = createSlice({
@@ -172,18 +175,18 @@ export const userSlice = createSlice({
         state.success = true
         state.loading = false
       })
-      // .addMatcher(userApi.endpoints.updateUserStatus.matchFulfilled, (state) => {
-      //   state.success = true
-      //   state.loading = false
-      // })
-      // .addMatcher(userApi.endpoints.createSkipper.matchFulfilled, (state) => {
-      //   state.success = true
-      //   state.loading = false
-      // })
-      // .addMatcher(userApi.endpoints.getSkipperByUserId.matchFulfilled, (state) => {
-      //   state.success = true
-      //   state.loading = false
-      // })
+      .addMatcher(userApi.endpoints.generateMemberMetrics.matchFulfilled, (state) => {
+        state.success = true
+        state.loading = false
+      })
+      .addMatcher(userApi.endpoints.signalQuartermaster.matchFulfilled, (state) => {
+        state.success = true
+        state.loading = false
+      })
+      .addMatcher(userApi.endpoints.updatePapers.matchFulfilled, (state) => {
+        state.success = true
+        state.loading = false
+      })
       .addMatcher(
         (action) => action.type.endsWith('rejected') && action.payload?.data?.sliceName === 'userApi',
         (state, { payload }: any) => {

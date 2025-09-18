@@ -15,7 +15,6 @@ const AuthCustomCallback = () => {
   useEffect(() => {
     const handlePostAuth = async () => {
       const user = session?.user
-
       if (status === 'authenticated' && user?.id) {
         try {
           if ((user?.isAdmin || user?.isSuperUser) && user?.role === 'ADMIN') {

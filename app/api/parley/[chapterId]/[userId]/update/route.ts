@@ -85,7 +85,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<RouteP
     }
 
     // Validate meeting type if provided
-    const validMeetingTypes = ['DECK_TO_DECK', 'VOYAGE_CALL', 'MESSAGE_IN_A_BOTTLE']
+    const validMeetingTypes = ['DECK_TO_DECK', 'VOYAGE_CALL', 'MESSAGE_IN_A_BOTTLE', 'LANTERN_LIGHT']
     if (meetingType && !validMeetingTypes.includes(meetingType)) {
       return NextResponse.json(
         {

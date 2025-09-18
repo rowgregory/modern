@@ -2,6 +2,8 @@ import { useAppDispatch } from '@/app/redux/store'
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
 import { Anchor, Plus, Users } from 'lucide-react'
+import { setInputs } from '@/app/redux/features/formSlice'
+import { useSession } from 'next-auth/react'
 
 const EmptyState: FC<{
   searchQuery: string
@@ -11,8 +13,11 @@ const EmptyState: FC<{
   advice: string
   func: any
   action: string
-}> = ({ searchQuery, statusFilter, typeFilter, title, advice, func, action }) => {
+  formName?: string
+}> = ({ searchQuery, statusFilter, typeFilter, title, advice, func, action, formName }) => {
   const dispatch = useAppDispatch()
+  const session = useSession()
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
       {title === 'Anchor' ? (
@@ -27,7 +32,16 @@ const EmptyState: FC<{
           : advice}
       </p>
       <motion.button
-        onClick={() => dispatch(func())}
+        onClick={() => {
+          if (formName === 'parleyForm') {
+            dispatch(setInputs({ formName, data: { requesterId: session.data?.user?.id } }))
+          } else if (formName === 'treasureMapForm') {
+            dispatch(setInputs({ formName, data: { giverId: session.data?.user?.id } }))
+          } else if (formName === 'anchorForm') {
+            dispatch(setInputs({ formName, data: { giverId: session.data?.user?.id } }))
+          }
+          dispatch(func())
+        }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className="px-6 py-3 bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 text-white rounded-lg hover:from-teal-500 hover:via-cyan-500 hover:to-blue-500 transition-all flex items-center space-x-2 font-semibold mx-auto"

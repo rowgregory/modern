@@ -21,7 +21,7 @@ export const treasureMapApi = api.injectEndpoints({
         method: 'POST',
         body: treasureMap
       }),
-      invalidatesTags: ['Treasure-Map']
+      invalidatesTags: ['Treasure-Map', 'Dashboard']
     }),
 
     updateTreasureMap: build.mutation({
@@ -30,7 +30,7 @@ export const treasureMapApi = api.injectEndpoints({
         method: 'PUT',
         body: updateData
       }),
-      invalidatesTags: ['Treasure-Map']
+      invalidatesTags: ['Treasure-Map', 'Dashboard']
     }),
 
     updateTreasureMapStatus: build.mutation({
@@ -39,7 +39,7 @@ export const treasureMapApi = api.injectEndpoints({
         method: 'PATCH',
         body: { treasureMapId, status }
       }),
-      invalidatesTags: ['Treasure-Map']
+      invalidatesTags: ['Treasure-Map', 'Dashboard']
     })
   })
 })

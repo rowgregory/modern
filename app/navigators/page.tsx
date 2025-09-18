@@ -26,7 +26,7 @@ const Navigators = () => {
   })
 
   return (
-    <div className="min-h-dvh bg-[#121212]">
+    <div className="min-h-dvh bg-gray-900">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-600 to-teal-600 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

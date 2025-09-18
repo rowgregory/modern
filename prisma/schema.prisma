@@ -15,6 +15,9 @@ datasource db {
 
 enum MembershipStatus {
   PENDING // Awaiting approval/payment
+  INITIAL_REVIEW
+  BACKGROUND_CHECK
+  FINAL_DECISION
   ACTIVE // Active member
   INACTIVE // Temporarily inactive
   SUSPENDED // Suspended by admin
@@ -23,6 +26,30 @@ enum MembershipStatus {
   REJECTED
 
   @@map("membership_status")
+}
+
+enum NotificationType {
+  APPLICATION_SUBMITTED
+  APPLICATION_APPROVED
+  APPLICATION_REJECTED
+  NEW_MEMBER
+  SYSTEM_ALERT
+  PARLEY_REQUEST
+  PARLEY_CONFIRMED
+  PARLEY_CANCELLED
+  PARLEY_COMPLETED
+  ANCHOR_REPORTED
+  ANCHOR_VERIFIED
+  ANCHOR_DISPUTED
+}
+
+enum EventStatus {
+  DRAFT
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+  POSTPONED
 }
 
 model Account {
@@ -76,19 +103,32 @@ model User {
   yearsInBusiness       String  @default("")
   industry              String  @default("")
   title                 String  @default("")
-  bio                   String  @default("")
-  website               String  @default("")
+  bio                   String? @default("")
+  website               String? @default("")
   isLicensed            Boolean @default(false)
   businessLicenseNumber String  @default("")
   isAdmin               Boolean @default(false)
   isSuperUser           Boolean @default(false)
 
   // Core membership
-  chapterId        String
-  chapter          Chapter          @relation(fields: [chapterId], references: [id])
-  joinedAt         DateTime?
-  expiresAt        DateTime?
-  membershipStatus MembershipStatus @default(PENDING)
+  chapterId                  String
+  chapter                    Chapter          @relation(fields: [chapterId], references: [id])
+  joinedAt                   DateTime?
+  expiresAt                  DateTime?
+  membershipStatus           MembershipStatus @default(PENDING)
+  hasCompletedApplication    Boolean          @default(false)
+  rejectedAt                 String?          @default("")
+  rejectedStep               String?          @default("") // 'INITIAL_REVIEW', 'BACKGROUND_CHECK', 'FINAL_DECISION'
+  rejectionReason            String?          @default("") // Optional: why they were rejected
+  initialReviewCompletedAt   String?          @default("")
+  backgroundCheckCompletedAt String?          @default("")
+  finalDecisionAt            String?          @default("")
+  isInitialReviewCompleted   Boolean          @default(false)
+  isBackgroudCheckCompleted  Boolean          @default(false)
+  isFinalDecisionMade        Boolean          @default(false)
+  isRejected                 Boolean          @default(false)
+  signals                    Json?            @default("[]")
+  addedBy                    String?          @default("")
 
   // Profile & Networking
   interests            String[] // Array of interest categories
@@ -134,7 +174,7 @@ model Parley {
   scheduledAt DateTime
   duration    Int      @default(30) // minutes
   location    String? // optional meeting location
-  meetingType String   @default("DECK_TO_DECK") // DECK_TO_DECK, VOYAGE_CALL, MESSAGE_IN_A_BOTTLE
+  meetingType String   @default("DECK_TO_DECK") // DECK_TO_DECK, VOYAGE_CALL, MESSAGE_IN_A_BOTTLE, LANTERN_LIGHT
 
   // Participants (exactly 2 Coastal Referral Exchange users)
   requesterId String
@@ -226,6 +266,11 @@ model Chapter {
   anchors       Anchor[]
   treasureMaps  TreasureMap[]
   notifications Notification[]
+  grogs         Grog[]
+
+  hasUnlockedMuster Boolean @default(false)
+  hasUnlockedBooty  Boolean @default(false)
+  hasUnlockedGrog   Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -315,6 +360,8 @@ model TreasureMap {
   contactedAt DateTime? // When receiver contacted the client
   closedAt    DateTime? // When business was closed
 
+  isThirdParty Boolean @default(false)
+
   // Notes
   notes         String? // General notes about the referral
   giverNotes    String? // Private notes for giver
@@ -331,17 +378,53 @@ model TreasureMap {
   @@index([createdAt])
 }
 
-enum NotificationType {
-  APPLICATION_SUBMITTED
-  APPLICATION_APPROVED
-  APPLICATION_REJECTED
-  NEW_MEMBER
-  SYSTEM_ALERT
-  PARLEY_REQUEST
-  PARLEY_CONFIRMED
-  PARLEY_CANCELLED
-  PARLEY_COMPLETED
-  ANCHOR_REPORTED
-  ANCHOR_VERIFIED
-  ANCHOR_DISPUTED
+model Grog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Basic Event Information
+  title       String
+  description String? @db.Text
+  category    String // "Weekly Meeting", "Special Event", "Education", "Chamber Event"
+  type        String // "networking", "workshop", "mixer", "luncheon"
+  cost        String?
+  dresscode   String?
+
+  // Date and Time
+  date                 DateTime
+  registrationDeadline DateTime @default(now())
+  time                 String // "07:00 AM"
+  duration             String // "90 minutes"
+
+  // Location
+  location String
+
+  // Capacity and Registration
+  maxAttendees Int?
+  attendees    Int?
+
+  // Status and Visibility
+  status   EventStatus @default(UPCOMING)
+  featured Boolean     @default(false)
+
+  // Host Information
+  host String?
+
+  requirements String?
+  materials    String?
+  requiresRSVP Boolean @default(false)
+  isPublic     Boolean @default(true)
+
+  // External Links
+  registrationUrl String?
+  meetingUrl      String? // For virtual events
+
+  // Analytics
+  viewCount  Int @default(0)
+  clickCount Int @default(0)
+
+  // Coastal Referral Exchange tracking
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
 }

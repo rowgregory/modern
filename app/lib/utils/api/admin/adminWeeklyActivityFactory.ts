@@ -3,14 +3,14 @@ import { now } from '../../date/formatDate'
 
 export const adminWeeklyActivityFactory = {
   chart: async () => {
-    // Force start of the week = Monday
+    // Force start of the week = Thursday
     const dayOfWeek = now.getDay() // 0 = Sunday, 1 = Monday...
-    const diffToMonday = (dayOfWeek + 6) % 7 // convert so Monday = 0
+    const diffToThursday = (dayOfWeek + 3) % 7 // convert so Thursday = 0
     const weekStart = new Date(now)
-    weekStart.setDate(now.getDate() - diffToMonday)
+    weekStart.setDate(now.getDate() - diffToThursday)
     weekStart.setHours(0, 0, 0, 0)
 
-    const daysShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const daysShort = ['Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed']
 
     const weeklyActivity = []
 
@@ -34,7 +34,7 @@ export const adminWeeklyActivityFactory = {
       })
 
       weeklyActivity.push({
-        day: daysShort[dayStart.getDay()],
+        day: daysShort[i],
         parleys,
         treasureMaps,
         anchors

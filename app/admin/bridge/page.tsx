@@ -5,7 +5,7 @@ import { Users, Settings, Download, MoreHorizontal, Scroll } from 'lucide-react'
 import CircularProgress from '@/app/components/common/CircularProgress'
 import QuickActionButton from '@/app/components/bridge/QuickActionButton'
 import AdminBridgeStatsGrid from '@/app/components/admin/bridge/AdminBridgeStatsGrid'
-import AdminWeeklyActivityChart from '@/app/components/admin/bridge/AdminWeeklyActivityChart'
+import WeeklyActivityChart from '@/app/components/bridge/WeeklyActivityChart'
 import IndustrySlots from '@/app/components/admin/bridge/IndustrySlots'
 import AdminOuputSummary from '@/app/components/admin/bridge/AdminOuputSummary'
 import MemberEngagement from '@/app/components/admin/bridge/MemberEngagement'
@@ -13,9 +13,10 @@ import TopPerformers from '@/app/components/admin/bridge/TopPerformers'
 import { useListAdminStatsQuery } from '@/app/redux/services/dashboardApi'
 import TooltipWrapper from '@/app/components/common/TooltipWrapper'
 import { useRouter } from 'next/navigation'
+import { chapterId } from '@/app/lib/constants/api/chapterId'
 
 const AdminBridge = () => {
-  const { data } = useListAdminStatsQuery({})
+  const { data } = useListAdminStatsQuery({ chapterId })
   const { push } = useRouter()
   return (
     <div className="bg-gray-900">
@@ -26,7 +27,7 @@ const AdminBridge = () => {
           {/* Stats Grid */}
           <AdminBridgeStatsGrid data={data} />
           {/* Weekly Activity Chart */}
-          <AdminWeeklyActivityChart weeklyActivity={data?.weeklyActivity} />
+          <WeeklyActivityChart weeklyActivity={data?.weeklyActivity} />
 
           {/* Industry Slots */}
           <IndustrySlots industrySlots={data?.industrySlots} capacityPercent={data?.capacityPercent} />
@@ -42,7 +43,7 @@ const AdminBridge = () => {
                 onClick={() => push('/admin/navigators')}
               />
               <QuickActionButton
-                title="Schedule Parley"
+                title="Call a Parley"
                 icon={Scroll}
                 color="from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-400 hover:to-blue-500"
                 onClick={() => push('/admin/parley')}
@@ -54,7 +55,7 @@ const AdminBridge = () => {
                 onClick={() => push('/admin/reports')}
               />
               <QuickActionButton
-                title="Chapter Settings"
+                title="Rigging"
                 icon={Settings}
                 color="from-pink-500 to-pink-600 text-white rounded-lg hover:from-pink-400 hover:to-pink-500"
                 onClick={() => push('/admin/rigging')}

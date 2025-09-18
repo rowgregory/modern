@@ -1,6 +1,6 @@
 const industryList = [
   // Technology & Software (Sqysh's Category)
-  'Custom Software Development',
+  'Software Development',
   // Business & Finance
   'Accountant',
   'Financial Advisor',

@@ -132,6 +132,7 @@ const TrasureMaps = () => {
             advice="Mark the spot — help other navigators discover the X"
             func={setOpenTreasureMapDrawer}
             action="Treasure Map"
+            formName="treasureMapForm"
           />
         )}
       </motion.div>

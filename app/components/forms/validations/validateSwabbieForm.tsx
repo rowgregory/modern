@@ -5,6 +5,8 @@ interface SSwabbieFormInputs {
   email: string
   company: string
   industry: string
+  location: string
+  businessLicenseNumber: string
 }
 
 const validateSwabbieForm = (inputs: SSwabbieFormInputs, setErrors: (newErrors: any) => void) => {
@@ -22,8 +24,15 @@ const validateSwabbieForm = (inputs: SSwabbieFormInputs, setErrors: (newErrors: 
     newErrors.company = 'Please enter valid company'
   }
 
+  if (!inputs?.location?.trim()) {
+    newErrors.location = 'Please enter valid location'
+  }
+
   if (!inputs?.industry?.trim()) {
     newErrors.industry = 'Please enter valid industry'
+  }
+  if (!inputs?.businessLicenseNumber?.trim()) {
+    newErrors.businessLicenseNumber = 'Please enter valid businees license number'
   }
 
   setErrors(newErrors)

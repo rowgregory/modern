@@ -19,7 +19,7 @@ export const anchorApi = api.injectEndpoints({
         method: 'POST',
         body: anchor
       }),
-      invalidatesTags: ['Anchor']
+      invalidatesTags: ['Anchor', 'Dashboard']
     }),
     updateAnchor: build.mutation({
       query: ({ chapterId, userId, anchorId, ...updateData }) => ({
@@ -27,7 +27,7 @@ export const anchorApi = api.injectEndpoints({
         method: 'PUT',
         body: { anchorId, ...updateData }
       }),
-      invalidatesTags: ['Anchor']
+      invalidatesTags: ['Anchor', 'Dashboard']
     })
   })
 })

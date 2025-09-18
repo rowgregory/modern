@@ -20,8 +20,13 @@ const Applications = () => {
 
   const filteredApplications = users
     ?.filter((user) => {
-      // Only show PENDING and REJECTED (SUSPENDED/CANCELLED) users
-      const isApplicationStatus = ['PENDING', 'REJECTED'].includes(user.membershipStatus)
+      // Only show users who have completed an application
+      const hasCompletedApplication = user.hasCompletedApplication === true
+
+      // Show all application statuses, plus ACTIVE users who completed applications
+      const isApplicationStatus =
+        ['PENDING', 'INITIAL_REVIEW', 'BACKGROUND_CHECK', 'REJECTED'].includes(user.membershipStatus) ||
+        (user.membershipStatus === 'ACTIVE' && hasCompletedApplication)
 
       const matchesSearch = searchQuery === '' || user.name.toLowerCase().includes(searchQuery.toLowerCase())
 
@@ -98,7 +103,7 @@ const Applications = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all"
             >
-              {getApplicationStatusOptions(users).map((option) => (
+              {getApplicationStatusOptions(filteredApplications).map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label} ({option.count})
                 </option>
@@ -111,7 +116,7 @@ const Applications = () => {
         <div className="grid grid-cols-1 2xl:grid-cols-2 3xl:grid-cols-3 gap-7">
           <AnimatePresence>
             {filteredApplications?.map((application, index) => (
-              <SwabbieCard key={index} application={application} index={index} />
+              <SwabbieCard key={index} swabbie={application} index={index} />
             ))}
           </AnimatePresence>
         </div>

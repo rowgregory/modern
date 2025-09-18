@@ -47,7 +47,10 @@ export async function getMyProfile(req: NextRequest, chapterId: string, userId: 
           select: {
             id: true,
             name: true,
-            location: true
+            location: true,
+            hasUnlockedMuster: true,
+            hasUnlockedBooty: true,
+            hasUnlockedGrog: true
           }
         }
       }

@@ -14,7 +14,7 @@ const initialState: ToastState = {
   type: 'success',
   message: '',
   description: '',
-  duration: 4000
+  duration: 7000
 }
 
 export const toastSlice = createSlice({

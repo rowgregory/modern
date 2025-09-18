@@ -56,6 +56,7 @@ export async function middleware(req: NextRequest) {
     }) && !isAuthAPIRoute
 
   const isProtectedPageRoute = nextUrl.pathname.startsWith('/member') || nextUrl.pathname.startsWith('/admin')
+  const isAdminRoute = nextUrl.pathname.startsWith('/admin')
 
   // Handle page route redirects for logged in users
   if (isLoggedIn && isPublicRoute) {
@@ -90,6 +91,11 @@ export async function middleware(req: NextRequest) {
     const loginUrl = new URL('/auth/login', nextUrl)
     loginUrl.searchParams.set('callbackUrl', nextUrl.pathname)
     return NextResponse.redirect(loginUrl)
+  }
+
+  // Block MEMBER role from accessing admin routes
+  if (isLoggedIn && isAdminRoute && session.user.role === 'MEMBER') {
+    return NextResponse.redirect(new URL('/member/bridge', nextUrl))
   }
 
   // Continue with headers for all routes

@@ -1,96 +1,19 @@
-import { useAppDispatch, useUserSelector } from '@/app/redux/store'
-import React, { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import React from 'react'
+import ActionButtonWithDropdown from '../header/ActionButtonWithDropdown'
+import MobileMenuButton from '../header/MobileMenuButton'
+import LogoutButton from '../header/LogoutButton'
 // import { useGetNotificationsQuery } from '@/app/redux/services/notificationApi'
 // import { chapterId } from '@/app/lib/constants/api/chapterId'
-import { Plus, ChevronDown, Users, BarChart3, Calendar, Anchor, LogOut, Layers3, Sailboat, Menu } from 'lucide-react'
-import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
-import { setOpenAddUserDrawer, setOpenSwabbieDrawer } from '@/app/redux/features/userSlice'
 // import { Notification } from '@/types/notification'
-import { navigatorInputs, setInputs } from '@/app/redux/features/formSlice'
-import { initialParleyFormState } from '@/app/lib/constants/entities/initialParleyFormState'
-import { signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { User } from '@/types/user'
-// import { showToast } from '@/app/redux/features/toastSlice'
-import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
-import { initialAnchorFormState } from '@/app/lib/constants/anchor'
-import { setOpenTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
-import { initialTreasureMapFormState } from '@/types/treasure-map'
-import { setOpenMobileNavigation } from '@/app/redux/features/appSlice'
-
-const actionItems = (isAdmin: boolean) => [
-  {
-    action: 'schedule-parley',
-    label: 'Schedule Parley',
-    icon: Calendar,
-    open: setOpenParleyDrawer,
-    formName: 'parleyForm',
-    initial: initialParleyFormState
-  },
-  {
-    action: 'create-treasure-map',
-    label: 'Send Treasure Map',
-    icon: Layers3,
-    open: setOpenTreasureMapDrawer,
-    formName: 'treasureMapForm',
-    initial: initialTreasureMapFormState
-  },
-  {
-    action: 'anchor',
-    label: 'Drop Anchor',
-    icon: Anchor,
-    open: setOpenAnchorDrawer,
-    formName: 'anchorForm',
-    initial: initialAnchorFormState
-  },
-  {
-    action: 'add-swabbie',
-    label: 'Invite Swabbie',
-    icon: Sailboat,
-    open: setOpenSwabbieDrawer,
-    formName: 'swabbieForm',
-    initial: {}
-  },
-  ...(isAdmin
-    ? [
-        {
-          action: 'add-navigator',
-          label: 'Add Navigator',
-          icon: Users,
-          open: setOpenAddUserDrawer,
-          formName: 'navigatorForm',
-          initial: navigatorInputs
-        },
-        {
-          action: 'generate-report',
-          label: 'Generate Report',
-          icon: BarChart3,
-          open: () => {}
-        }
-      ]
-    : [])
-]
 
 const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
-  const dispatch = useAppDispatch()
-  const [isActionsOpen, setIsActionsOpen] = useState(false)
   // const [selectedTimeframe, setSelectedTimeframe] = useState('week')
   // const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   // const { data } = useGetNotificationsQuery(chapterId) as { data: any }
-  const { push } = useRouter()
   // const notifications = data?.notifications
   // const unreadCount = data?.unreadCount
-  const [isLoading, setIsLoading] = useState<boolean>(false)
   // const [isMarking, setIsMarking] = useState<Record<string, boolean>>({})
-  const { user } = useUserSelector() as { user: User }
   // const [markNotificationAsRead] = useMarkNotificationAsReadMutation()
-
-  const handleActionClick = (item: any) => {
-    setIsActionsOpen(false)
-    dispatch(item.open())
-    dispatch(setInputs({ formName: item.formName, data: item.initial }))
-  }
 
   const getPageDisplayName = (page: string) => {
     const item = links?.find((nav: { id: string }) => nav.id === page)
@@ -113,21 +36,6 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
   //     setIsMarking({ [notificationId]: false })
   //   }
   // }
-
-  const handleLogout = async (e: { preventDefault: () => void }) => {
-    e.preventDefault()
-
-    try {
-      setIsLoading(true)
-      await signOut({
-        redirect: false, // Prevent automatic redirect
-        callbackUrl: '/auth/login' // Optional: specify where to redirect after signout
-      })
-
-      push('/auth/login')
-      setIsLoading(false)
-    } catch {}
-  }
 
   return (
     <header
@@ -245,52 +153,8 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
           )} */}
 
           {/* Actions Dropdown */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => dispatch(setOpenMobileNavigation())}
-            className="block lg:hidden relative p-2 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 transition-all"
-          >
-            <Menu className="w-5 h-5 text-gray-400" />
-          </motion.button>
-
-          <div className="relative">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsActionsOpen(!isActionsOpen)}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600 text-white rounded-lg hover:from-cyan-500 hover:to-cyan-500 transition-all flex items-center space-x-2 font-medium shadow-lg text-sm"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Actions</span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${isActionsOpen ? 'rotate-180' : ''}`} />
-            </motion.button>
-
-            <AnimatePresence>
-              {isActionsOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-xl"
-                >
-                  <div className="py-2">
-                    {actionItems(user?.isAdmin).map((item, i) => (
-                      <motion.button
-                        key={i}
-                        onClick={() => handleActionClick(item)}
-                        className="w-full px-4 py-3 text-left text-gray-200 hover:text-white transition-all flex items-center space-x-3 hover:bg-cyan-600/10"
-                      >
-                        <item.icon className="w-4 h-4 text-cyan-400" />
-                        <span className="font-medium text-sm">{item.label}</span>
-                      </motion.button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <MobileMenuButton />
+          <ActionButtonWithDropdown />
 
           {/* Export Button */}
           {/* <motion.button
@@ -301,18 +165,7 @@ const FixedHeader = ({ isNavigationCollapsed, selectedPage, links }: any) => {
             <Download className="w-4 h-4" />
             <span className="hidden lg:inline">Export</span>
           </motion.button> */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleLogout}
-            className="relative p-2 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 transition-all"
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-t-0 border-cyan-400 animate-spin rounded-full" />
-            ) : (
-              <LogOut className="w-5 h-5 text-gray-400" />
-            )}
-          </motion.button>
+          <LogoutButton />
         </div>
       </div>
     </header>

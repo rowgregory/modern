@@ -36,7 +36,8 @@ const SwabbieDrawer = () => {
         ...swabbieForm?.inputs,
         chapterId,
         userId: user?.id,
-        membershStatus: 'PENDING'
+        hasCompletedApplication: true,
+        isAddedByAdmin: true
       }
 
       if (inputs?.isUpdating) {

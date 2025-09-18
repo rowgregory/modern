@@ -63,6 +63,27 @@ export const userApi = api.injectEndpoints({
         method: 'DELETE'
       }),
       invalidatesTags: ['User']
+    }),
+    generateMemberMetrics: build.query({
+      query: ({ chapterId, filterType }) =>
+        `${BASE_URL}/${chapterId}/reports/generate-member-metrics?filterType=${filterType}`,
+      providesTags: ['User']
+    }),
+    signalQuartermaster: build.mutation({
+      query: ({ chapterId, ...data }) => ({
+        url: `${BASE_URL}/${chapterId}/swabbie/signal-quartermaster`,
+        method: 'PATCH',
+        body: data
+      }),
+      invalidatesTags: ['User']
+    }),
+    updatePapers: build.mutation({
+      query: ({ chapterId, ...data }) => ({
+        url: `${BASE_URL}/${chapterId}/swabbie/update-papers`,
+        method: 'PATCH',
+        body: data
+      }),
+      invalidatesTags: ['User']
     })
   })
 })
@@ -75,5 +96,8 @@ export const {
   useGetUserByIdQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,
-  useUpdateUserStatusMutation
+  useUpdateUserStatusMutation,
+  useGenerateMemberMetricsQuery,
+  useSignalQuartermasterMutation,
+  useUpdatePapersMutation
 } = userApi

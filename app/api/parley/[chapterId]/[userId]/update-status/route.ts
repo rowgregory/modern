@@ -1,9 +1,21 @@
 import { sliceUser } from '@/app/lib/constants/api/sliceNames'
+import parleyCompletedTemplate from '@/app/lib/email-templates/parley-complete'
+import { getUserFromHeader } from '@/app/lib/utils/api/getUserFromheader'
+import { formatDate } from '@/app/lib/utils/date/formatDate'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function PATCH(req: NextRequest, { params }: any) {
   try {
+    const userAuth = getUserFromHeader({ req })
+
+    if (!userAuth.success) {
+      return userAuth.response!
+    }
+
     const parameters = await params
     const chapterId = parameters.chapterId
     const userId = parameters.userId
@@ -119,6 +131,28 @@ export async function PATCH(req: NextRequest, { params }: any) {
         }
       }
     })
+
+    if (updatedParley.status === 'COMPLETED') {
+      const nodeEnv = process.env.NODE_ENV
+
+      const baseUrl = nodeEnv === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+      const bridgePath = userAuth.user.isAdmin ? '/admin/parley' : '/member/parley'
+      const fullUrl = `${baseUrl}${bridgePath}`
+
+      const parleyCompletedHtmlString = parleyCompletedTemplate(
+        updatedParley.requester.name,
+        updatedParley.recipient.name,
+        formatDate(updatedParley.updatedAt, { includeTime: true }),
+        fullUrl
+      )
+
+      await resend.emails.send({
+        from: `Parley Completed <no-reply@coastal-referral-exchange.com>`,
+        to: [updatedParley.recipient.email],
+        subject: `Parley between ${updatedParley.requester.name === 'Gregory Row' ? 'Sqysh' : updatedParley.requester.name} and ${updatedParley.recipient.name}`,
+        html: parleyCompletedHtmlString
+      })
+    }
 
     return NextResponse.json(
       {

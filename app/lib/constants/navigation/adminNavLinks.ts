@@ -1,4 +1,18 @@
-import { Users, ClipboardList, FileText, TowerControl, Anchor, Sliders, Ship, Scroll, Layers } from 'lucide-react'
+import HiddenCoveSVG from '@/public/svg/HiddenCoveSVG'
+import {
+  Users,
+  ClipboardList,
+  FileText,
+  TowerControl,
+  Anchor,
+  Sliders,
+  Ship,
+  Scroll,
+  Layers,
+  LifeBuoy,
+  Beer,
+  Coins
+} from 'lucide-react'
 
 export const adminNavLinks = [
   {
@@ -30,6 +44,13 @@ export const adminNavLinks = [
     linkKey: '/admin/anchors'
   },
   {
+    id: 'muster',
+    label: 'Muster',
+    icon: LifeBuoy,
+    description: 'The Crew Quarters',
+    linkKey: '/admin/muster'
+  },
+  {
     id: 'beacon',
     label: 'Beacon',
     icon: TowerControl,
@@ -42,6 +63,13 @@ export const adminNavLinks = [
     icon: Users,
     description: 'Member Directory',
     linkKey: '/admin/navigators'
+  },
+  {
+    id: 'grogs',
+    label: 'Grogs',
+    icon: Beer,
+    description: 'The Tavern',
+    linkKey: '/admin/grogs'
   },
   {
     id: 'applications',
@@ -57,6 +85,13 @@ export const adminNavLinks = [
     description: 'Analytics & Reports',
     linkKey: '/admin/reports'
   },
+  {
+    id: 'booty',
+    label: 'Booty',
+    icon: Coins,
+    description: 'The Treasure Vault',
+    linkKey: '/admin/booty'
+  },
 
   {
     id: 'rigging',
@@ -64,5 +99,12 @@ export const adminNavLinks = [
     icon: Sliders,
     description: 'Chapter Configuration',
     linkKey: '/admin/rigging'
+  },
+  {
+    id: 'hidden-cove',
+    label: 'Hidden Cove',
+    icon: HiddenCoveSVG,
+    description: 'Special tools, features, and perks waiting to be discovered',
+    linkKey: '/admin/hidden-cove'
   }
 ]

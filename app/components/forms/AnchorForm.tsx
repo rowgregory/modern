@@ -3,11 +3,13 @@ import { Calendar, DollarSign, Building, FileText, AlertCircle, CheckCircle, Anc
 import { useUserSelector } from '@/app/redux/store'
 import { motion } from 'framer-motion'
 import { formatDateForInput } from '@/app/lib/utils/date/formatDate'
+import { useSession } from 'next-auth/react'
 
 const statusOptions = ['REPORTED', 'VERIFIED']
 
 const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user, isUpdating, onClose }: any) => {
   const { users } = useUserSelector()
+  const session = useSession()
   // Format currency display
   const formatCurrency = (value: string) => {
     if (!value) return ''
@@ -215,7 +217,7 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
             form="anchorForm"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            disabled={isLoading}
+            disabled={isLoading || session.data?.user?.id !== user?.id}
             className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 text-white rounded-lg hover:from-teal-500 hover:to-blue-500 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (

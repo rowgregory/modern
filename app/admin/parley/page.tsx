@@ -109,7 +109,7 @@ const AdminParleys = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all"
+                className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all"
               >
                 {statusOptions(parleys).map((option) => (
                   <option key={option.value} value={option.value}>
@@ -121,12 +121,13 @@ const AdminParleys = () => {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all"
+                className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all"
               >
                 <option value="all">All Types</option>
                 <option value="DECK_TO_DECK">Deck-to-Deck</option>
                 <option value="VOYAGE_CALL">Voyage Call</option>
                 <option value="MESSAGE_IN_A_BOTTLE">Message In a Bottle</option>
+                <option value="LANTERN_LIGHT">Lantern Light</option>
               </select>
 
               <button

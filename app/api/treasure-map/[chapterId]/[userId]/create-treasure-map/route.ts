@@ -22,9 +22,17 @@ export async function POST(req: NextRequest, { params }: any) {
 
     // Parse request body
     const body = await req.json()
-    const { clientName, clientEmail, clientPhone, serviceNeeded, notes, giverNotes, receiverId } = body
-
-    const giverId = userAuth.user.id
+    const {
+      clientName,
+      clientEmail,
+      clientPhone,
+      serviceNeeded,
+      notes,
+      giverNotes,
+      receiverId,
+      giverId,
+      isThirdParty
+    } = body
 
     // Prevent self-referral
     if (giverId === receiverId) {
@@ -70,7 +78,8 @@ export async function POST(req: NextRequest, { params }: any) {
         chapterId,
         giverId,
         receiverId,
-        status: 'GIVEN'
+        status: 'GIVEN',
+        isThirdParty
       },
       include: {
         giver: {

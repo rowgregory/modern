@@ -9,10 +9,11 @@ import ParleyDrawer from './components/drawers/ParleyDrawer'
 import AnchorDrawer from './components/drawers/AnchorDrawer'
 import SwabbieDrawer from './components/drawers/SwabbieDrawer'
 import TreasureMapDrawer from './components/drawers/TreasureMapDrawer'
+import GrogDrawer from './components/drawers/GrogDrawer'
 
 const PageWrapper: FC<{ children: ReactNode }> = ({ children }) => {
   const path = useCustomPathname()
-  const showHeader = !['/admin', '/member', '/skipper/port'].some((str) => path.includes(str))
+  const showHeader = !['/admin', '/member', '/swabbie/port', '/auth/custom-callback'].some((str) => path.includes(str))
 
   return (
     <>
@@ -22,6 +23,7 @@ const PageWrapper: FC<{ children: ReactNode }> = ({ children }) => {
       <AnchorDrawer />
       <SwabbieDrawer />
       <TreasureMapDrawer />
+      <GrogDrawer />
       {showHeader && <Header />}
       {children}
     </>

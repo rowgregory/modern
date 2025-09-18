@@ -76,15 +76,15 @@ const AnchorDrawer = () => {
       dispatch(
         showToast({
           type: 'success',
-          message: `${isUpdating ? 'Update' : 'Create'} Anchor Success`,
-          description: `Anchor ${isUpdating ? 'updated' : 'created'} successfully.`
+          message: `${inputs?.isUpdating ? 'Update' : 'Create'} Anchor Success`,
+          description: `Anchor ${inputs?.isUpdating ? 'updated' : 'created'} successfully.`
         })
       )
     } catch (error: any) {
       dispatch(
         showToast({
           type: 'error',
-          message: `${isUpdating ? 'Update' : 'Create'} Anchor Failed`,
+          message: `${inputs?.isUpdating ? 'Update' : 'Create'} Anchor Failed`,
           description: error.message || 'Unable to process request.'
         })
       )

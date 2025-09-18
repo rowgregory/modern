@@ -13,6 +13,8 @@ import MeetingDetails from './MeetingDetails'
 import OutcomesForCompoletedMeetings from './OutcomesForCompoletedMeetings'
 import RequestedActionButtons from './RequestedActionButtons'
 import ConfirmedActionButtons from './ConfirmedActionButtons'
+import { setInputs } from '@/app/redux/features/formSlice'
+import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
 
 const ParleyCard: FC<{ parley: IParley; index: number }> = ({ parley, index }) => {
   const session = useSession()
@@ -90,7 +92,21 @@ const ParleyCard: FC<{ parley: IParley; index: number }> = ({ parley, index }) =
           {/* Actions for CONFIRMED meetings - Both parties can mark as completed */}
           {(parley.recipientId === session.data?.user?.id || parley.requesterId === session.data?.user?.id) &&
             parley.status === 'CONFIRMED' && (
-              <ConfirmedActionButtons handleStatusUpdate={handleStatusUpdate} isUpdating={isUpdating} parley={parley} />
+              <ConfirmedActionButtons
+                handleStatusUpdate={handleStatusUpdate}
+                isUpdating={isUpdating}
+                parley={parley}
+                onEdit={() => {
+                  const isUserReceiving = parley.recipientId === session.data?.user?.id
+                  dispatch(
+                    setInputs({
+                      formName: 'parleyForm',
+                      data: { ...parley, isUpdating: true, isReceiving: isUserReceiving }
+                    })
+                  )
+                  dispatch(setOpenParleyDrawer())
+                }}
+              />
             )}
 
           {/* Status message for CANCELLED meetings */}

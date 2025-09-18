@@ -1,6 +1,7 @@
 import React, { FC, FormEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertCircle, ArrowRight, CheckCircle, Loader2, Mail } from 'lucide-react'
+import { AlertCircle, ArrowRight, Loader2, Mail } from 'lucide-react'
+import SailboatSVG from '@/public/svg/SailboatSVG'
 
 interface ILoginCard {
   isEmailSent: boolean
@@ -62,8 +63,7 @@ const LoginCard: FC<ILoginCard> = ({
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your.email@company.com"
-                    required
+                    placeholder="refer_sqysh@sqysh.io"
                     disabled={isLoading}
                     className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   />
@@ -117,9 +117,7 @@ const LoginCard: FC<ILoginCard> = ({
             transition={{ duration: 0.3 }}
             className="text-center"
           >
-            <div className="w-16 h-16 bg-green-500/20 border border-green-500/30 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-8 h-8 text-green-400" />
-            </div>
+            <SailboatSVG />
             <h2 className="text-xl font-semibold text-white mb-3">Check your email</h2>
             <p className="text-gray-400 mb-2">We&apos;ve sent a secure magic link to:</p>
             <p className="text-violet-400 font-medium mb-6">{email}</p>

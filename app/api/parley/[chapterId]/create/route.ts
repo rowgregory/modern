@@ -1,10 +1,14 @@
-import { notificationFactory } from '@/app/api/notification/services/notificationFactory'
 import { sliceParley } from '@/app/lib/constants/api/sliceNames'
+import parleyRequestTemplate from '@/app/lib/email-templates/parley-request'
 import { createLog } from '@/app/lib/utils/api/createLog'
 import { getUserFromHeader } from '@/app/lib/utils/api/getUserFromheader'
 import { handleApiError } from '@/app/lib/utils/api/handleApiError'
+import { formatDate } from '@/app/lib/utils/date/formatDate'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: NextRequest, { params }: any) {
   try {
@@ -129,27 +133,72 @@ export async function POST(req: NextRequest, { params }: any) {
       }
     })
 
-    if (status === 'COMPLETED') {
-      notificationFactory.parley.completed(
-        parley.requester.name,
-        parley.scheduledAt,
-        chapterId,
-        parley.id,
-        userAuth.user.id,
-        parley.recipientId
-      )
-    } else {
-      notificationFactory.parley.request(
-        parley.requester.name,
-        parley.scheduledAt,
-        chapterId,
-        parley.id,
-        userAuth.user.id,
-        parley.recipientId
-      )
+    // if (status === 'COMPLETED') {
+    //   notificationFactory.parley.completed(
+    //     parley.requester.name,
+    //     parley.scheduledAt,
+    //     chapterId,
+    //     parley.id,
+    //     userAuth.user.id,
+    //     parley.recipientId
+    //   )
+    // } else {
+    //   notificationFactory.parley.request(
+    //     parley.requester.name,
+    //     parley.scheduledAt,
+    //     chapterId,
+    //     parley.id,
+    //     userAuth.user.id,
+    //     parley.recipientId
+    //   )
+    // }
+
+    const meetingTypes = [
+      { value: 'DECK_TO_DECK', description: 'In-person meeting' },
+      { value: 'VOYAGE_CALL', description: 'Video call (Zoom, Teams, etc.)' },
+      { value: 'MESSAGE_IN_A_BOTTLE', description: 'Audio-only conversation' },
+      { value: 'LANTERN_LIGHT', description: 'Text-based parley (SMS, chat)' }
+    ]
+
+    const formatEnumToReadable = (enumString: string): string => {
+      if (!enumString) return ''
+
+      // Find the meeting type that matches the enum
+      const meetingType = meetingTypes.find((type) => type.value === enumString)
+
+      // Format the enum string to readable format
+      const formattedLabel = enumString
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ')
+
+      // Return formatted label with description if found, otherwise just the formatted label
+      return meetingType ? `${formattedLabel} - ${meetingType.description}` : formattedLabel
     }
 
-    await createLog('info', 'New parley request', {
+    const nodeEnv = process.env.NODE_ENV
+
+    const baseUrl = nodeEnv === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+    const bridgePath = userAuth.user.isAdmin ? '/admin/parley' : '/member/parley'
+    const fullUrl = `${baseUrl}${bridgePath}`
+
+    const parleyRequestHtmlString = parleyRequestTemplate(
+      parley.requester.name,
+      formatEnumToReadable(parley.meetingType),
+      formatDate(parley.scheduledAt, { includeTime: true }),
+      fullUrl,
+      parley.duration,
+      parley.location ? `at ${parley.location}` : 'aboard the bridge'
+    )
+
+    await resend.emails.send({
+      from: `${parley.completed ? 'Parley Submitted' : 'Parley Request'} <no-reply@coastal-referral-exchange.com>`,
+      to: [parley.recipient.email],
+      subject: `Parley ${parley.completed ? 'Submitted' : 'Request'} from ${parley.requester.name === 'Gregory Row' ? 'Sqysh' : parley.requester.name} ${!parley.completed && '- Respond Now!'}`,
+      html: parleyRequestHtmlString
+    })
+
+    await createLog('info', `New parley ${parley.completed ? 'submitted' : 'request'}`, {
       location: ['app route - POST /api/parley/[chapterId]/create'],
       message: `New parley request`,
       name: 'ParleyRequested',
