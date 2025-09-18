@@ -1,5 +1,4 @@
 import { sliceUser } from '@/app/lib/constants/api/sliceNames'
-import { createLog } from '@/app/lib/utils/api/createLog'
 import { handleApiError } from '@/app/lib/utils/api/handleApiError'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
@@ -82,22 +81,6 @@ export async function getMyProfile(req: NextRequest, chapterId: string, userId: 
     const isExpiringSoon = user.expiresAt
       ? Math.floor((new Date(user.expiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) <= 30
       : false
-
-    // Log success
-    await createLog('info', 'User profile retrieved successfully', {
-      location: ['app route - GET /api/member/<chapterId>/<userId>/me'],
-      message: 'User profile retrieved successfully',
-      name: 'UserProfileRetrieved',
-      timestamp: new Date().toISOString(),
-      url: req.url,
-      method: req.method,
-      chapterId,
-      userId: user.id,
-      userEmail: user.email,
-      membershipStatus: user.membershipStatus,
-      isProfileComplete,
-      membershipDays
-    })
 
     return NextResponse.json(
       {
