@@ -130,6 +130,26 @@ export const formatDateRange = (startDays: number, endDays: number) => {
   return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
 }
 
+export const formatMonth = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric'
+  })
+}
+
+export const isCurrentMonth = (date: Date, currentMonth: Date) => {
+  return date.getMonth() === currentMonth.getMonth() && date.getFullYear() === currentMonth.getFullYear()
+}
+
+export const isToday = (date: Date) => {
+  const today = new Date()
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  )
+}
+
 // COMMON VARIABLES
 export const now = new Date()
 

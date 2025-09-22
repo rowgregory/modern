@@ -325,7 +325,10 @@ const GrogsEventsPage: FC = () => {
     .sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })
-
+  const getEventsForDate = (grogs: any[], date: Date) => {
+    const dateString = date.toISOString().split('T')[0]
+    return grogs.filter((event) => event.date === dateString)
+  }
   return (
     <div className="h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
       <div className="flex-1 mx-auto">
@@ -608,7 +611,6 @@ const GrogsEventsPage: FC = () => {
           </motion.div>
         )}
 
-        {/* Calendar View Placeholder */}
         {/* Calendar View */}
         {viewMode === 'calendar' && (
           <motion.div
@@ -633,6 +635,7 @@ const GrogsEventsPage: FC = () => {
               onDateSelect={setSelectedDate}
               getEventTypeIcon={getEventTypeIcon}
               getEventTypeColor={getEventTypeColor}
+              getEventsForDate={getEventsForDate}
             />
           </motion.div>
         )}

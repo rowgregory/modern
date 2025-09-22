@@ -1,15 +1,16 @@
 import React from 'react'
-import { Calendar, DollarSign, Building, FileText, AlertCircle, CheckCircle, Anchor } from 'lucide-react'
-import { useUserSelector } from '@/app/redux/store'
+import { Calendar, DollarSign, Building, FileText, AlertCircle, CheckCircle } from 'lucide-react'
+import { useAppDispatch, useUserSelector } from '@/app/redux/store'
 import { motion } from 'framer-motion'
 import { formatDateForInput } from '@/app/lib/utils/date/formatDate'
 import { useSession } from 'next-auth/react'
+import { setInputs } from '@/app/redux/features/formSlice'
 
 const statusOptions = ['REPORTED', 'VERIFIED']
 
 const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user, isUpdating, onClose }: any) => {
-  const { users } = useUserSelector()
   const session = useSession()
+  const { users } = useUserSelector()
   // Format currency display
   const formatCurrency = (value: string) => {
     if (!value) return ''
@@ -20,6 +21,7 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
       maximumFractionDigits: 2
     }).format(parseFloat(value))
   }
+  const dispatch = useAppDispatch()
 
   return (
     <>
@@ -32,57 +34,174 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
             transition={{ delay: 0.1 }}
             className="space-y-4"
           >
-            <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
-              <Anchor className="w-5 h-5 text-cyan-400" />
-              <span>Anchor Thanks</span>
-            </h3>
+            {/* Role Switch Toggle */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-300">What be yer role in this anchor?</label>
 
-            {/* Current User (Read-only) */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2"> Ye be Droppin’ Anchor</label>
-              <div className="w-full px-4 py-3 bg-gray-700/30 border border-gray-600 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                    {user?.name
-                      ?.split(' ')
-                      .map((n: any[]) => n[0])
-                      .join('')}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    dispatch(
+                      setInputs({
+                        formName: 'anchorForm',
+                        data: { isReceiving: false, giverId: user?.id, receiverId: '' }
+                      })
+                    )
+                  }}
+                  className={`py-4 px-4 rounded-xl border transition-all duration-200 ${
+                    !inputs?.isReceiving
+                      ? 'border-teal-400 bg-teal-400/10 text-teal-300 shadow-lg shadow-teal-400/20'
+                      : 'border-gray-600 bg-gray-800/50 text-gray-300 hover:border-gray-500 hover:bg-gray-700/50'
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="font-semibold">I Referred This Business</div>
+                    <div className="text-xs opacity-70 mt-1">I gave the referral that led to this sale</div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-white">{user?.name}</p>
-                    <p className="text-sm text-gray-400">{user?.email}</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    dispatch(
+                      setInputs({
+                        formName: 'anchorForm',
+                        data: { isReceiving: true, receiverId: user?.id, giverId: '' }
+                      })
+                    )
+                  }}
+                  className={`py-4 px-4 rounded-xl border transition-all duration-200 ${
+                    inputs?.isReceiving
+                      ? 'border-purple-400 bg-purple-400/10 text-purple-300 shadow-lg shadow-purple-400/20'
+                      : 'border-gray-600 bg-gray-800/50 text-gray-300 hover:border-gray-500 hover:bg-gray-700/50'
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="font-semibold">I Closed This Business</div>
+                    <div className="text-xs opacity-70 mt-1">I received and closed this referral</div>
                   </div>
-                </div>
+                </button>
               </div>
             </div>
 
-            {/* Who to meet with */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2"> Who steered yer course?</label>
-              <select
-                name="receiverId"
-                value={inputs?.receiverId || ''}
-                onChange={(e) => handleInput({ target: { name: 'receiverId', value: e.target.value } })}
-                className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all ${
-                  errors.receiverId ? 'border-red-500' : 'border-gray-600'
-                }`}
-              >
-                <option value="">Select a crew member...</option>
-                {users
-                  ?.filter((navigator) => navigator.id !== user?.id && navigator?.membershipStatus === 'ACTIVE')
-                  .map((navigator) => (
-                    <option key={navigator.id} value={navigator.id || ''}>
-                      {navigator.name} - {navigator.company}
-                    </option>
-                  ))}
-              </select>
-              {errors.receiverId && (
-                <p className="text-red-400 text-sm mt-1 flex items-center space-x-1">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>{errors.receiverId}</span>
-                </p>
-              )}
-            </div>
+            {!inputs?.isReceiving ? (
+              <>
+                {/* When user GAVE the referral - Current User (Read-only) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    You gave the referral that led to this business
+                  </label>
+                  <div className="w-full px-4 py-3 bg-gray-700/30 border border-gray-600 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                        {user?.name
+                          ?.split(' ')
+                          .map((n: any[]) => n[0])
+                          .join('')}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white">{user?.name}</p>
+                        <p className="text-sm text-gray-400">{user?.email}</p>
+                      </div>
+                      <div className="ml-auto">
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-teal-400/20 text-teal-300 border border-teal-400/30">
+                          Referral Giver
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Who received and closed the referral */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Who received your referral and closed this business?
+                  </label>
+                  <select
+                    name="receiverId"
+                    value={inputs?.receiverId || ''}
+                    onChange={(e) => handleInput({ target: { name: 'receiverId', value: e.target.value } })}
+                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all ${
+                      errors.receiverId ? 'border-red-500' : 'border-gray-600'
+                    }`}
+                  >
+                    <option value="">Select who closed the business...</option>
+                    {users
+                      ?.filter((navigator) => navigator.id !== user?.id && navigator?.membershipStatus === 'ACTIVE')
+                      .map((navigator) => (
+                        <option key={navigator.id} value={navigator.id || ''}>
+                          {navigator.name} - {navigator.company}
+                        </option>
+                      ))}
+                  </select>
+                  {errors.receiverId && (
+                    <p className="text-red-400 text-sm mt-1 flex items-center space-x-1">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>{errors.receiverId}</span>
+                    </p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* When user RECEIVED the referral - Current User (Read-only) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    You received a referral and closed this business
+                  </label>
+                  <div className="w-full px-4 py-3 bg-gray-700/30 border border-gray-600 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                        {user?.name
+                          ?.split(' ')
+                          .map((n: any[]) => n[0])
+                          .join('')}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white">{user?.name}</p>
+                        <p className="text-sm text-gray-400">{user?.email}</p>
+                      </div>
+                      <div className="ml-auto">
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-400/20 text-purple-300 border border-purple-400/30">
+                          Business Closer
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Who gave the referral */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Who gave you the referral that led to this business?
+                  </label>
+                  <select
+                    name="giverId"
+                    value={inputs?.giverId || ''}
+                    onChange={(e) => handleInput({ target: { name: 'giverId', value: e.target.value } })}
+                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all ${
+                      errors.giverId ? 'border-red-500' : 'border-gray-600'
+                    }`}
+                  >
+                    <option value="">Select who gave you the referral...</option>
+                    {users
+                      ?.filter((navigator) => navigator.id !== user?.id && navigator?.membershipStatus === 'ACTIVE')
+                      .map((navigator) => (
+                        <option key={navigator.id} value={navigator.id || ''}>
+                          {navigator.name} - {navigator.company}
+                        </option>
+                      ))}
+                  </select>
+                  {errors.giverId && (
+                    <p className="text-red-400 text-sm mt-1 flex items-center space-x-1">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>{errors.giverId}</span>
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
           </motion.div>
 
           {/* Business Value */}

@@ -1,5 +1,5 @@
 import HiddenCoveSVG from '@/public/svg/HiddenCoveSVG'
-import { TowerControl, Ship, Anchor, Scroll, Layers, Sailboat } from 'lucide-react'
+import { TowerControl, Ship, Anchor, Scroll, Layers, Sailboat, Crosshair } from 'lucide-react'
 
 export const memberNavLinks = [
   {
@@ -29,6 +29,13 @@ export const memberNavLinks = [
     icon: Anchor,
     description: 'Thank You For Closed Business',
     linkKey: '/member/anchors'
+  },
+  {
+    id: 'rendezvous',
+    label: 'Rendezvous',
+    icon: Crosshair,
+    description: 'The Gathering Point',
+    linkKey: '/member/rendezvous'
   },
   {
     id: 'swabbies',

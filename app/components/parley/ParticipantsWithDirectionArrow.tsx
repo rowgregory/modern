@@ -13,7 +13,11 @@ const ParticipantsWithDirectionArrow: FC<{ parley: IParley }> = ({ parley }) => 
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
             {parley.requester.profileImage ? (
-              <Picture src={parley.requester.profileImage} className="w-full h-full rounded-full" priority={false} />
+              <Picture
+                src={parley.requester.profileImage}
+                className="w-full h-full rounded-full object-cover"
+                priority={false}
+              />
             ) : (
               getInitials(parley.requester.name)
             )}

@@ -23,9 +23,7 @@ export async function POST(req: NextRequest, { params }: any) {
 
     // Parse request body
     const body = await req.json()
-    const { businessValue, clientName, closedDate, description, notes, receiverId, status } = body
-
-    const giverId = userAuth.user.id
+    const { businessValue, clientName, closedDate, description, notes, receiverId, giverId, status } = body
 
     // Prevent self-meeting
     if (giverId === receiverId) {

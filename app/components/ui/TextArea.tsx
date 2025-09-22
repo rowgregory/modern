@@ -30,7 +30,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const [isFocused, setIsFocused] = React.useState(false)
     const paddingLeft = icon ? 'pl-10 pt-3' : 'p-4'
 
-    const textareaStyles = `w-full text-white placeholder-gray-400 focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed resize-none ${
+    const textareaStyles = `w-full text-white placeholder-gray-400 focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed resize-y ${
       variant === 'default'
         ? 'bg-gray-800/50 border border-gray-600 rounded-lg'
         : variant === 'filled'

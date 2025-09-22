@@ -16,14 +16,23 @@ import { showToast } from '@/app/redux/features/toastSlice'
 const validateForm = (inputs: any, setErrors: any) => {
   const newErrors = {} as any
 
-  if (!inputs?.receiverId) newErrors.receiverId = 'Choose who gave ye the treasure map'
+  // Always validate that both giver and receiver are selected
+  if (!inputs?.giverId) newErrors.giverId = 'Please select who gave the referral'
+  if (!inputs?.receiverId) newErrors.receiverId = 'Please select who received the referral'
+
   if (!inputs?.businessValue || parseFloat(inputs?.businessValue) <= 0) {
     newErrors.businessValue = 'Please enter a valid business value'
   }
-  if (!inputs?.description?.trim()) newErrors.description = 'Please describe the business that was closed'
-  if (!inputs?.closedDate) newErrors.closedDate = 'Please select when the business was closed'
 
-  // Check that giver and receiver are different
+  if (!inputs?.description?.trim()) {
+    newErrors.description = 'Please describe the business that was closed'
+  }
+
+  if (!inputs?.closedDate) {
+    newErrors.closedDate = 'Please select when the business was closed'
+  }
+
+  // Check that giver and receiver are different people
   if (inputs?.giverId && inputs?.receiverId && inputs?.giverId === inputs?.receiverId) {
     newErrors.receiverId = 'Giver and receiver must be different people'
   }

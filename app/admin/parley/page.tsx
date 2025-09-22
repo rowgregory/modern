@@ -91,7 +91,7 @@ const AdminParleys = () => {
           </div>
 
           {/* Filters and Search */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="sticky top-0 z-20 flex flex-col sm:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />

@@ -100,14 +100,14 @@ const TreasureMapCard: FC<{ treasureMap: ITreasureMap; index: number }> = ({ tre
               priority={false}
               src={treasureMap?.giver?.profileImage}
               alt={treasureMap?.giver?.name}
-              className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600"
+              className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600 object-cover"
             />
             {/* Receiver Avatar */}
             <Picture
               priority={false}
               src={treasureMap.receiver?.profileImage}
               alt={treasureMap.receiver?.name}
-              className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600"
+              className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600 object-cover"
             />
           </div>
           <div>

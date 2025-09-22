@@ -65,7 +65,7 @@ const ParleyCard: FC<{ parley: IParley; index: number }> = ({ parley, index }) =
     >
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         {/* Main Info */}
-        <div className="flex-1 space-y-4">
+        <div className="space-y-4 w-full">
           <Header parley={parley} />
 
           {/* Participants with direction arrow */}

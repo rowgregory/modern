@@ -11,7 +11,8 @@ import {
   Layers,
   LifeBuoy,
   Beer,
-  Coins
+  Coins,
+  Crosshair
 } from 'lucide-react'
 
 export const adminNavLinks = [
@@ -49,6 +50,13 @@ export const adminNavLinks = [
     icon: LifeBuoy,
     description: 'The Crew Quarters',
     linkKey: '/admin/muster'
+  },
+  {
+    id: 'rendezvous',
+    label: 'Rendezvous',
+    icon: Crosshair,
+    description: 'The Gathering Point',
+    linkKey: '/admin/rendezvous'
   },
   {
     id: 'beacon',

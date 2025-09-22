@@ -487,10 +487,12 @@ const AdminReportsPage: React.FC = () => {
                           <div className="text-sm font-semibold text-white">
                             ${(member.scores.revenue / 1000).toFixed(0)}k
                           </div>
-                          <div className="text-xs text-gray-400">Given: ${member.scores.businessGiven}k</div>
-                          <div className="text-xs text-gray-400">
-                            Received: ${member.scores.businessReceived?.toLocaleString()}k
+                          <div className="text-xs text-gray-400 whitespace-nowrap">
+                            Given: ${member.scores.businessGiven?.toLocaleString()}k
                           </div>
+                          {/* <div className="text-xs text-gray-400">
+                            Received: ${member.scores.businessReceived?.toLocaleString()}k
+                          </div> */}
                         </div>
                       </td>
                     </motion.tr>

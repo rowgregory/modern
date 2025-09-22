@@ -97,7 +97,8 @@ const formInitialState = {
   },
   anchorForm: { inputs: {}, errors: {} },
   treasureMapForm: { inputs: {}, errors: {} },
-  grogForm: { inputs: {}, errors: {} }
+  grogForm: { inputs: {}, errors: {} },
+  rendezvousForm: { inputs: {}, errors: {} }
 } as any
 
 const formSlice = createSlice({

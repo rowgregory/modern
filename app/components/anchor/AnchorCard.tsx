@@ -1,12 +1,13 @@
 import React, { FC, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, DollarSign, Building2, User, FileText, MapPin } from 'lucide-react'
+import { Calendar, DollarSign, Building2, User, FileText, MapPin, ArrowRightCircle } from 'lucide-react'
 import { IAnchor } from '@/types/anchor'
 import Picture from '../common/Picture'
 import { formatDate } from '@/app/lib/utils/date/formatDate'
 import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { setInputs } from '@/app/redux/features/formSlice'
+import { useSession } from 'next-auth/react'
 
 const formatCurrency = (amount: any, currency: string) => {
   return new Intl.NumberFormat('en-US', {
@@ -31,12 +32,18 @@ const getStatusColor = (status: string) => {
 const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
   const dispatch = useAppDispatch()
+  const session = useSession()
 
   return (
     <motion.div
       onClick={() => {
         dispatch(setOpenAnchorDrawer())
-        dispatch(setInputs({ formName: 'anchorForm', data: { ...anchor, isUpdating: true } }))
+        dispatch(
+          setInputs({
+            formName: 'anchorForm',
+            data: { ...anchor, isReceiving: anchor.receiverId === session.data?.user?.id, isUpdating: true }
+          })
+        )
       }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -52,15 +59,10 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
               priority={false}
               src={anchor.giver?.profileImage}
               alt={anchor.giver?.name}
-              className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600"
+              className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600 object-cover"
             />
+            <ArrowRightCircle className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600" />
             {/* Receiver Avatar */}
-            <Picture
-              priority={false}
-              src={anchor.receiver?.profileImage}
-              alt={anchor.receiver?.name}
-              className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600"
-            />
           </div>
           <div>
             <h3 className="text-white font-semibold text-lg">{anchor.clientName}</h3>
@@ -104,8 +106,8 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
             <span className="text-gray-400 text-sm">Receiver</span>
           </div>
           <div>
-            <p className="text-white text-sm font-medium">{anchor.receiver?.name}</p>
-            <p className="text-gray-400 text-xs">{anchor.receiver?.company}</p>
+            <p className="text-white text-sm font-medium">Anonymous</p>
+            <p className="text-gray-400 text-xs">--</p>
           </div>
         </div>
       </div>
@@ -120,43 +122,45 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
         <div className="text-gray-400">Created: {formatDate(anchor.createdAt)}</div>
       </div>
 
-      {/* Description */}
-      {anchor.description && (
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              <FileText className="w-4 h-4 text-gray-400" />
-              <span className="text-gray-400 text-sm">Description</span>
+      {(session?.data?.user?.id === anchor.receiverId || session?.data?.user?.id === anchor.giverId) && (
+        <div>
+          {anchor.description && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <FileText className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-400 text-sm">Description</span>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsDescriptionExpanded(!isDescriptionExpanded)
+                  }}
+                  className="text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors"
+                >
+                  {isDescriptionExpanded ? 'Show Less' : 'Show More'}
+                </button>
+              </div>
+              <motion.div
+                initial={false}
+                animate={{ height: isDescriptionExpanded ? 'auto' : '4.5rem' }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="overflow-hidden"
+              >
+                <p className="text-gray-300 text-sm leading-relaxed">{anchor.description}</p>
+              </motion.div>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setIsDescriptionExpanded(!isDescriptionExpanded)
-              }}
-              className="text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors"
-            >
-              {isDescriptionExpanded ? 'Show Less' : 'Show More'}
-            </button>
-          </div>
-          <motion.div
-            initial={false}
-            animate={{ height: isDescriptionExpanded ? 'auto' : '4.5rem' }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="overflow-hidden"
-          >
-            <p className="text-gray-300 text-sm leading-relaxed">{anchor.description}</p>
-          </motion.div>
-        </div>
-      )}
+          )}
 
-      {/* Notes */}
-      {anchor.notes && (
-        <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-600">
-          <div className="flex items-center space-x-2 mb-2">
-            <MapPin className="w-4 h-4 text-blue-400" />
-            <span className="text-blue-400 text-sm font-medium">Notes</span>
-          </div>
-          <p className="text-gray-300 text-sm leading-relaxed">{anchor.notes}</p>
+          {anchor.notes && (
+            <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-600">
+              <div className="flex items-center space-x-2 mb-2">
+                <MapPin className="w-4 h-4 text-blue-400" />
+                <span className="text-blue-400 text-sm font-medium">Notes</span>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed">{anchor.notes}</p>
+            </div>
+          )}
         </div>
       )}
     </motion.div>

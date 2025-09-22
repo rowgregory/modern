@@ -147,6 +147,7 @@ const AdminAnchors = () => {
             advice="Drop your first anchor to get started"
             func={setOpenAnchorDrawer}
             action="Drop Anchor"
+            formName="anchorForm"
           />
         )}
       </motion.div>
