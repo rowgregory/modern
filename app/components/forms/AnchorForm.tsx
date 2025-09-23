@@ -5,8 +5,7 @@ import { motion } from 'framer-motion'
 import { formatDateForInput } from '@/app/lib/utils/date/formatDate'
 import { useSession } from 'next-auth/react'
 import { setInputs } from '@/app/redux/features/formSlice'
-
-const statusOptions = ['REPORTED', 'VERIFIED']
+import getAnchorStatusColor from '@/app/lib/utils/anchor/getAnchorStatusColor'
 
 const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user, isUpdating, onClose }: any) => {
   const session = useSession()
@@ -122,11 +121,12 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
                     name="receiverId"
                     value={inputs?.receiverId || ''}
                     onChange={(e) => handleInput({ target: { name: 'receiverId', value: e.target.value } })}
-                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all ${
+                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all ${
                       errors.receiverId ? 'border-red-500' : 'border-gray-600'
                     }`}
                   >
                     <option value="">Select who closed the business...</option>
+                    <option value="external">Out of chaper member</option>
                     {users
                       ?.filter((navigator) => navigator.id !== user?.id && navigator?.membershipStatus === 'ACTIVE')
                       .map((navigator) => (
@@ -142,6 +142,81 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
                     </p>
                   )}
                 </div>
+                {inputs?.receiverId === 'external' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-4 mt-4 p-4 bg-gray-800/30 border border-gray-600/30 rounded-lg"
+                  >
+                    <h4 className="text-sm font-medium text-gray-300 mb-3">External Referral Source Details</h4>
+
+                    {/* External Giver Name */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Name <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="externalReceiverName"
+                        value={inputs?.externalReceiverName || ''}
+                        onChange={handleInput}
+                        placeholder="Enter their full name"
+                        className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all ${
+                          errors.externalReceiverName ? 'border-red-500' : 'border-gray-600'
+                        }`}
+                      />
+                      {errors.externalReceiverName && (
+                        <p className="text-red-400 text-sm mt-1 flex items-center space-x-1">
+                          <AlertCircle className="w-4 h-4" />
+                          <span>{errors.externalReceiverName}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* External Giver Email */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                      <input
+                        type="email"
+                        name="externalReceiverEmail"
+                        value={inputs?.externalReceiverEmail || ''}
+                        onChange={handleInput}
+                        placeholder="their.email@company.com"
+                        className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all ${
+                          errors.externalReceiverEmail ? 'border-red-500' : 'border-gray-600'
+                        }`}
+                      />
+                      {errors.externalReceiverEmail && (
+                        <p className="text-red-400 text-sm mt-1 flex items-center space-x-1">
+                          <AlertCircle className="w-4 h-4" />
+                          <span>{errors.externalReceiverEmail}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* External Giver Company */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Company/Organization</label>
+                      <input
+                        type="text"
+                        name="externalReceiverCompany"
+                        value={inputs?.externalReceiverCompany || ''}
+                        onChange={handleInput}
+                        placeholder="Their company or organization name"
+                        className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all ${
+                          errors.externalReceiverCompany ? 'border-red-500' : 'border-gray-600'
+                        }`}
+                      />
+                      {errors.externalReceiverCompany && (
+                        <p className="text-red-400 text-sm mt-1 flex items-center space-x-1">
+                          <AlertCircle className="w-4 h-4" />
+                          <span>{errors.externalReceiverCompany}</span>
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
               </>
             ) : (
               <>
@@ -180,11 +255,12 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
                     name="giverId"
                     value={inputs?.giverId || ''}
                     onChange={(e) => handleInput({ target: { name: 'giverId', value: e.target.value } })}
-                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all ${
+                    className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg focus:outline-none text-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all ${
                       errors.giverId ? 'border-red-500' : 'border-gray-600'
                     }`}
                   >
                     <option value="">Select who gave you the referral...</option>
+                    <option value="external">Out of chaper member</option>
                     {users
                       ?.filter((navigator) => navigator.id !== user?.id && navigator?.membershipStatus === 'ACTIVE')
                       .map((navigator) => (
@@ -200,6 +276,82 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
                     </p>
                   )}
                 </div>
+                {/* Conditional External Giver Inputs */}
+                {inputs?.giverId === 'external' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-4 mt-4 p-4 bg-gray-800/30 border border-gray-600/30 rounded-lg"
+                  >
+                    <h4 className="text-sm font-medium text-gray-300 mb-3">External Referral Source Details</h4>
+
+                    {/* External Giver Name */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Name <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="externalGiverName"
+                        value={inputs?.externalGiverName || ''}
+                        onChange={handleInput}
+                        placeholder="Enter their full name"
+                        className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all ${
+                          errors.externalGiverName ? 'border-red-500' : 'border-gray-600'
+                        }`}
+                      />
+                      {errors.externalGiverName && (
+                        <p className="text-red-400 text-sm mt-1 flex items-center space-x-1">
+                          <AlertCircle className="w-4 h-4" />
+                          <span>{errors.externalGiverName}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* External Giver Email */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                      <input
+                        type="email"
+                        name="externalGiverEmail"
+                        value={inputs?.externalGiverEmail || ''}
+                        onChange={handleInput}
+                        placeholder="their.email@company.com"
+                        className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all ${
+                          errors.externalGiverEmail ? 'border-red-500' : 'border-gray-600'
+                        }`}
+                      />
+                      {errors.externalGiverEmail && (
+                        <p className="text-red-400 text-sm mt-1 flex items-center space-x-1">
+                          <AlertCircle className="w-4 h-4" />
+                          <span>{errors.externalGiverEmail}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* External Giver Company */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Company/Organization</label>
+                      <input
+                        type="text"
+                        name="externalGiverCompany"
+                        value={inputs?.externalGiverCompany || ''}
+                        onChange={handleInput}
+                        placeholder="Their company or organization name"
+                        className={`w-full px-4 py-3 bg-gray-800/50 border rounded-lg text-white focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all ${
+                          errors.externalGiverCompany ? 'border-red-500' : 'border-gray-600'
+                        }`}
+                      />
+                      {errors.externalGiverCompany && (
+                        <p className="text-red-400 text-sm mt-1 flex items-center space-x-1">
+                          <AlertCircle className="w-4 h-4" />
+                          <span>{errors.externalGiverCompany}</span>
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
               </>
             )}
           </motion.div>
@@ -231,20 +383,22 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
           </div>
 
           {/* Client Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              <Building className="w-4 h-4 inline mr-2" />
-              Client Name (Optional)
-            </label>
-            <input
-              type="text"
-              name="clientName"
-              value={inputs?.clientName || ''}
-              onChange={handleInput}
-              placeholder="Client or company name"
-              className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-            />
-          </div>
+          {inputs?.giverId !== 'external' && inputs?.receiverId !== 'external' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                <Building className="w-4 h-4 inline mr-2" />
+                Client Name (Optional)
+              </label>
+              <input
+                type="text"
+                name="clientName"
+                value={inputs?.clientName || ''}
+                onChange={handleInput}
+                placeholder="Client or company name"
+                className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+              />
+            </div>
+          )}
 
           {/* Closed Date */}
           <div>
@@ -286,18 +440,16 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
               <AlertCircle className="w-4 h-4 inline mr-2" />
               Status
             </label>
-            <select
-              name="status"
-              value={inputs?.status}
-              onChange={handleInput}
-              className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2.5 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-            >
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
+            <div className="w-full bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-600 rounded-lg px-4 py-3 relative overflow-hidden">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-3 h-3 rounded-full ${getAnchorStatusColor(inputs?.status)}`}></div>
+                  <span className="text-white font-medium">{inputs?.status || 'No status set'}</span>
+                </div>
+                <div className="text-xs text-gray-400 bg-gray-600/30 px-2 py-1 rounded">Read Only</div>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12 -translate-x-full animate-pulse"></div>
+            </div>
           </div>
 
           {/* Additional Notes */}

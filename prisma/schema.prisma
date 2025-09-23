@@ -223,12 +223,20 @@ model Anchor {
   updatedAt DateTime @updatedAt
 
   // Who is giving the thank you
-  giverId String
-  giver   User   @relation("AnchorGiver", fields: [giverId], references: [id])
+  giverId String?
+  giver   User?   @relation("AnchorGiver", fields: [giverId], references: [id])
+
+  externalGiverName    String?
+  externalGiverEmail   String?
+  externalGiverCompany String?
 
   // Who is receiving the thank you (who provided the referral)
-  receiverId String
-  receiver   User   @relation("AnchorReceiver", fields: [receiverId], references: [id])
+  receiverId String?
+  receiver   User?   @relation("AnchorReceiver", fields: [receiverId], references: [id])
+
+  externalReceiverName    String?
+  externalReceiverEmail   String?
+  externalReceiverCompany String?
 
   // Business details
   businessValue Decimal @db.Decimal(10, 2) // monetary value of closed business

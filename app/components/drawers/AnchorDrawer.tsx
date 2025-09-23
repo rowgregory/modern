@@ -11,35 +11,7 @@ import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
 import AnchorForm from '../forms/AnchorForm'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { showToast } from '@/app/redux/features/toastSlice'
-
-// Validation
-const validateForm = (inputs: any, setErrors: any) => {
-  const newErrors = {} as any
-
-  // Always validate that both giver and receiver are selected
-  if (!inputs?.giverId) newErrors.giverId = 'Please select who gave the referral'
-  if (!inputs?.receiverId) newErrors.receiverId = 'Please select who received the referral'
-
-  if (!inputs?.businessValue || parseFloat(inputs?.businessValue) <= 0) {
-    newErrors.businessValue = 'Please enter a valid business value'
-  }
-
-  if (!inputs?.description?.trim()) {
-    newErrors.description = 'Please describe the business that was closed'
-  }
-
-  if (!inputs?.closedDate) {
-    newErrors.closedDate = 'Please select when the business was closed'
-  }
-
-  // Check that giver and receiver are different people
-  if (inputs?.giverId && inputs?.receiverId && inputs?.giverId === inputs?.receiverId) {
-    newErrors.receiverId = 'Giver and receiver must be different people'
-  }
-
-  setErrors(newErrors)
-  return Object.keys(newErrors).length === 0
-}
+import validateAnchorForm from '../forms/validations/validateAnchorForm'
 
 const AnchorDrawer = () => {
   const session = useSession()
@@ -60,16 +32,46 @@ const AnchorDrawer = () => {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
-    if (!validateForm(anchorForm?.inputs, setErrors)) return
+    if (!validateAnchorForm(anchorForm?.inputs, setErrors)) return
 
     try {
+      const isExternalGiver = anchorForm?.inputs?.giverId === 'external'
+      const isExternalReceiver = anchorForm?.inputs?.receiverId === 'external'
+
       // Prepare data for submission
       const submitData = {
         ...anchorForm?.inputs,
-        businessValue: parseFloat(anchorForm?.inputs.businessValue),
-        closedDate: new Date(anchorForm?.inputs.closedDate).toISOString(),
+        businessValue: parseFloat(anchorForm?.inputs?.businessValue),
+        closedDate: new Date(anchorForm?.inputs?.closedDate).toISOString(),
         chapterId,
-        userId: user?.id
+        userId: user?.id,
+
+        // External giver attributes
+        externalGiverName: anchorForm?.inputs?.externalGiverName || null,
+        externalGiverEmail: anchorForm?.inputs?.externalGiverEmail || null,
+        externalGiverCompany: anchorForm?.inputs?.externalGiverCompany || null,
+
+        // External receiver attributes
+        externalReceiverName: anchorForm?.inputs?.externalReceiverName || null,
+        externalReceiverEmail: anchorForm?.inputs?.externalReceiverEmail || null,
+        externalReceiverCompany: anchorForm?.inputs?.externalReceiverCompany || null,
+
+        // Ensure proper handling of internal vs external participants
+        giverId: isExternalGiver ? null : anchorForm?.inputs?.giverId,
+        receiverId: isExternalReceiver ? null : anchorForm?.inputs?.receiverId
+      }
+
+      // Clean up data - remove empty external fields for internal participants
+      if (!isExternalGiver) {
+        delete submitData.externalGiverName
+        delete submitData.externalGiverEmail
+        delete submitData.externalGiverCompany
+      }
+
+      if (!isExternalReceiver) {
+        delete submitData.externalReceiverName
+        delete submitData.externalReceiverEmail
+        delete submitData.externalReceiverCompany
       }
 
       if (inputs?.isUpdating) {
@@ -82,11 +84,19 @@ const AnchorDrawer = () => {
 
       dispatch(clearInputs({ formName: 'anchorForm' }))
 
+      // Determine participant types for success message
+      const giverType = isExternalGiver ? 'external' : 'internal'
+      const receiverType = isExternalReceiver ? 'external' : 'internal'
+      const participantInfo =
+        giverType === 'external' || receiverType === 'external'
+          ? ` (${giverType} giver → ${receiverType} receiver)`
+          : ''
+
       dispatch(
         showToast({
           type: 'success',
           message: `${inputs?.isUpdating ? 'Update' : 'Create'} Anchor Success`,
-          description: `Anchor ${inputs?.isUpdating ? 'updated' : 'created'} successfully.`
+          description: `Anchor ${inputs?.isUpdating ? 'updated' : 'created'} successfully${participantInfo}.`
         })
       )
     } catch (error: any) {

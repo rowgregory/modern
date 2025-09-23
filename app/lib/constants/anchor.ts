@@ -9,6 +9,6 @@ export const initialAnchorFormState = {
   chapterId: '',
   announcedAt: null,
   meetingId: null,
-  status: 'REPORTED',
+  status: 'VERIFIED',
   notes: ''
 }

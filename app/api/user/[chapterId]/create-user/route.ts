@@ -6,6 +6,7 @@ import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import swabbiePendingTemplate from '@/app/lib/email-templates/swabbie-pending'
+import adminVisitorNotificationTemplate from '@/app/lib/email-templates/admin-visitor-notification'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -119,6 +120,39 @@ export async function POST(req: NextRequest, { params }: any) {
         subject: `Your Coastal Referral application is pending initial review`,
         html: swabbiePendingTemplate(createdUser.name, 'Storm Watch', fullPortUrl)
       })
+
+      // Only send admin emails if the ACTUAL user has filled out the form
+      // Not admin inviting a swabbie
+      if (!body?.isAddedByAdmin) {
+        // Get all admin users and send them notification emails
+        const adminUsers = await prisma.user.findMany({
+          where: {
+            isAdmin: true
+          },
+          select: {
+            email: true,
+            name: true
+          }
+        })
+
+        // Send notification to each admin
+        const adminEmailPromises = adminUsers.map((admin) =>
+          resend.emails.send({
+            from: `New Application <no-reply@coastal-referral-exchange.com>`,
+            to: [admin.email],
+            subject: `New visitor form submission - ${createdUser.name}`,
+            html: adminVisitorNotificationTemplate(
+              admin.name,
+              createdUser.name,
+              createdUser.email,
+              `${baseUrl}/admin/bridge`
+            )
+          })
+        )
+
+        // Wait for all admin emails to be sent
+        await Promise.all(adminEmailPromises)
+      }
     }
 
     await createLog('info', 'New user created', {

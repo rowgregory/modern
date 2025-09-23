@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, DollarSign, Building2, User, FileText, MapPin, ArrowRightCircle } from 'lucide-react'
+import { Calendar, DollarSign, Building2, User, FileText, MapPin, Globe, Crown } from 'lucide-react'
 import { IAnchor } from '@/types/anchor'
 import Picture from '../common/Picture'
 import { formatDate } from '@/app/lib/utils/date/formatDate'
@@ -8,6 +8,7 @@ import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
 import { useAppDispatch } from '@/app/redux/store'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { useSession } from 'next-auth/react'
+import getAnchorStatusColor from '@/app/lib/utils/anchor/getAnchorStatusColor'
 
 const formatCurrency = (amount: any, currency: string) => {
   return new Intl.NumberFormat('en-US', {
@@ -16,35 +17,110 @@ const formatCurrency = (amount: any, currency: string) => {
   }).format(amount)
 }
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'REPORTED':
-      return 'bg-green-500/20 text-green-400 border-green-500/30'
-    case 'PENDING':
-      return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-    case 'CLOSED':
-      return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-    default:
-      return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
-  }
-}
+// const getStatusColor = (status: string) => {
+//   switch (status) {
+//     case 'REPORTED':
+//       return 'bg-green-500/20 text-green-400 border-green-500/30'
+//     case 'PENDING':
+//       return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+//     case 'CLOSED':
+//       return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+//     default:
+//       return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+//   }
+// }
 
 const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
   const dispatch = useAppDispatch()
   const session = useSession()
 
+  // Helper functions to get participant info with null handling
+  const getGiverInfo = () => {
+    if (anchor.giver && anchor.giverId) {
+      return {
+        name: anchor.giver.name || 'Unknown User',
+        company: anchor.giver.company || 'Unknown Company',
+        profileImage: anchor.giver.profileImage,
+        type: 'internal'
+      }
+    } else if (anchor.externalGiverName || anchor.externalGiverEmail || anchor.externalGiverCompany) {
+      return {
+        name: anchor.externalGiverName || 'External Contact',
+        company: anchor.externalGiverCompany || 'External Organization',
+        profileImage: null,
+        email: anchor.externalGiverEmail,
+        type: 'external'
+      }
+    } else {
+      // Fallback when no giver info is available
+      return {
+        name: 'Unknown Giver',
+        company: 'Unknown',
+        profileImage: null,
+        type: 'unknown'
+      }
+    }
+  }
+
+  const getReceiverInfo = () => {
+    if (anchor.receiver && anchor.receiverId) {
+      return {
+        name: anchor.receiver.name || 'Unknown User',
+        company: anchor.receiver.company || 'Unknown Company',
+        profileImage: anchor.receiver.profileImage,
+        type: 'internal'
+      }
+    } else if (anchor.externalReceiverName || anchor.externalReceiverEmail || anchor.externalReceiverCompany) {
+      return {
+        name: anchor.externalReceiverName || 'External Contact',
+        company: anchor.externalReceiverCompany || 'External Organization',
+        profileImage: null,
+        email: anchor.externalReceiverEmail,
+        type: 'external'
+      }
+    } else {
+      // Fallback when no receiver info is available
+      return {
+        name: 'Unknown Receiver',
+        company: 'Unknown',
+        profileImage: null,
+        type: 'unknown'
+      }
+    }
+  }
+
+  const giverInfo = getGiverInfo()
+  const receiverInfo = getReceiverInfo()
+
+  const handleCardClick = () => {
+    dispatch(setOpenAnchorDrawer())
+    dispatch(
+      setInputs({
+        formName: 'anchorForm',
+        data: {
+          ...anchor,
+          // Set giverId based on whether it's external or internal
+          giverId: anchor.giverId || 'external',
+          // Set receiverId based on whether it's external or internal
+          receiverId: anchor.receiverId || 'external',
+          // Keep external fields as they are
+          externalGiverName: anchor.externalGiverName,
+          externalGiverEmail: anchor.externalGiverEmail,
+          externalGiverCompany: anchor.externalGiverCompany,
+          externalReceiverName: anchor.externalReceiverName,
+          externalReceiverEmail: anchor.externalReceiverEmail,
+          externalReceiverCompany: anchor.externalReceiverCompany,
+          isReceiving: anchor.receiverId === session.data?.user?.id,
+          isUpdating: true
+        }
+      })
+    )
+  }
+
   return (
     <motion.div
-      onClick={() => {
-        dispatch(setOpenAnchorDrawer())
-        dispatch(
-          setInputs({
-            formName: 'anchorForm',
-            data: { ...anchor, isReceiving: anchor.receiverId === session.data?.user?.id, isUpdating: true }
-          })
-        )
-      }}
+      onClick={handleCardClick}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.2, ease: 'easeInOut' }}
@@ -55,14 +131,37 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
         <div className="flex items-center space-x-3">
           <div className="flex -space-x-2">
             {/* Giver Avatar */}
-            <Picture
-              priority={false}
-              src={anchor.giver?.profileImage}
-              alt={anchor.giver?.name}
-              className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600 object-cover"
-            />
-            <ArrowRightCircle className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600" />
+            {giverInfo.type === 'internal' ? (
+              <Picture
+                priority={false}
+                src={giverInfo.profileImage ?? ''}
+                alt={giverInfo.name}
+                className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-600 object-cover"
+              />
+            ) : giverInfo.type === 'external' ? (
+              <div className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-800 flex items-center justify-center">
+                <User className="w-5 h-5 text-orange-400" />
+              </div>
+            ) : (
+              <div className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-800 flex items-center justify-center">
+                <User className="w-5 h-5 text-gray-500" />
+              </div>
+            )}
+
             {/* Receiver Avatar */}
+            {receiverInfo.type === 'internal' ? (
+              <div className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-800 flex items-center justify-center">
+                <Crown className="w-5 h-5 text-purple-400" />
+              </div>
+            ) : receiverInfo.type === 'external' ? (
+              <div className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-800 flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-blue-400" />
+              </div>
+            ) : (
+              <div className="w-10 h-10 rounded-full border-2 border-gray-700 bg-gray-800 flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-gray-500" />
+              </div>
+            )}
           </div>
           <div>
             <h3 className="text-white font-semibold text-lg">{anchor.clientName}</h3>
@@ -71,7 +170,7 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
         </div>
 
         {/* Status Badge */}
-        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(anchor.status)}`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getAnchorStatusColor(anchor.status)}`}>
           {anchor.status}
         </span>
       </div>
@@ -93,10 +192,23 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
           <div className="flex items-center space-x-2">
             <User className="w-4 h-4 text-gray-400" />
             <span className="text-gray-400 text-sm">Giver</span>
+            {giverInfo.type === 'external' && (
+              <span className="px-1.5 py-0.5 bg-orange-500/20 text-orange-400 text-xs rounded border border-orange-500/30">
+                External
+              </span>
+            )}
+            {giverInfo.type === 'unknown' && (
+              <span className="px-1.5 py-0.5 bg-gray-500/20 text-gray-400 text-xs rounded border border-gray-500/30">
+                Unknown
+              </span>
+            )}
           </div>
           <div>
-            <p className="text-white text-sm font-medium">{anchor.giver?.name}</p>
-            <p className="text-gray-400 text-xs">{anchor.giver?.company}</p>
+            <p className="text-white text-sm font-medium">{giverInfo.name}</p>
+            <p className="text-gray-400 text-xs">{giverInfo.company}</p>
+            {giverInfo.type === 'external' && giverInfo.email && (
+              <p className="text-gray-500 text-xs">{giverInfo.email}</p>
+            )}
           </div>
         </div>
 
@@ -104,10 +216,19 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
           <div className="flex items-center space-x-2">
             <Building2 className="w-4 h-4 text-gray-400" />
             <span className="text-gray-400 text-sm">Receiver</span>
+            {receiverInfo.type === 'external' && (
+              <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded border border-blue-500/30">
+                External
+              </span>
+            )}
+            {receiverInfo.type === 'unknown' && (
+              <span className="px-1.5 py-0.5 bg-gray-500/20 text-gray-400 text-xs rounded border border-gray-500/30">
+                Unknown
+              </span>
+            )}
           </div>
           <div>
-            <p className="text-white text-sm font-medium">Anonymous</p>
-            <p className="text-gray-400 text-xs">--</p>
+            <p className="text-white text-sm font-medium">Classified</p>
           </div>
         </div>
       </div>
@@ -122,6 +243,7 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
         <div className="text-gray-400">Created: {formatDate(anchor.createdAt)}</div>
       </div>
 
+      {/* Show details only if user is a participant (internal users only) */}
       {(session?.data?.user?.id === anchor.receiverId || session?.data?.user?.id === anchor.giverId) && (
         <div>
           {anchor.description && (
@@ -161,6 +283,16 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
               <p className="text-gray-300 text-sm leading-relaxed">{anchor.notes}</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* External participant info notice */}
+      {(giverInfo.type === 'external' || receiverInfo.type === 'external') && (
+        <div className="mt-3 p-3 bg-gray-900/30 border border-gray-600/50 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <Globe className="w-4 h-4 text-yellow-400" />
+            <span className="text-yellow-400 text-xs font-medium">This anchor involves external business contacts</span>
+          </div>
         </div>
       )}
     </motion.div>
