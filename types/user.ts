@@ -2,6 +2,7 @@ import { Anchor, Parley } from '@prisma/client'
 
 // Base User interface matching your Prisma User model
 export interface User {
+  businessLicenseNumber: any
   addedBy: string | undefined
   isFinalDecisionMade: any
   rejectionReason: string
@@ -16,6 +17,7 @@ export interface User {
   id: string
   createdAt: string
   updatedAt: string
+  role: string
 
   // Basic info
   name: string
@@ -32,8 +34,8 @@ export interface User {
   // Coastal Referral Exchange membership
   chapterId: string
   chapter?: Chapter
-  joinedAt: string | null
-  expiresAt: string | null
+  joinedAt?: Date
+  expiresAt?: Date
   membershipStatus: MembershipStatus
 
   // Profile & Networking
@@ -42,6 +44,38 @@ export interface User {
   profileImageFilename: string | null
   isPublic: boolean
   isActive: boolean
+
+  // NEW: Professional Goals & Media
+  goal: string | null
+  collage: any | null // JSON field for educational background
+  coverImage: string | null
+  coverImageFilename: string | null
+
+  // NEW: Social Media & Online Presence
+  facebookUrl: string | null
+  threadsUrl: string | null
+  youtubeUrl: string | null
+  xUrl: string | null
+  linkedInUrl: string | null
+  portfolioUrl: string | null
+
+  // NEW: Content & Communication
+  posts: any | null // JSON field for recent posts/articles
+  podcasts: any | null // JSON field for favorite podcasts
+
+  // NEW: Skills & Professional Development
+  skills: string[] // Array of skills
+  careerAchievements: string[] // Array of achievements
+  learningGoals: string[] // Array of learning objectives
+
+  // NEW: Services & Professional Network
+  servicesOffered: any | null // JSON field for services provided
+  professionalAssociations: any | null // JSON field for organizations
+  professionalBooks: any | null // JSON field for influential books
+
+  // NEW: Projects & Expertise Sharing
+  sideProjects: any | null // JSON field for personal projects
+  askMeAbout: any | null // JSON field for expertise areas
 
   // Verification & Security
   lastLoginAt: string | null
@@ -61,10 +95,13 @@ export interface User {
   sessions?: Session[]
   logs?: Log[]
   signals?: Log[]
+
+  weeklyTreasureWishlist?: string
 }
 
 // Usership status enum
 export type MembershipStatus =
+  | 'FLAGGED'
   | 'PENDING'
   | 'ACTIVE'
   | 'INACTIVE'
@@ -161,6 +198,7 @@ export interface CreateUserResponse {
 }
 
 export interface UpdateUserResponse {
+  user: { id: string; data: any }
   success: boolean
   message: string
   member: UserWithChapter
@@ -201,4 +239,22 @@ export interface Log {
   action: string
   details: any
   createdAt: string
+}
+
+export interface UserWithMeta extends User {
+  meta: {
+    chapterId: string
+    lastUpdated: string
+    membership: {
+      expiresAt: string
+      isExpiringWithin30Days: boolean
+      joinedDaysAgo: number
+      status: string
+    }
+    profileCompleteness: {
+      isComplete: boolean
+      missingFields: string[]
+    }
+  }
+  chapter: Chapter
 }

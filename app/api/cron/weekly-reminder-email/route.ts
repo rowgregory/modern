@@ -7,13 +7,12 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-export async function POST(req: NextRequest) {
+async function sendWeeklyReminders(req: NextRequest) {
   try {
     const users = await prisma.user.findMany({ where: { membershipStatus: 'ACTIVE' } })
 
     const weekEndDate = 'tonight (Wednesday at 11:59 PM)'
 
-    // Send emails to all active users
     const emailPromises = users.map(async (user) => {
       return await resend.emails.send({
         from: 'no-reply@coastal-referral-exchange.com',
@@ -43,4 +42,13 @@ export async function POST(req: NextRequest) {
       statusCode: error.statusCode || error.status || 500
     })
   }
+}
+
+// Handle both GET (cron) and POST (manual trigger)
+export async function GET(req: NextRequest) {
+  return sendWeeklyReminders(req)
+}
+
+export async function POST(req: NextRequest) {
+  return sendWeeklyReminders(req)
 }

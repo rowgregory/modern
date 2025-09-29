@@ -12,7 +12,8 @@ import {
   LifeBuoy,
   Beer,
   Coins,
-  Crosshair
+  Crosshair,
+  Flag
 } from 'lucide-react'
 
 export const adminNavLinks = [
@@ -52,6 +53,13 @@ export const adminNavLinks = [
     linkKey: '/admin/muster'
   },
   {
+    id: 'stowaways',
+    label: 'Stowaways',
+    icon: Flag,
+    description: 'The Brig',
+    linkKey: '/admin/stowaways'
+  },
+  {
     id: 'rendezvous',
     label: 'Rendezvous',
     icon: Crosshair,
@@ -62,7 +70,7 @@ export const adminNavLinks = [
     id: 'beacon',
     label: 'Beacon',
     icon: TowerControl,
-    description: 'Account Settings',
+    description: 'The Lighthouse',
     linkKey: '/admin/beacon'
   },
   {

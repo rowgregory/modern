@@ -1,4 +1,5 @@
 export interface IAnchor {
+  id: string
   externalReceiverEmail: string
   externalGiverEmail: string
   externalReceiverCompany: string

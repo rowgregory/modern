@@ -1,5 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { anchorApi } from '../services/anchorApi'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { IAnchor } from '@/types/anchor'
 
 interface AnchorState {
@@ -21,42 +20,27 @@ export const anchorSlice = createSlice({
   name: 'anchor',
   initialState,
   reducers: {
-    resetAnchorError: (state) => {
-      state.error = null
-    },
     setOpenAnchorDrawer: (state) => {
       state.anchorDrawer = true
     },
     setCloseAnchorDrawer: (state) => {
       state.anchorDrawer = false
+    },
+    setAnchors: (state, { payload }) => {
+      state.anchors = payload
+    },
+    addAnchorToState: (state, action) => {
+      state.anchors.push(action.payload)
+    },
+    updateAnchorInState: (state, action: PayloadAction<{ id: string; data: any }>) => {
+      const index = state.anchors.findIndex((t) => t.id === action.payload.id)
+      if (index !== -1) {
+        state.anchors[index] = { ...state.anchors[index], ...action.payload.data }
+      }
     }
-  },
-  extraReducers: (builder) => {
-    builder
-      .addMatcher(anchorApi.endpoints.getAnchors.matchFulfilled, (state, { payload }: any) => {
-        state.anchors = payload.anchors
-        state.loading = false
-      })
-      .addMatcher(anchorApi.endpoints.getMyAnchors.matchFulfilled, (state, { payload }: any) => {
-        state.anchors = payload.anchors
-        state.loading = false
-      })
-      .addMatcher(anchorApi.endpoints.createAnchor.matchFulfilled, (state) => {
-        state.loading = false
-      })
-      .addMatcher(anchorApi.endpoints.updateAnchor.matchFulfilled, (state) => {
-        state.loading = false
-      })
-
-      .addMatcher(
-        (action) => action.type.endsWith('rejected') && action.payload?.data?.sliceName === 'anchorApi',
-        (state, { payload }: any) => {
-          state.loading = false
-          state.error = payload?.data?.message
-        }
-      )
   }
 })
 
-export const { resetAnchorError, setOpenAnchorDrawer, setCloseAnchorDrawer } = anchorSlice.actions
+export const { setOpenAnchorDrawer, setCloseAnchorDrawer, setAnchors, addAnchorToState, updateAnchorInState } =
+  anchorSlice.actions
 export const anchorReducer = anchorSlice.reducer

@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { dashboardApi } from '../services/dashboardApi'
 
 interface DashboardState {
+  parleys: any
   loading: boolean
   error: string | null
   totalMembers: string
@@ -58,12 +59,42 @@ const initialState: DashboardState = {
   buckets: [],
   topPerformers: [],
   newApplicationsCount: '',
-  parleyRequestsCount: ''
+  parleyRequestsCount: '',
+  parleys: []
 }
 export const dashboardSlice = createSlice({
   name: 'dashboard',
   initialState,
-  reducers: {},
+  reducers: {
+    setHydrateDashboard: (state, { payload }) => {
+      state.totalMembers = payload.totalMembers
+      state.totalMembersChange = payload.totalMembersChange
+      state.totalRevenue = payload.totalRevenue
+      state.totalRevenueChange = payload.totalRevenueChange
+      state.conversionRate = payload.conversionRate
+      state.conversionChangePercent = payload.conversionChangePercent
+      state.chapterHealth = payload.chapterHealth
+      state.healthChangePercent = payload.healthChangePercent
+      state.totalParleys = payload.totalParleys
+      state.parleysChangePercent = payload.parleysChangePercent
+      state.totalTreasureMaps = payload.totalTreasureMaps
+      state.treasureMapsChangePercent = payload.treasureMapsChangePercent
+      state.totalAnchors = payload.totalAnchors
+      state.anchorsChangePercent = payload.anchorsChangePercent
+      state.memberRetention = payload.memberRetention
+      state.retentionChangePercent = payload.retentionChangePercent
+      state.weeklyActivity = payload.weeklyActivity
+      state.industrySlots = payload.industrySlots
+      state.capacityPercent = payload.capacityPercent
+      state.activeUsersCount = payload.activeUsersCount
+      state.participationPercent = payload.participationPercent
+      state.buckets = payload.buckets
+      state.topPerformers = payload.topPerformers
+      state.newApplicationsCount = payload.newApplicationsCount
+      state.parleyRequestsCount = payload.parleyRequestsCount
+      state.loading = false
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addMatcher(dashboardApi.endpoints.listAdminStats.matchFulfilled, (state, { payload }: any) => {
@@ -111,5 +142,5 @@ export const dashboardSlice = createSlice({
   }
 })
 
-export const {} = dashboardSlice.actions
+export const { setHydrateDashboard } = dashboardSlice.actions
 export const dashboardReducer = dashboardSlice.reducer

@@ -7,19 +7,19 @@ import { useSession } from 'next-auth/react'
 import { setInputs } from '@/app/redux/features/formSlice'
 import getAnchorStatusColor from '@/app/lib/utils/anchor/getAnchorStatusColor'
 
+const formatCurrency = (value: string) => {
+  if (!value) return ''
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  }).format(parseFloat(value))
+}
+
 const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user, isUpdating, onClose }: any) => {
   const session = useSession()
   const { users } = useUserSelector()
-  // Format currency display
-  const formatCurrency = (value: string) => {
-    if (!value) return ''
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }).format(parseFloat(value))
-  }
   const dispatch = useAppDispatch()
 
   return (
@@ -457,7 +457,7 @@ const AnchorForm = ({ inputs, errors, handleInput, isLoading, handleSubmit, user
             <label className="block text-sm font-medium text-gray-300 mb-2">Additional Notes</label>
             <textarea
               name="notes"
-              value={inputs?.notes}
+              value={inputs?.notes || ''}
               onChange={handleInput}
               placeholder="Any additional details about this closed business..."
               rows={3}

@@ -8,9 +8,7 @@ import { formatDate } from '@/app/lib/utils/date/formatDate'
 import { IParley } from '@/types/parley'
 import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
 import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
-import { useAppDispatch } from '@/app/redux/store'
-import { useListMemberStatsQuery } from '@/app/redux/services/dashboardApi'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { useAppDispatch, useDashboardSelector } from '@/app/redux/store'
 import MemberBridgeStatsGrid from '@/app/components/member/MemberBridgeStatsGrid'
 import WeeklyActivityChart from '@/app/components/bridge/WeeklyActivityChart'
 import { setOpenTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
@@ -19,16 +17,15 @@ import Link from 'next/link'
 import TooltipWrapper from '@/app/components/common/TooltipWrapper'
 
 const MemberBridge = () => {
-  const { data, isFetching } = useListMemberStatsQuery({ chapterId })
+  const data = useDashboardSelector()
   const dispatch = useAppDispatch()
-
   return (
     <div className="bg-gray-900">
       {/* Main Layout */}
       <div className="flex flex-col md:flex-row min-h-[calc(100vh-66px)]">
         {/* Main Content Area */}
         <div className="flex-1 p-6 md:overflow-y-auto">
-          <MemberBridgeStatsGrid data={data} isFetching={isFetching} />
+          <MemberBridgeStatsGrid data={data} />
           {/* Weekly Activity Chart */}
           <WeeklyActivityChart weeklyActivity={data?.weeklyActivity} />
 
@@ -130,7 +127,7 @@ const MemberBridge = () => {
           </div>
 
           {/* My Stats */}
-          <div className="bg-gray-800/40 border border-gray-700/50 rounded-xl p-4">
+          {/* <div className="bg-gray-800/40 border border-gray-700/50 rounded-xl p-4">
             <h4 className="text-white font-semibold mb-3">My Stats Past 30 days</h4>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
@@ -146,7 +143,7 @@ const MemberBridge = () => {
                 <span className="text-green-400 font-medium">{data?.totalClosedAnchorCountThisMonth || 0}</span>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

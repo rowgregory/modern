@@ -1,14 +1,45 @@
 import { IParley } from '@/types/parley'
 import React, { FC } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle, Edit3, XCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Edit3, XCircle } from 'lucide-react'
+import { useDeleteParleyMutation } from '@/app/redux/services/parleyApi'
+import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { useAppDispatch } from '@/app/redux/store'
+import { deleteParleyFromState } from '@/app/redux/features/parleySlice'
+import { showToast } from '@/app/redux/features/toastSlice'
 
 const ConfirmedActionButtons: FC<{
   parley: IParley
   handleStatusUpdate: any
   isUpdating: boolean
   onEdit: () => void
-}> = ({ parley, handleStatusUpdate, isUpdating, onEdit }) => {
+  userId: string
+}> = ({ parley, handleStatusUpdate, isUpdating, onEdit, userId }) => {
+  const [deleteParley, { isLoading: isDeleting }] = useDeleteParleyMutation()
+  const dispatch = useAppDispatch()
+
+  const handleDelete = async () => {
+    try {
+      await deleteParley({ chapterId, userId, parleyId: parley.id }).unwrap()
+      dispatch(deleteParleyFromState(parley.id))
+      dispatch(
+        showToast({
+          type: 'success',
+          message: 'Parley Deleted',
+          description: 'The parley has been successfully removed.'
+        })
+      )
+    } catch (error: any) {
+      dispatch(
+        showToast({
+          type: 'error',
+          message: 'Delete Failed',
+          description: error.data?.error || 'Failed to delete parley'
+        })
+      )
+    }
+  }
+
   return (
     <div className="pt-4 border-t border-gray-700">
       <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">Meeting Confirmed</p>
@@ -35,21 +66,33 @@ const ConfirmedActionButtons: FC<{
             <XCircle className="w-4 h-4" />
             <span>Cancel Meeting</span>
           </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={(e) => {
+              e.stopPropagation()
+              onEdit()
+            }}
+            disabled={isUpdating}
+            className="flex items-center space-x-2 px-4 py-2 border border-cyan-600 text-cyan-300 rounded-lg hover:bg-cyan-600/10 hover:border-cyan-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium cursor-pointer"
+          >
+            <Edit3 className="w-4 h-4" />
+            <span>Edit Details</span>
+          </motion.button>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={(e) => {
-            e.stopPropagation()
-            onEdit()
-          }}
-          disabled={isUpdating}
-          className="flex items-center space-x-2 px-4 py-2 border border-cyan-600 text-cyan-300 rounded-lg hover:bg-cyan-600/10 hover:border-cyan-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium cursor-pointer"
-        >
-          <Edit3 className="w-4 h-4" />
-          <span>Edit Details</span>
-        </motion.button>
+        {/* Delete Button - Only show if user is the requester */}
+        {parley.requesterId === userId && parley.status === 'REQUESTED' && (
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="flex items-center space-x-2 px-4 py-2 border border-red-600 text-red-400 rounded-lg hover:bg-red-600 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+            title="Delete parley"
+          >
+            <AlertTriangle className="w-4 h-4" />
+            <span>Delete Parley</span>
+          </button>
+        )}
       </div>
     </div>
   )

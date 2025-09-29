@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
 import Picture from '../common/Picture'
-import { ChevronDown, ChevronUp, Globe, Mail, MapPin, Phone } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface INavigatorCard {
   navigator: any
@@ -8,144 +9,48 @@ interface INavigatorCard {
   expandedMember: any
 }
 
-const NavigatorCard: FC<INavigatorCard> = ({ navigator, setExpandedMember, expandedMember }) => {
+const NavigatorCard: FC<INavigatorCard> = ({ navigator }) => {
+  const { push } = useRouter()
+
   return (
-    <div className="bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-700">
+    <div
+      onClick={() => push(`/navigators/${navigator.id}/profile`)}
+      className="bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-700 cursor-pointer group"
+    >
       {/* Member Image */}
-      <div className="h-60 bg-gradient-to-br from-blue-500 to-teal-500 relative overflow-hidden">
+      <div className="h-[400px] bg-gradient-to-br from-blue-500 to-teal-500 relative overflow-hidden">
         <Picture
-          priority={false}
+          priority={true}
           src={navigator?.profileImage}
           alt={navigator?.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <div className="absolute bottom-4 left-4">
-          <div className="bg-white/90 px-3 py-1 rounded-full text-sm font-medium text-slate-900">
-            {navigator?.yearsInBusiness} years experience
+        {navigator?.yearsInBusiness && (
+          <div className="absolute bottom-4 left-4">
+            <div className="bg-white/90 px-3 py-1 rounded-full text-sm font-medium text-slate-900">
+              {navigator.yearsInBusiness} years experience
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Member Info */}
       <div className="p-6">
         <div className="mb-4">
-          <h3 className="text-xl font-bold text-white mb-1">{navigator?.name}</h3>
-          <p className="text-blue-400 font-medium">{navigator?.title}</p>
-          <p className="text-gray-300">{navigator?.company}</p>
-          <div className="flex items-center text-gray-400 mt-2">
-            <MapPin className="w-4 h-4 mr-1" />
-            <span className="text-sm">{navigator?.location}</span>
-          </div>
+          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+            {navigator?.name}
+          </h3>
+          <p className="text-gray-300 text-lg">{navigator?.company}</p>
         </div>
 
-        {/* Industry Badge */}
-        <div className="mb-4">
-          <span className="bg-gradient-to-r from-cyan-600  via-blue-600 to-teal-600 text-white px-3 py-1 rounded-full text-sm">
-            {navigator?.industry}
-          </span>
-        </div>
-
-        {/* Bio Preview */}
-        <p className="text-gray-300 text-sm mb-4 line-clamp-3">{navigator?.bio}</p>
-
-        {/* Specialties */}
-        <div className="mb-4">
-          <p className="text-white font-medium mb-2">Specialties:</p>
-          <div className="flex flex-wrap gap-2">
-            {navigator?.interests.slice(0, 2).map((specialty: string, i: number) => (
-              <span key={i} className="bg-slate-700 text-gray-300 px-2 py-1 rounded text-xs">
-                {specialty}
-              </span>
-            ))}
-            {navigator?.interests.length > 2 && (
-              <span className="bg-slate-700 text-gray-300 px-2 py-1 rounded text-xs">
-                +{navigator?.interests.length - 2} more
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Contact Actions */}
+        {/* View Profile CTA */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-700">
-          <div className="flex space-x-3">
-            <a href={`tel:${navigator?.phone}`} className="text-blue-400 hover:text-blue-300 transition-colors">
-              <Phone className="w-5 h-5" />
-            </a>
-            <a href={`mailto:${navigator?.email}`} className="text-blue-400 hover:text-blue-300 transition-colors">
-              <Mail className="w-5 h-5" />
-            </a>
-            <a
-              href={navigator?.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 transition-colors"
-            >
-              <Globe className="w-5 h-5" />
-            </a>
-          </div>
-          <button
-            onClick={() => setExpandedMember(expandedMember === navigator?.id ? null : navigator?.id)}
-            className="flex items-center text-blue-400 hover:text-blue-300 transition-colors text-sm"
-          >
-            {expandedMember === navigator?.id ? (
-              <>
-                Less <ChevronUp className="w-4 h-4 ml-1" />
-              </>
-            ) : (
-              <>
-                More <ChevronDown className="w-4 h-4 ml-1" />
-              </>
-            )}
-          </button>
+          <span className="text-blue-400 font-medium text-sm group-hover:text-blue-300 transition-colors">
+            View Full Profile
+          </span>
+          <ChevronRight className="w-5 h-5 text-blue-400 group-hover:text-blue-300 group-hover:translate-x-1 transition-all" />
         </div>
-
-        {/* Expanded Content */}
-        {expandedMember === navigator?.id && (
-          <div className="mt-4 pt-4 border-t border-slate-700">
-            <div className="space-y-3">
-              <div>
-                <p className="text-white font-medium mb-1">Full Bio:</p>
-                <p className="text-gray-300 text-sm">{navigator?.bio}</p>
-              </div>
-              <div>
-                <p className="text-white font-medium mb-1">All Specialties:</p>
-                <div className="flex flex-wrap gap-2">
-                  {navigator?.interests.map((interest: string, i: number) => (
-                    <span key={i} className="bg-slate-700 text-gray-300 px-2 py-1 rounded text-xs">
-                      {interest}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-2 text-sm">
-                <div className="flex items-center text-gray-300">
-                  <Phone className="w-4 h-4 mr-2 text-blue-400" />
-                  <a href={`tel:${navigator?.phone}`} className="hover:text-blue-400">
-                    {navigator?.phone}
-                  </a>
-                </div>
-                <div className="flex items-center text-gray-300">
-                  <Mail className="w-4 h-4 mr-2 text-blue-400" />
-                  <a href={`mailto:${navigator?.email}`} className="hover:text-blue-400">
-                    {navigator?.email}
-                  </a>
-                </div>
-                <div className="flex items-center text-gray-300">
-                  <Globe className="w-4 h-4 mr-2 text-blue-400" />
-                  <a
-                    href={navigator?.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-blue-400"
-                  >
-                    {navigator?.website}
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )

@@ -4,26 +4,20 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search } from 'lucide-react'
 import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
-import { useGetMyParleysQuery } from '@/app/redux/services/parleyApi'
-import { IParley } from '@/types/parley'
 import { useSession } from 'next-auth/react'
 import getStatusColor from '@/app/lib/utils/parley/getParleyStatusColor'
 import getStatusIcon from '@/app/lib/utils/parley/getParleyStatusIcon'
 import ParleyCard from '@/app/components/parley/ParleyCard'
 import EmptyState from '@/app/components/common/EmptyState'
 import statusOptions from '@/app/lib/utils/parley/getParleyStatusOptions'
+import { useParleySelector } from '@/app/redux/store'
 
 const MemberParleys = () => {
   const session = useSession()
-  const { data } = useGetMyParleysQuery({ chapterId, userId: session.data?.user?.id }) as {
-    data: { parleys: IParley[] }
-  }
-
+  const { parleys } = useParleySelector()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
-  const parleys = data?.parleys
 
   const filteredParleys = parleys
     ?.filter((parley) => {

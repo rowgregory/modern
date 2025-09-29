@@ -1,7 +1,9 @@
-import { Clock, CheckCircle, XCircle, AlertCircle, Pause, Ban } from 'lucide-react'
+import { Clock, CheckCircle, XCircle, AlertCircle, Pause, Ban, Flag } from 'lucide-react'
 
 const getApplicationStatusIcon: any = (status: string) => {
   switch (status) {
+    case 'FLAGGED':
+      return <Flag className="w-4 h-4" />
     case 'PENDING':
       return <Clock className="w-4 h-4" />
     case 'ACTIVE':

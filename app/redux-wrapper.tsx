@@ -1,16 +1,22 @@
 'use client'
 
-import React, { FC } from 'react'
+import React from 'react'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
 import PageWrapper from './page-wrapper'
 
-const ReduxWrapper: FC<{ children: any }> = ({ children }) => {
+interface ReduxWrapperProps {
+  children: React.ReactNode
+  initialData?: any
+  error?: { status: number; message: string } | null
+}
+
+export default function ReduxWrapper({ children, initialData, error }: ReduxWrapperProps) {
   return (
     <Provider store={store}>
-      <PageWrapper>{children}</PageWrapper>
+      <PageWrapper initialData={initialData} error={error}>
+        {children}
+      </PageWrapper>
     </Provider>
   )
 }
-
-export default ReduxWrapper

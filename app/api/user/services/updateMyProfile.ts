@@ -31,7 +31,35 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
       bio,
       yearsInBusiness,
       website,
-      businessLicenseNumber
+      businessLicenseNumber,
+      title,
+      // NEW: Professional Goals & Media
+      goal,
+      collage,
+      coverImage,
+      coverImageFilename,
+      // NEW: Social Media & Online Presence
+      facebookUrl,
+      threadsUrl,
+      youtubeUrl,
+      xUrl,
+      linkedInUrl,
+      portfolioUrl,
+      // NEW: Content & Communication
+      posts,
+      podcasts,
+      // NEW: Skills & Professional Development
+      skills,
+      careerAchievements,
+      learningGoals,
+      // NEW: Services & Professional Network
+      servicesOffered,
+      professionalAssociations,
+      professionalBooks,
+      // NEW: Projects & Expertise Sharing
+      sideProjects,
+      askMeAbout,
+      weeklyTreasureWishlist
     } = body
 
     // Validate required fields
@@ -63,7 +91,30 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
         isActive: true,
         profileImage: true,
         profileImageFilename: true,
-        updatedAt: true
+        title: true,
+        // Add new fields to select
+        goal: true,
+        collage: true,
+        coverImage: true,
+        coverImageFilename: true,
+        facebookUrl: true,
+        threadsUrl: true,
+        youtubeUrl: true,
+        xUrl: true,
+        linkedInUrl: true,
+        portfolioUrl: true,
+        posts: true,
+        podcasts: true,
+        skills: true,
+        careerAchievements: true,
+        learningGoals: true,
+        servicesOffered: true,
+        professionalAssociations: true,
+        professionalBooks: true,
+        sideProjects: true,
+        askMeAbout: true,
+        updatedAt: true,
+        weeklyTreasureWishlist: true
       }
     })
 
@@ -94,6 +145,40 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
     if (website !== undefined) updateData.website = website
     if (yearsInBusiness !== undefined) updateData.yearsInBusiness = yearsInBusiness
     if (businessLicenseNumber !== undefined) updateData.businessLicenseNumber = businessLicenseNumber
+    if (title !== undefined) updateData.title = title
+
+    // NEW: Professional Goals & Media
+    if (goal !== undefined) updateData.goal = goal?.trim() || null
+    if (collage !== undefined) updateData.collage = collage
+    if (coverImage !== undefined) updateData.coverImage = coverImage
+    if (coverImageFilename !== undefined) updateData.coverImageFilename = coverImageFilename
+
+    // NEW: Social Media & Online Presence
+    if (facebookUrl !== undefined) updateData.facebookUrl = facebookUrl?.trim() || null
+    if (threadsUrl !== undefined) updateData.threadsUrl = threadsUrl?.trim() || null
+    if (youtubeUrl !== undefined) updateData.youtubeUrl = youtubeUrl?.trim() || null
+    if (xUrl !== undefined) updateData.xUrl = xUrl?.trim() || null
+    if (linkedInUrl !== undefined) updateData.linkedInUrl = linkedInUrl?.trim() || null
+    if (portfolioUrl !== undefined) updateData.portfolioUrl = portfolioUrl?.trim() || null
+
+    // NEW: Content & Communication
+    if (posts !== undefined) updateData.posts = posts
+    if (podcasts !== undefined) updateData.podcasts = podcasts
+
+    // NEW: Skills & Professional Development
+    if (skills !== undefined) updateData.skills = skills
+    if (careerAchievements !== undefined) updateData.careerAchievements = careerAchievements
+    if (learningGoals !== undefined) updateData.learningGoals = learningGoals
+
+    // NEW: Services & Professional Network
+    if (servicesOffered !== undefined) updateData.servicesOffered = servicesOffered
+    if (professionalAssociations !== undefined) updateData.professionalAssociations = professionalAssociations
+    if (professionalBooks !== undefined) updateData.professionalBooks = professionalBooks
+
+    // NEW: Projects & Expertise Sharing
+    if (sideProjects !== undefined) updateData.sideProjects = sideProjects
+    if (askMeAbout !== undefined) updateData.askMeAbout = askMeAbout
+    if (weeklyTreasureWishlist !== undefined) updateData.weeklyTreasureWishlist = weeklyTreasureWishlist
 
     // Update the user
     const updatedUser = await prisma.user.update({
@@ -108,6 +193,7 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
         industry: true,
         role: true,
         bio: true,
+        title: true,
         yearsInBusiness: true,
         interests: true,
         profileImage: true,
@@ -122,6 +208,28 @@ export async function updateMyProfile(req: NextRequest, chapterId: string, userI
         lastLoginAt: true,
         createdAt: true,
         updatedAt: true,
+        // NEW: All new fields in select
+        goal: true,
+        collage: true,
+        coverImage: true,
+        coverImageFilename: true,
+        facebookUrl: true,
+        threadsUrl: true,
+        youtubeUrl: true,
+        xUrl: true,
+        linkedInUrl: true,
+        portfolioUrl: true,
+        posts: true,
+        podcasts: true,
+        skills: true,
+        careerAchievements: true,
+        learningGoals: true,
+        servicesOffered: true,
+        professionalAssociations: true,
+        professionalBooks: true,
+        sideProjects: true,
+        askMeAbout: true,
+        weeklyTreasureWishlist: true,
         chapter: {
           select: {
             id: true,

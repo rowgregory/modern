@@ -3,6 +3,7 @@ import generateCalendarDays from '@/app/lib/utils/calendar/generateCalendarDays'
 import navigateMonth from '@/app/lib/utils/calendar/navigateMonth'
 import { formatMonth, isCurrentMonth, isToday } from '@/app/lib/utils/date/formatDate'
 import { createFormActions, setInputs } from '@/app/redux/features/formSlice'
+import { setUpdateRendezvous } from '@/app/redux/features/rendezvousSlice'
 import { showToast } from '@/app/redux/features/toastSlice'
 import { useCreateRendezvousMutation, useUpdateRendezvousMutation } from '@/app/redux/services/rendezvousApi'
 import { useAppDispatch, useFormSelector, useUserSelector } from '@/app/redux/store'
@@ -36,7 +37,6 @@ const CalendarGrid: FC<CalendarGridProps> = ({
   const { rendezvousForm } = useFormSelector()
   const [removingMeetingId, setRemovingMeetingId] = useState<string | null>(null)
   const { user } = useUserSelector()
-
   const inputs = rendezvousForm?.inputs
 
   const handleDayClick = (date: Date, dayEvents: any) => {
@@ -67,16 +67,18 @@ const CalendarGrid: FC<CalendarGridProps> = ({
     e.preventDefault()
 
     const isUpdating = !inputs.isRecurring
-
+    let rendezvous
     try {
       if (isUpdating) {
-        await updateRendezvous({
+        rendezvous = await updateRendezvous({
           id: inputs.id,
           ...prepareRendezvousData
         })
       } else {
-        await createRendezvous(prepareRendezvousData)
+        rendezvous = await createRendezvous(prepareRendezvousData)
       }
+
+      dispatch(setUpdateRendezvous(rendezvous?.data))
 
       dispatch(
         showToast({
@@ -307,7 +309,7 @@ const CalendarGrid: FC<CalendarGridProps> = ({
                           {user?.isAdmin && !isRemoving && (
                             <button
                               onClick={() => handleRemoveMeeting(event)}
-                              className="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-medium rounded-md transition-all duration-200 hover:bg-emerald-500/30 hover:shadow-lg"
+                              className="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-medium rounded-md transition-all duration-200 hover:bg-emerald-500/30 hover:shadow-lg whitespace-nowrap"
                             >
                               Update Meeting
                             </button>

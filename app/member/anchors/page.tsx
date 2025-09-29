@@ -5,22 +5,18 @@ import { AnimatePresence, motion } from 'framer-motion'
 import getAnchorStatusOptions from '@/app/lib/utils/anchor/getAnchorStatusOptions'
 import getAnchorStatusIcon from '@/app/lib/utils/anchor/getAnchorStatusIcon'
 import getAnchorStatusColor from '@/app/lib/utils/anchor/getAnchorStatusColor'
-import { useGetMyAnchorsQuery } from '@/app/redux/services/anchorApi'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { useSession } from 'next-auth/react'
-import { IAnchor } from '@/types/anchor'
 import AnchorCard from '@/app/components/anchor/AnchorCard'
 import EmptyState from '@/app/components/common/EmptyState'
 import { Search } from 'lucide-react'
 import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
+import { useAnchorSelector } from '@/app/redux/store'
 
 const Anchors = () => {
   const session = useSession()
-  const userId = session.data?.user?.id
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const { data } = useGetMyAnchorsQuery({ chapterId, userId }) as { data: { anchors: IAnchor[] } }
-  const anchors = data?.anchors
+  const { anchors } = useAnchorSelector()
 
   const filteredAnchors = anchors
     ?.filter((anchor) => {

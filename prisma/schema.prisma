@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,16 +8,17 @@ datasource db {
 }
 
 enum MembershipStatus {
-  PENDING // Awaiting approval/payment
+  PENDING
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  EXPIRED
+  CANCELLED
+  REJECTED
   INITIAL_REVIEW
   BACKGROUND_CHECK
   FINAL_DECISION
-  ACTIVE // Active member
-  INACTIVE // Temporarily inactive
-  SUSPENDED // Suspended by admin
-  EXPIRED // Membership expired
-  CANCELLED // Cancelled by member
-  REJECTED
+  FLAGGED
 
   @@map("membership_status")
 }
@@ -53,9 +48,9 @@ enum EventStatus {
 }
 
 enum RendezvousStatus {
-  ACTIVE // Meeting is active/scheduled
-  REMOVED // Admin removed this specific occurrence
-  CANCELLED // Meeting was cancelled (different from removed)
+  ACTIVE
+  REMOVED
+  CANCELLED
 }
 
 model Account {
@@ -64,15 +59,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -94,172 +88,139 @@ model VerificationToken {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  tempId    String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Basic info
-  name                  String
-  role                  String
-  email                 String  @unique
-  phone                 String?
-  company               String
-  location              String  @default("")
-  yearsInBusiness       String  @default("")
-  industry              String  @default("")
-  title                 String  @default("")
-  bio                   String? @default("")
-  website               String? @default("")
-  isLicensed            Boolean @default(false)
-  businessLicenseNumber String  @default("")
-  isAdmin               Boolean @default(false)
-  isSuperUser           Boolean @default(false)
-
-  // Core membership
+  id                         String             @id @default(cuid())
+  createdAt                  DateTime           @default(now())
+  updatedAt                  DateTime           @updatedAt
+  name                       String
+  email                      String             @unique
+  phone                      String?
+  company                    String
   chapterId                  String
-  chapter                    Chapter          @relation(fields: [chapterId], references: [id])
-  joinedAt                   DateTime?
+  emailVerified              DateTime?
   expiresAt                  DateTime?
-  membershipStatus           MembershipStatus @default(PENDING)
-  hasCompletedApplication    Boolean          @default(false)
-  rejectedAt                 String?          @default("")
-  rejectedStep               String?          @default("") // 'INITIAL_REVIEW', 'BACKGROUND_CHECK', 'FINAL_DECISION'
-  rejectionReason            String?          @default("") // Optional: why they were rejected
-  initialReviewCompletedAt   String?          @default("")
-  backgroundCheckCompletedAt String?          @default("")
-  finalDecisionAt            String?          @default("")
-  isInitialReviewCompleted   Boolean          @default(false)
-  isBackgroudCheckCompleted  Boolean          @default(false)
-  isFinalDecisionMade        Boolean          @default(false)
-  isRejected                 Boolean          @default(false)
-  signals                    Json?            @default("[]")
-  addedBy                    String?
-
-  // Profile & Networking
-  interests            String[] // Array of interest categories
-  profileImage         String? // URL to profile image
-  profileImageFilename String?
-  isPublic             Boolean  @default(true)
-  isActive             Boolean  @default(true)
-
-  // Verification & Security
-  lastLoginAt DateTime?
-
-  // NextAuth fields
-  emailVerified DateTime? // Add for NextAuth
-  image         String?
-
-  // Parley relationships
-  requestedMeetings Parley[] @relation("ParleyRequester")
-  receivedMeetings  Parley[] @relation("ParleyRecipient")
-
-  // Anchor relationships
-  givenCredits    Anchor[] @relation("AnchorGiver")
-  receivedCredits Anchor[] @relation("AnchorReceiver")
-
-  // TreasureMap relationships
-  giver    TreasureMap[] @relation("TreasureMapGiver")
-  receiver TreasureMap[] @relation("TreasureMapReceiver")
-
-  accounts Account[]
-  sessions Session[]
-
-  logs Log[]
-
-  notificationsRead NotificationRead[]
-  sentNotifications Notification[]     @relation("SentNotifications")
-
-  addedByUser User?  @relation("UserAddedBy", fields: [addedBy], references: [id], onDelete: SetNull)
-  addedUsers  User[] @relation("UserAddedBy")
+  image                      String?
+  interests                  String[]
+  isActive                   Boolean            @default(true)
+  isPublic                   Boolean            @default(true)
+  joinedAt                   DateTime?
+  lastLoginAt                DateTime?
+  membershipStatus           MembershipStatus   @default(PENDING)
+  profileImage               String?
+  profileImageFilename       String?
+  role                       String
+  location                   String?            @default("")
+  tempId                     String             @default("")
+  isAdmin                    Boolean            @default(false)
+  isSuperUser                Boolean            @default(false)
+  bio                        String?            @default("")
+  businessLicenseNumber      String?            @default("")
+  isLicensed                 Boolean?           @default(false)
+  industry                   String             @default("")
+  title                      String?            @default("")
+  website                    String?            @default("")
+  yearsInBusiness            String?            @default("")
+  hasCompletedApplication    Boolean            @default(false)
+  rejectedAt                 String?            @default("")
+  rejectionReason            String?            @default("")
+  backgroundCheckCompletedAt String?            @default("")
+  finalDecisionAt            String?            @default("")
+  initialReviewCompletedAt   String?            @default("")
+  rejectedStep               String?            @default("")
+  isBackgroudCheckCompleted  Boolean            @default(false)
+  isInitialReviewCompleted   Boolean            @default(false)
+  signals                    Json?              @default("[]")
+  isFinalDecisionMade        Boolean            @default(false)
+  isRejected                 Boolean            @default(false)
+  askMeAbout                 Json?
+  careerAchievements         Json?
+  collage                    Json?
+  coverImage                 String?
+  coverImageFilename         String?
+  facebookUrl                String?
+  goal                       String?
+  learningGoals              String[]
+  linkedInUrl                String?
+  podcasts                   Json?
+  portfolioUrl               String?
+  posts                      Json?
+  professionalAssociations   Json?
+  professionalBooks          Json?
+  servicesOffered            Json?
+  sideProjects               Json?
+  skills                     String[]
+  threadsUrl                 String?
+  xUrl                       String?
+  youtubeUrl                 String?
+  weeklyTreasureWishlist     String?
+  accounts                   Account[]
+  givenCredits               Anchor[]           @relation("AnchorGiver")
+  receivedCredits            Anchor[]           @relation("AnchorReceiver")
+  logs                       Log[]
+  sentNotifications          Notification[]     @relation("SentNotifications")
+  notificationsRead          NotificationRead[]
+  receivedMeetings           Parley[]           @relation("ParleyRecipient")
+  requestedMeetings          Parley[]           @relation("ParleyRequester")
+  sessions                   Session[]
+  giver                      TreasureMap[]      @relation("TreasureMapGiver")
+  receiver                   TreasureMap[]      @relation("TreasureMapReceiver")
+  chapter                    Chapter            @relation(fields: [chapterId], references: [id])
 }
 
 model Parley {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Meeting details
-  scheduledAt DateTime
-  duration    Int      @default(30) // minutes
-  location    String? // optional meeting location
-  meetingType String   @default("DECK_TO_DECK") // DECK_TO_DECK, VOYAGE_CALL, MESSAGE_IN_A_BOTTLE, LANTERN_LIGHT
-
-  // Participants (exactly 2 Coastal Referral Exchange users)
-  requesterId String
-  requester   User   @relation("ParleyRequester", fields: [requesterId], references: [id])
-
-  recipientId String
-  recipient   User   @relation("ParleyRecipient", fields: [recipientId], references: [id])
-
-  // Status tracking
-  status String @default("REQUESTED") // REQUESTED, CONFIRMED, COMPLETED, CANCELLED
-
-  // Meeting outcomes (filled after completion)
+  id               String    @id @default(cuid())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  scheduledAt      DateTime
+  duration         Int       @default(30)
+  location         String?
+  meetingType      String    @default("DECK_TO_DECK")
+  requesterId      String
+  recipientId      String
+  status           String    @default("REQUESTED")
   completed        Boolean   @default(false)
   completedAt      DateTime?
   referralGiven    Boolean   @default(false)
   referralReceived Boolean   @default(false)
   followUpRequired Boolean   @default(false)
+  notes            String?
+  requesterNotes   String?
+  recipientNotes   String?
+  chapterId        String?
+  chapter          Chapter?  @relation(fields: [chapterId], references: [id])
+  recipient        User      @relation("ParleyRecipient", fields: [recipientId], references: [id])
+  requester        User      @relation("ParleyRequester", fields: [requesterId], references: [id])
 
-  // Notes
-  notes          String? // general meeting notes
-  requesterNotes String? // private notes for requester
-  recipientNotes String? // private notes for recipient
-
-  // Coastal Referral Exchange specific tracking
-  chapterId String?
-  chapter   Chapter? @relation(fields: [chapterId], references: [id])
-
-  @@unique([requesterId, recipientId, scheduledAt]) // prevent duplicate meetings
+  @@unique([requesterId, recipientId, scheduledAt])
   @@index([chapterId])
   @@index([scheduledAt])
   @@index([status])
 }
 
 model Anchor {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Who is giving the thank you
-  giverId String?
-  giver   User?   @relation("AnchorGiver", fields: [giverId], references: [id])
-
-  externalGiverName    String?
-  externalGiverEmail   String?
-  externalGiverCompany String?
-
-  // Who is receiving the thank you (who provided the referral)
-  receiverId String?
-  receiver   User?   @relation("AnchorReceiver", fields: [receiverId], references: [id])
-
-  externalReceiverName    String?
-  externalReceiverEmail   String?
+  id                      String    @id @default(cuid())
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  giverId                 String?
+  receiverId              String?
+  businessValue           Decimal   @db.Decimal(10, 2)
+  currency                String    @default("USD")
+  description             String
+  clientName              String?
+  closedDate              DateTime
+  chapterId               String
+  announcedAt             DateTime?
+  meetingId               String?
+  status                  String    @default("REPORTED")
+  notes                   String?
+  externalGiverCompany    String?
+  externalGiverEmail      String?
+  externalGiverName       String?
   externalReceiverCompany String?
-
-  // Business details
-  businessValue Decimal @db.Decimal(10, 2) // monetary value of closed business
-  currency      String  @default("USD")
-  description   String // description of the business/service
-  clientName    String? // name of the client (optional)
-
-  // When the business was closed
-  closedDate DateTime
-
-  // Coastal Referral Exchange tracking
-  chapterId String
-  chapter   Chapter @relation(fields: [chapterId], references: [id])
-
-  // Meeting context (if announced during a chapter meeting)
-  announcedAt DateTime? // when this was announced to the chapter
-  meetingId   String? // reference to chapter meeting if applicable
-
-  // Status
-  status String @default("REPORTED") // REPORTED, VERIFIED, DISPUTED
-
-  // Notes
-  notes String? // additional details about the closed business
+  externalReceiverEmail   String?
+  externalReceiverName    String?
+  chapter                 Chapter   @relation(fields: [chapterId], references: [id])
+  giver                   User?     @relation("AnchorGiver", fields: [giverId], references: [id])
+  receiver                User?     @relation("AnchorReceiver", fields: [receiverId], references: [id])
 
   @@index([chapterId])
   @@index([giverId])
@@ -269,125 +230,97 @@ model Anchor {
 }
 
 model Chapter {
-  id String @id @default(cuid())
-
-  name             String
-  location         String
-  meetingDay       String // e.g., "TUESDAY"
-  meetingTime      String // e.g., "07:30"
-  meetingFrequency String @default("WEEKLY") // e.g., "WEEKLY"
-
-  // Relationships
-  users         User[]
-  parleys       Parley[]
-  anchors       Anchor[]
-  treasureMaps  TreasureMap[]
-  notifications Notification[]
-  grogs         Grog[]
-  rendezvous    Rendezvous[]
-
-  hasUnlockedMuster Boolean @default(false)
-  hasUnlockedBooty  Boolean @default(false)
-  hasUnlockedGrog   Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String         @id @default(cuid())
+  name              String
+  location          String
+  meetingDay        String
+  meetingTime       String
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  meetingFrequency  String         @default("WEEKLY")
+  hasUnlockedBooty  Boolean        @default(false)
+  hasUnlockedGrog   Boolean        @default(false)
+  hasUnlockedMuster Boolean        @default(false)
+  anchors           Anchor[]
+  grogs             Grog[]
+  notifications     Notification[]
+  parleys           Parley[]
+  rendezvous        Rendezvous[]
+  treasureMaps      TreasureMap[]
+  users             User[]
 }
 
 model Newsletter {
-  id                       String  @id @default(cuid())
-  firstName                String  @db.VarChar(255)
-  lastName                 String  @db.VarChar(255)
-  email                    String  @unique @db.VarChar(255)
-  agreedToPrivacyStatement Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                       String   @id @default(cuid())
+  firstName                String   @db.VarChar(255)
+  lastName                 String   @db.VarChar(255)
+  email                    String   @unique @db.VarChar(255)
+  agreedToPrivacyStatement Boolean  @default(false)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 }
 
 model Log {
-  id       String @id @default(cuid())
-  level    String // e.g., 'info', 'error', 'debug'
-  message  String
-  metadata Json? // Optional, store additional context
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
+  id        String   @id @default(cuid())
+  level     String
+  message   String
+  metadata  Json?
+  userId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
 }
 
 model Notification {
-  id         String           @id @default(cuid())
+  id         String             @id @default(cuid())
   title      String
   message    String
   type       NotificationType
-  isRead     Boolean          @default(false)
+  isRead     Boolean            @default(false)
+  entityId   String?
+  entityType String?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
   chapterId  String
-  entityId   String? // ID of the explorer application, etc.
-  entityType String? // "application", "member", etc.
-
-  readBy  NotificationRead[] // Relation to junction table
-  chapter Chapter            @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-
-  senderId String
-  sender   User   @relation("SentNotifications", fields: [senderId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  senderId   String
+  chapter    Chapter            @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  sender     User               @relation("SentNotifications", fields: [senderId], references: [id])
+  readBy     NotificationRead[]
 }
 
-// Junction table to track which admins have read which notifications
 model NotificationRead {
-  id             String   @id @default(cuid())
+  id             String       @id @default(cuid())
   notificationId String
   userId         String
-  isRead         Boolean  @default(false)
-  readAt         DateTime @default(now())
-
-  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  readAt         DateTime     @default(now())
+  isRead         Boolean      @default(false)
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([notificationId, userId])
 }
 
 model TreasureMap {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Who is giving the referral
-  giverId String
-  giver   User   @relation("TreasureMapGiver", fields: [giverId], references: [id])
-
-  // Who is receiving the referral  
-  receiverId String
-  receiver   User   @relation("TreasureMapReceiver", fields: [receiverId], references: [id])
-
-  // Referral details
-  clientName    String // Name of the client being referred
-  clientEmail   String? // Optional client contact
-  clientPhone   String? // Optional client contact
-  serviceNeeded String // What service/product the client needs
-
-  // Status tracking
-  status String @default("GIVEN") // GIVEN, ACCEPTED, CONTACTED, CLOSED, DECLINED
-
-  // Follow-up tracking
-  contactedAt DateTime? // When receiver contacted the client
-  closedAt    DateTime? // When business was closed
-
-  isThirdParty Boolean @default(false)
-
-  // Notes
-  notes         String? // General notes about the referral
-  giverNotes    String? // Private notes for giver
-  receiverNotes String? // Private notes for receiver
-
-  // Coastal Referral Exchange tracking
-  chapterId String
-  chapter   Chapter @relation(fields: [chapterId], references: [id])
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  giverId       String
+  receiverId    String
+  clientName    String
+  clientEmail   String?
+  clientPhone   String?
+  serviceNeeded String
+  status        String    @default("GIVEN")
+  contactedAt   DateTime?
+  closedAt      DateTime?
+  notes         String?
+  giverNotes    String?
+  receiverNotes String?
+  chapterId     String
+  isThirdParty  Boolean   @default(false)
+  chapter       Chapter   @relation(fields: [chapterId], references: [id])
+  giver         User      @relation("TreasureMapGiver", fields: [giverId], references: [id])
+  receiver      User      @relation("TreasureMapReceiver", fields: [receiverId], references: [id])
 
   @@index([chapterId])
   @@index([giverId])
@@ -397,72 +330,49 @@ model TreasureMap {
 }
 
 model Grog {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Basic Event Information
-  title       String
-  description String? @db.Text
-  category    String // "Weekly Meeting", "Special Event", "Education", "Chamber Event"
-  type        String // "networking", "workshop", "mixer", "luncheon"
-  cost        String?
-  dresscode   String?
-
-  // Date and Time
+  id                   String      @id @default(cuid())
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  title                String
+  description          String?
+  category             String
+  type                 String
+  cost                 String?
+  dresscode            String?
   date                 DateTime
-  registrationDeadline DateTime @default(now())
-  time                 String // "07:00 AM"
-  duration             String // "90 minutes"
-
-  // Location
-  location String
-
-  // Capacity and Registration
-  maxAttendees Int?
-  attendees    Int?
-
-  // Status and Visibility
-  status   EventStatus @default(UPCOMING)
-  featured Boolean     @default(false)
-
-  // Host Information
-  host String?
-
-  requirements String?
-  materials    String?
-  requiresRSVP Boolean @default(false)
-  isPublic     Boolean @default(true)
-
-  // External Links
-  registrationUrl String?
-  meetingUrl      String? // For virtual events
-
-  // Analytics
-  viewCount  Int @default(0)
-  clickCount Int @default(0)
-
-  // Coastal Referral Exchange tracking
-  chapterId String
-  chapter   Chapter @relation(fields: [chapterId], references: [id])
+  time                 String
+  duration             String
+  location             String
+  maxAttendees         Int?
+  attendees            Int?
+  status               EventStatus @default(UPCOMING)
+  featured             Boolean     @default(false)
+  host                 String?
+  requirements         String?
+  materials            String?
+  registrationUrl      String?
+  meetingUrl           String?
+  viewCount            Int         @default(0)
+  clickCount           Int         @default(0)
+  chapterId            String
+  isPublic             Boolean     @default(true)
+  requiresRSVP         Boolean     @default(false)
+  registrationDeadline DateTime    @default(now())
+  chapter              Chapter     @relation(fields: [chapterId], references: [id])
 }
 
 model Rendezvous {
-  id                String   @id @default(cuid())
+  id                String           @id @default(cuid())
   title             String
   description       String?
-  type              String // "meeting", "social", "entertainment", etc.
+  type              String
   startTime         DateTime
   endTime           DateTime
-  isRecurring       Boolean  @default(false)
-  recurrencePattern String? // "daily", "weekly", "monthly", "yearly"
-
-  status RendezvousStatus @default(ACTIVE)
-
-  // Metadata
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  chapterId String
-  chapter   Chapter @relation(fields: [chapterId], references: [id])
+  isRecurring       Boolean          @default(false)
+  recurrencePattern String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  chapterId         String
+  status            RendezvousStatus @default(ACTIVE)
+  chapter           Chapter          @relation(fields: [chapterId], references: [id])
 }

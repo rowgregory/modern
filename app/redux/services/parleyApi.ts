@@ -40,6 +40,12 @@ export const parleyApi = api.injectEndpoints({
         body: { parleyId, status }
       }),
       invalidatesTags: ['Parley', 'Dashboard']
+    }),
+    deleteParley: build.mutation({
+      query: ({ chapterId, userId, parleyId }) => ({
+        url: `${BASE_URL}/${chapterId}/${userId}/${parleyId}/delete-parley`,
+        method: 'DELETE'
+      })
     })
   })
 })
@@ -49,5 +55,6 @@ export const {
   useGetMyParleysQuery,
   useCreateParleyMutation,
   useUpdateParleyMutation,
-  useUpdateParleyStatusMutation
+  useUpdateParleyStatusMutation,
+  useDeleteParleyMutation
 } = parleyApi

@@ -9,6 +9,7 @@ import swabbieRejectedTemplate from '@/app/lib/email-templates/swabbie-rejected'
 import swabbieActiveTemplate from '@/app/lib/email-templates/swabbie-active'
 import { Resend } from 'resend'
 import swabbieSecondChanceTemplate from '@/app/lib/email-templates/swabbie-second-change'
+import swabbiePendingTemplate from '@/app/lib/email-templates/swabbie-pending'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -43,6 +44,9 @@ export async function PATCH(req: NextRequest, { params }: any) {
     }
 
     switch (membershipStatus) {
+      case 'PENDING':
+        updateData.role = 'SWABBIE'
+        break
       case 'INITIAL_REVIEW':
         updateData.initialReviewCompletedAt = `${new Date()}`
         updateData.isInitialReviewCompleted = true
@@ -59,7 +63,7 @@ export async function PATCH(req: NextRequest, { params }: any) {
       case 'REJECTED':
         updateData.rejectedAt = `${new Date()}`
         updateData.rejectedStep = membershipStatus
-        updateData.isRefected = true
+        updateData.isRejected = true
         break
     }
 
@@ -72,6 +76,14 @@ export async function PATCH(req: NextRequest, { params }: any) {
     const noReplyEmail = '<no-reply@coastal-referral-exchange.com>'
 
     switch (updatedUser.membershipStatus) {
+      case 'PENDING':
+        await resend.emails.send({
+          from: `Pending Review ${noReplyEmail}`,
+          to: [updatedUser.email],
+          subject: `Your application is pending review`,
+          html: swabbiePendingTemplate(updatedUser.name, 'Storm Watch', fullPortUrl)
+        })
+        break
       case 'INITIAL_REVIEW':
         await resend.emails.send({
           from: `Initial Review ${noReplyEmail}`,

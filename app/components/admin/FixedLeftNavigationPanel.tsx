@@ -18,7 +18,7 @@ const FixedLeftNavigationPanel: FC<IFixedLeftNavigationPanel> = ({
   selectedPage,
   links,
   data
-}: any) => {
+}) => {
   return (
     <motion.div
       initial={false}

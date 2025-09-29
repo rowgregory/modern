@@ -1,9 +1,9 @@
-import { Calendar, User, Building2, FileText, MapPin, Phone, Mail, Clock, CheckCircle } from 'lucide-react'
+import { Calendar, User, Building2, FileText, Phone, Mail, Clock, CheckCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { FC, useState } from 'react'
 import { ITreasureMap } from '@/types/treasure-map'
 import Picture from '../common/Picture'
-import { setOpenTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
+import { setOpenTreasureMapDrawer, updateTreasureMapInState } from '@/app/redux/features/treasureMapSlice'
 import { setInputs } from '@/app/redux/features/formSlice'
 import { formatDate } from '@/app/lib/utils/date/formatDate'
 import { useAppDispatch } from '@/app/redux/store'
@@ -11,40 +11,8 @@ import { useUpdateTreasureMapStatusMutation } from '@/app/redux/services/treasur
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { useSession } from 'next-auth/react'
 import { showToast } from '@/app/redux/features/toastSlice'
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'GIVEN':
-      return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-    case 'ACCEPTED':
-      return 'bg-purple-500/20 text-purple-400 border-purple-500/30'
-    case 'CONTACTED':
-      return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-    case 'CLOSED':
-      return 'bg-green-500/20 text-green-400 border-green-500/30'
-    case 'DECLINED':
-      return 'bg-red-500/20 text-red-400 border-red-500/30'
-    default:
-      return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
-  }
-}
-
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case 'GIVEN':
-      return <MapPin className="w-4 h-4" />
-    case 'CONTACTED':
-      return <Phone className="w-4 h-4" />
-    case 'ACCEPTED':
-      return <CheckCircle className="w-4 h-4" />
-    case 'CLOSED':
-      return <CheckCircle className="w-4 h-4" />
-    case 'DECLINED':
-      return <FileText className="w-4 h-4" />
-    default:
-      return <MapPin className="w-4 h-4" />
-  }
-}
+import getTreasureMapStatusIcon from '@/app/lib/utils/treasure-map/getTreasureMapStatusIcon'
+import getTreasureMapStatusColor from '@/app/lib/utils/treasure-map/getTreasureMapStatusColor'
 
 const TreasureMapCard: FC<{ treasureMap: ITreasureMap; index: number }> = ({ treasureMap, index }) => {
   const [isNotesExpanded, setIsNotesExpanded] = useState(false)
@@ -56,12 +24,14 @@ const TreasureMapCard: FC<{ treasureMap: ITreasureMap; index: number }> = ({ tre
   const handleStatusChange = async (treasureMapId: string, newStatus: string) => {
     setCurrentStatus(newStatus)
     try {
-      await updateTreasureMapStatus({
+      const updated = await updateTreasureMapStatus({
         chapterId,
         userId: session.data?.user.id,
         treasureMapId,
         status: newStatus
       }).unwrap()
+      dispatch(updateTreasureMapInState({ id: treasureMap?.id, data: updated?.treasureMap }))
+
       dispatch(
         showToast({
           type: 'success',
@@ -119,9 +89,9 @@ const TreasureMapCard: FC<{ treasureMap: ITreasureMap; index: number }> = ({ tre
         {/* Status Badge */}
         <div className="flex items-center space-x-2">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(treasureMap.status)}`}
+            className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getTreasureMapStatusColor(treasureMap.status)}`}
           >
-            {getStatusIcon(treasureMap.status)}
+            {getTreasureMapStatusIcon(treasureMap.status)}
             {treasureMap.status}
           </span>
         </div>

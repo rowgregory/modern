@@ -1,6 +1,6 @@
-import { Reducer, createSlice } from '@reduxjs/toolkit'
-import { userApi } from '../services/userApi'
-import { User, UserFilters, UserPagination, UserStats } from '@/types/user'
+import { PayloadAction, Reducer, createSlice } from '@reduxjs/toolkit'
+import { User, UserStats } from '@/types/user'
+import { initialUserFormState } from '@/app/lib/constants/user/initialUserFormState'
 
 export interface UserState {
   // Core data
@@ -17,27 +17,22 @@ export interface UserState {
   noUsers: boolean
   swabbieDrawer: boolean
 
-  // Filtering & Search
-  filters: UserFilters
   searchQuery: string
-
-  // Pagination
-  pagination: UserPagination
 
   // Statistics
   stats: UserStats
 
   // Error handling
   error: string | null
-  fieldErrors: Array<{ field: string; message: string }>
 
   signals: any
+  stowawayDrawer: boolean
 }
 
 export const initialUserState: UserState = {
   // Core data
   users: [],
-  user: null,
+  user: initialUserFormState,
   success: false,
 
   // UI state
@@ -48,27 +43,7 @@ export const initialUserState: UserState = {
   viewUserDrawer: false,
   noUsers: false,
   swabbieDrawer: false,
-
-  // Filtering & Search
-  filters: {
-    search: '',
-    membershipStatus: 'all',
-    chapterId: 'all',
-    isActive: undefined,
-    interests: [],
-    joinedAfter: undefined,
-    joinedBefore: undefined,
-    expiringWithinDays: undefined
-  },
   searchQuery: '',
-
-  // Pagination
-  pagination: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0
-  },
 
   // Statistics
   stats: {
@@ -84,8 +59,9 @@ export const initialUserState: UserState = {
 
   // Error handling
   error: null,
-  fieldErrors: [],
-  signals: []
+
+  signals: [],
+  stowawayDrawer: false
 }
 
 export const userSlice = createSlice({
@@ -97,6 +73,12 @@ export const userSlice = createSlice({
     },
     setCloseSwabbieDrawer: (state) => {
       state.swabbieDrawer = false
+    },
+    setOpenStowawayDrawer: (state) => {
+      state.stowawayDrawer = true
+    },
+    setCloseStowawayDrawer: (state) => {
+      state.stowawayDrawer = false
     },
     setOpenAddUserDrawer: (state) => {
       state.addUserDrawer = true
@@ -114,86 +96,24 @@ export const userSlice = createSlice({
       state.noUsers = payload?.length === 0
     },
     setUser: (state, { payload }) => {
-      state.user = { ...state.user, ...payload }
+      state.user = payload
     },
-    resetUserError: (state) => {
-      state.error = null
+    addUserToState: (state, action: PayloadAction<any>) => {
+      state.users.push(action.payload)
     },
-    hydrateUserState: (state, { payload }) => {
-      state.user = { ...state.user, ...payload }
-    },
-    addUserToState: (state, { payload }) => {
-      state.users.unshift(payload)
-    },
-    updateUserInState: (state, action) => {
-      const { findById, replaceWith, ...updatedUser } = action.payload
+    updateUserInState: (state, action: PayloadAction<{ id: string; data: any }>) => {
+      const index = state.users.findIndex((p) => p.id === action.payload.id)
 
-      if (findById && replaceWith) {
-        // Special case: find by one ID, replace with different data
-        const index = state.users.findIndex((user) => user?.id === findById)
-        if (index !== -1) {
-          state.users[index] = replaceWith
-        }
-      } else {
-        // Normal update
-        const index = state.users.findIndex((user) => user?.id === updatedUser?.id)
-        if (index !== -1) {
-          state.users[index] = updatedUser
-        }
+      if (index !== -1) {
+        state.users[index] = { ...state.users[index], ...action.payload.data }
       }
     },
     removeUserFromState: (state, action) => {
       state.users = state.users.filter((user: { id: string }) => user?.id !== action.payload)
+    },
+    setHydrateUsers: (state, { payload }) => {
+      state.users = payload
     }
-  },
-  extraReducers: (builder) => {
-    builder
-      .addMatcher(userApi.endpoints.getUsers.matchFulfilled, (state, { payload }: any) => {
-        state.users = payload.users
-        state.stats.total = payload.users.length
-        state.noUsers = payload.users.length === 0
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.getMyProfile.matchFulfilled, (state, { payload }: any) => {
-        state.user = payload.user
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.updateMyProfile.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.createUser.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.updateUser.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-
-      .addMatcher(userApi.endpoints.deleteUser.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.generateMemberMetrics.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.signalQuartermaster.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-      .addMatcher(userApi.endpoints.updatePapers.matchFulfilled, (state) => {
-        state.success = true
-        state.loading = false
-      })
-      .addMatcher(
-        (action) => action.type.endsWith('rejected') && action.payload?.data?.sliceName === 'userApi',
-        (state, { payload }: any) => {
-          state.loading = false
-          state.error = payload?.data?.message
-        }
-      )
   }
 })
 
@@ -207,9 +127,10 @@ export const {
   resetUser,
   setUsers,
   setUser,
-  resetUserError,
-  hydrateUserState,
   addUserToState,
   updateUserInState,
-  removeUserFromState
+  removeUserFromState,
+  setHydrateUsers,
+  setOpenStowawayDrawer,
+  setCloseStowawayDrawer
 } = userSlice.actions

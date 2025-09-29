@@ -1,47 +1,41 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { initialTreasureMapState } from '@/types/treasure-map'
-import { treasureMapApi } from '../services/treasureMapApi'
 
 export const treasureMapSlice = createSlice({
   name: 'treasureMap',
   initialState: initialTreasureMapState,
   reducers: {
-    resetTreasureMapError: (state) => {
-      state.error = null
-    },
     setOpenTreasureMapDrawer: (state) => {
       state.treasureMapDrawer = true
     },
     setCloseTreasureMapDrawer: (state) => {
       state.treasureMapDrawer = false
+    },
+    setTreasureMaps: (state, { payload }) => {
+      state.treasureMaps = payload
+    },
+    addTreasureMapToState: (state, action) => {
+      state.treasureMaps.push(action.payload)
+    },
+    updateTreasureMapInState: (state, action: PayloadAction<{ id: string; data: any }>) => {
+      const index = state.treasureMaps.findIndex((t) => t.id === action.payload.id)
+      if (index !== -1) {
+        state.treasureMaps[index] = { ...state.treasureMaps[index], ...action.payload.data }
+      }
+    },
+    deleteTreasureMapFromState: (state, action: PayloadAction<string>) => {
+      state.treasureMaps = state.treasureMaps.filter((t) => t.id !== action.payload)
     }
-  },
-  extraReducers: (builder) => {
-    builder
-      .addMatcher(treasureMapApi.endpoints.getTreasureMaps.matchFulfilled, (state, { payload }: any) => {
-        state.treasureMaps = payload.treasureMaps
-        state.loading = false
-      })
-      .addMatcher(treasureMapApi.endpoints.getMyTreasureMaps.matchFulfilled, (state, { payload }: any) => {
-        state.treasureMaps = payload.treasureMaps
-        state.loading = false
-      })
-      .addMatcher(treasureMapApi.endpoints.createTreasureMap.matchFulfilled, (state) => {
-        state.loading = false
-      })
-      .addMatcher(treasureMapApi.endpoints.updateTreasureMap.matchFulfilled, (state) => {
-        state.loading = false
-      })
-
-      .addMatcher(
-        (action) => action.type.endsWith('rejected') && action.payload?.data?.sliceName === 'treasureMapApi',
-        (state, { payload }: any) => {
-          state.loading = false
-          state.error = payload?.data?.message
-        }
-      )
   }
 })
 
-export const { resetTreasureMapError, setOpenTreasureMapDrawer, setCloseTreasureMapDrawer } = treasureMapSlice.actions
+export const {
+  setOpenTreasureMapDrawer,
+  setCloseTreasureMapDrawer,
+  setTreasureMaps,
+  addTreasureMapToState,
+  deleteTreasureMapFromState,
+  updateTreasureMapInState
+} = treasureMapSlice.actions
+
 export const treasureMapReducer = treasureMapSlice.reducer

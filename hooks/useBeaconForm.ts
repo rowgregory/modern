@@ -6,41 +6,77 @@ const useBeaconForm = (data: any) => {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (data && dispatch) {
+    if (data) {
       dispatch(
         setInputs({
           formName: 'beaconForm',
           data: {
-            id: data?.user?.id,
-            name: data?.user?.name || '',
-            email: data?.user?.email || '',
-            phone: data?.user?.phone || '',
-            company: data?.user?.company || '',
-            industry: data?.user?.industry || '',
-            role: data?.user?.role || '',
-            bio: data?.user?.bio || '',
-            website: data?.user?.website || '',
-            busineessLicenseNumber: data?.user?.busineessLicenseNumber || '',
-            yearsInBusiness: data?.user?.yearsInBusiness || '',
-            interests: data?.user?.interests || [],
-            profileImage: data?.user?.profileImage || null,
-            profileImageFilename: data?.user?.profileImageFilename || null,
-            isPublic: data?.user?.isPublic ?? true,
-            isActive: data?.user?.isActive ?? true,
-            isAdmin: data?.user?.isAdmin ?? false,
-            membershipStatus: data?.user?.membershipStatus || '',
-            joinedAt: data?.user?.joinedAt || null,
-            expiresAt: data?.user?.expiresAt || null,
-            lastLoginAt: data?.user?.lastLoginAt || null,
-            createdAt: data?.user?.createdAt || null,
-            updatedAt: data?.user?.updatedAt || null,
-            isProfileComplete: data?.user?.isProfileComplete ?? false,
-            membershipDays: data?.user?.membershipDays || 0,
-            isExpiringSoon: data?.user?.isExpiringSoon ?? false,
+            id: data?.id,
+            name: data?.name || '',
+            email: data?.email || '',
+            phone: data?.phone || '',
+            company: data?.company || '',
+            industry: data?.industry || '',
+            role: data?.role || '',
+            bio: data?.bio || '',
+            website: data?.website || '',
+            title: data?.title || '',
+            busineessLicenseNumber: data?.busineessLicenseNumber || '',
+            yearsInBusiness: data?.yearsInBusiness || '',
+            interests: data?.interests || [],
+            profileImage: data?.profileImage || null,
+            profileImageFilename: data?.profileImageFilename || null,
+            isPublic: data?.isPublic ?? true,
+            isActive: data?.isActive ?? true,
+            isAdmin: data?.isAdmin ?? false,
+            membershipStatus: data?.membershipStatus || '',
+            joinedAt: data?.joinedAt || null,
+            expiresAt: data?.expiresAt || null,
+            lastLoginAt: data?.lastLoginAt || null,
+            createdAt: data?.createdAt || null,
+            updatedAt: data?.updatedAt || null,
+            isProfileComplete: data?.isProfileComplete ?? false,
+            membershipDays: data?.membershipDays || 0,
+            isExpiringSoon: data?.isExpiringSoon ?? false,
+
+            // NEW: Professional Goals & Media
+            goal: data?.goal || '',
+            collage: data?.collage || [],
+            coverImage: data?.coverImage || '',
+            coverImageFilename: data?.coverImageFilename || '',
+
+            // NEW: Social Media & Online Presence
+            facebookUrl: data?.facebookUrl || '',
+            threadsUrl: data?.threadsUrl || '',
+            youtubeUrl: data?.youtubeUrl || '',
+            xUrl: data?.xUrl || '',
+            linkedInUrl: data?.linkedInUrl || '',
+            portfolioUrl: data?.portfolioUrl || '',
+
+            // NEW: Content & Communication
+            posts: data?.posts || [],
+            podcasts: data?.podcasts || [],
+
+            // NEW: Skills & Professional Development
+            skills: data?.skills || [],
+            careerAchievements: data?.careerAchievements || [],
+            learningGoals: data?.learningGoals || [],
+
+            // NEW: Services & Professional Network
+            servicesOffered: data?.servicesOffered || [],
+            professionalAssociations: data?.professionalAssociations || [],
+            professionalBooks: data?.professionalBooks || [],
+
+            // NEW: Projects & Expertise Sharing
+            sideProjects: data?.sideProjects || [],
+            askMeAbout: data?.askMeAbout || [],
+
+            weeklyTreasureWishlist: data?.weeklyTreasureWishlist || '',
+
             chapter: {
-              id: data?.user?.chapter?.id || '',
-              name: data?.user?.chapter?.name || '',
-              location: data?.user?.chapter?.location || ''
+              id: data?.chapter?.id || '',
+              name: data?.chapter?.name || '',
+              location: data?.chapter?.location || ''
             },
             meta: {
               chapterId: data?.meta?.chapterId || '',

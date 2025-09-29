@@ -99,28 +99,6 @@ const ParleyForm: FC<IForm> = ({
                     <div className="text-xs opacity-70 mt-1">Asking for a parley</div>
                   </div>
                 </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    dispatch(
-                      setInputs({
-                        formName: 'parleyForm',
-                        data: { isReceiving: true, recipientId: user?.id, requesterId: '' }
-                      })
-                    )
-                  }}
-                  className={`py-4 px-4 rounded-xl border transition-all duration-200 ${
-                    inputs?.isReceiving
-                      ? 'border-purple-400 bg-purple-400/10 text-purple-300 shadow-lg shadow-purple-400/20'
-                      : 'border-gray-600 bg-gray-800/50 text-gray-300 hover:border-gray-500 hover:bg-gray-700/50'
-                  }`}
-                >
-                  <div className="text-center">
-                    <div className="font-semibold">I&apos;m Receiving</div>
-                    <div className="text-xs opacity-70 mt-1">Got a parley request</div>
-                  </div>
-                </button>
               </div>
             </div>
 
@@ -309,11 +287,23 @@ const ParleyForm: FC<IForm> = ({
               {/* Quick Select Buttons */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {[
+                  // Past dates (for completed parleys)
+                  { label: 'Yesterday', days: -1, hour: 14, color: 'slate' },
+                  { label: 'Two Days Ago', days: -2, hour: 10, color: 'slate' },
+                  { label: 'Three Days Ago', days: -3, hour: 15, color: 'slate' },
+                  { label: 'Last Week', days: -7, hour: 11, color: 'slate' },
+                  { label: 'Two Weeks Ago', days: -14, hour: 13, color: 'slate' },
+                  { label: 'Last Month', days: -30, hour: 12, color: 'slate' },
+
+                  // Future dates (for upcoming parleys)
                   { label: 'Later Today (5 PM)', days: 0, hour: 17, color: 'teal' },
                   { label: 'Tomorrow Morning (9 AM)', days: 1, hour: 9, color: 'blue' },
                   { label: 'Tomorrow Afternoon (2 PM)', days: 1, hour: 14, color: 'cyan' },
                   { label: 'Two Days From Now (10 AM)', days: 2, hour: 10, color: 'purple' },
-                  { label: 'Next Week (11 AM)', days: 7, hour: 11, color: 'emerald' }
+                  { label: 'This Weekend (Saturday 10 AM)', days: 5, hour: 10, color: 'indigo' },
+                  { label: 'Next Week (Monday 11 AM)', days: 7, hour: 11, color: 'emerald' },
+                  { label: 'Two Weeks From Now', days: 14, hour: 14, color: 'emerald' },
+                  { label: 'Next Month', days: 30, hour: 10, color: 'emerald' }
                 ].map((preset, index) => (
                   <button
                     key={index}
@@ -600,62 +590,6 @@ const ParleyForm: FC<IForm> = ({
                 <p className="text-xs text-gray-500 ml-auto">{inputs?.notes?.length || 0}/1000 characters</p>
               </div>
             </div>
-
-            {/* <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-              <label className="block text-sm font-medium text-gray-300">Quick Note Tags</label>
-              <p className="text-xs text-gray-400 mb-3">Click a tag to quickly fill in the notes</p>
-
-              <div className="flex flex-wrap gap-2">
-   
-                {(showAllTags ? parleyNoteOptions : parleyNoteOptions.slice(0, 6)).map((tag, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => {
-                      dispatch(
-                        setInputs({
-                          formName: 'parleyForm',
-                          data: { notes: tag }
-                        })
-                      )
-                    }}
-                    className={`px-3 py-2 border rounded-lg text-sm transition-all duration-200 ${
-                      inputs?.notes === tag
-                        ? 'bg-teal-500/30 border-teal-400 text-teal-200 shadow-lg shadow-teal-400/20'
-                        : 'bg-gray-700/50 hover:bg-teal-500/20 border-gray-600 hover:border-teal-400 text-gray-300 hover:text-teal-300'
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-
-                {parleyNoteOptions.length > 6 && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAllTags(!showAllTags)}
-                    className="px-3 py-2 border border-dashed border-gray-500 rounded-lg text-sm text-gray-400 hover:text-gray-300 hover:border-gray-400 transition-all duration-200"
-                  >
-                    {showAllTags ? '← Show Less' : `+${parleyNoteOptions.length - 6} More`}
-                  </button>
-                )}
-              </div>
-
-
-              <button
-                type="button"
-                onClick={() => {
-                  dispatch(
-                    setInputs({
-                      formName: 'parleyForm',
-                      data: { notes: '' }
-                    })
-                  )
-                }}
-                className="px-3 py-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-600 hover:border-gray-500 rounded-lg text-sm text-gray-400 hover:text-gray-300 transition-all duration-200"
-              >
-                Write custom description
-              </button>
-            </motion.div> */}
 
             {/* Status (Hidden field - set to REQUESTED by default) */}
             <input type="hidden" name="status" value={inputs?.status || 'REQUESTED'} />

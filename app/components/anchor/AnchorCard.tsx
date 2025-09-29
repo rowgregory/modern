@@ -17,19 +17,6 @@ const formatCurrency = (amount: any, currency: string) => {
   }).format(amount)
 }
 
-// const getStatusColor = (status: string) => {
-//   switch (status) {
-//     case 'REPORTED':
-//       return 'bg-green-500/20 text-green-400 border-green-500/30'
-//     case 'PENDING':
-//       return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-//     case 'CLOSED':
-//       return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-//     default:
-//       return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
-//   }
-// }
-
 const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
   const dispatch = useAppDispatch()
@@ -265,7 +252,7 @@ const AnchorCard: FC<{ anchor: IAnchor; index: number }> = ({ anchor, index }) =
               </div>
               <motion.div
                 initial={false}
-                animate={{ height: isDescriptionExpanded ? 'auto' : '4.5rem' }}
+                animate={{ height: isDescriptionExpanded ? 'auto' : '1.5rem' }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className="overflow-hidden"
               >

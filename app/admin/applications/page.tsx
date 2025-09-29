@@ -60,7 +60,7 @@ const Applications = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {getApplicationStatusOptions(users)
-            .slice(1)
+            .slice(2)
             .map((status, index) => (
               <motion.div
                 key={status.value}

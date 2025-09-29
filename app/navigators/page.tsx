@@ -2,17 +2,15 @@
 
 import React, { useState } from 'react'
 import { Search, Users, Award } from 'lucide-react'
-import { useGetUsersQuery } from '../redux/services/userApi'
-import { User } from '@/types/user'
-import { chapterId } from '../lib/constants/api/chapterId'
 import NavigatorCard from '../components/navigators/NavigatorCard'
+import { useUserSelector } from '../redux/store'
 
 const Navigators = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIndustry, setSelectedIndustry] = useState('All')
   const [expandedMember, setExpandedMember] = useState(null) as any
-  const { data } = useGetUsersQuery({ chapterId, membershipStatus: 'ACTIVE' }) as { data: { users: User[] } }
-  const navigators = data?.users ?? []
+  const { users } = useUserSelector()
+  const navigators = users ?? []
 
   const industries = ['All', ...new Set(navigators?.map?.((navigator) => navigator.industry))]
 

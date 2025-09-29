@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import swabbiePendingTemplate from '@/app/lib/email-templates/swabbie-pending'
 import adminVisitorNotificationTemplate from '@/app/lib/email-templates/admin-visitor-notification'
+import stowawayInvitationTemplate from '@/app/lib/email-templates/stowaway-flagged'
+import { Prisma } from '@prisma/client'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -71,33 +73,46 @@ export async function POST(req: NextRequest, { params }: any) {
       ? new Date(body.expiresAt)
       : new Date(joinedAt.getTime() + 365 * 24 * 60 * 60 * 1000) // 1 year from join date
 
-    // Create the user
-    const createdUser = await prisma.user.create({
-      data: {
-        name: body?.name?.trim(),
-        email: body?.email?.toLowerCase(),
-        phone: body?.phone || null,
-        role: body.isAdmin ? 'ADMIN' : body?.hasCompletedApplication ? 'SWABBIE' : 'MEMBER',
-        company: body?.company?.trim(),
-        industry: body?.industry?.trim(),
-        isLicensed: body?.isLicensed || false,
-        membershipStatus: body?.membershipStatus || 'PENDING',
-        isAdmin: !!body.isAdmin,
-        isPublic: false,
-        isActive: false,
-        joinedAt,
-        expiresAt,
-        ...(body?.location?.trim() && { location: body.location.trim() }),
-        ...(body?.location?.trim() && { location: body.location.trim() }),
-        ...(body?.businessLicenseNumber?.trim() && { businessLicenseNumber: body.businessLicenseNumber.trim() }),
-        hasCompletedApplication: body.hasCompletedApplication,
-        ...(body?.isAddedByAdmin && { addedBy: body?.userId }),
-        chapter: {
-          connect: {
-            id: chapterId
-          }
+    const userData: Prisma.UserCreateInput = {
+      name: body?.name?.trim(),
+      email: body?.email?.toLowerCase(),
+      phone: body?.phone || null,
+      role: body.isAdmin
+        ? 'ADMIN'
+        : body.hasCompletedApplication
+          ? 'SWABBIE'
+          : body.membershipStatus === 'FLAGGED'
+            ? 'STOWAWAY'
+            : 'MEMBER',
+
+      company: body?.company?.trim(),
+      industry: body?.industry?.trim(),
+      isLicensed: body?.isLicensed || false,
+      membershipStatus: body?.membershipStatus || 'PENDING',
+      isAdmin: !!body.isAdmin,
+      isPublic: false,
+      isActive: false,
+      joinedAt,
+      expiresAt,
+      hasCompletedApplication: body.hasCompletedApplication,
+      chapter: {
+        connect: {
+          id: chapterId
         }
-      },
+      }
+    }
+
+    // Add optional fields only if they exist
+    if (body?.location?.trim()) {
+      userData.location = body.location.trim()
+    }
+
+    if (body?.businessLicenseNumber?.trim()) {
+      userData.businessLicenseNumber = body.businessLicenseNumber.trim()
+    }
+
+    const createdUser = await prisma.user.create({
+      data: userData,
       include: {
         chapter: {
           select: {
@@ -108,9 +123,10 @@ export async function POST(req: NextRequest, { params }: any) {
       }
     })
 
+    const nodeEnv = process.env.NODE_ENV
+    const baseUrl = nodeEnv === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+
     if (createdUser.membershipStatus === 'PENDING') {
-      const nodeEnv = process.env.NODE_ENV
-      const baseUrl = nodeEnv === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
       const portPath = `/swabbie/port?swabbieId=${createdUser.id}`
       const fullPortUrl = `${baseUrl}${portPath}`
 
@@ -153,6 +169,18 @@ export async function POST(req: NextRequest, { params }: any) {
         // Wait for all admin emails to be sent
         await Promise.all(adminEmailPromises)
       }
+    } else if (createdUser?.membershipStatus === 'FLAGGED') {
+      const eventInfo = `Thursday, Octover 2nd, 2025
+        7:00 AM - 8:15 AM
+        Boys & Girls Club of Lynn
+        25 N Common St, Lynn, MA 01902`
+
+      await resend.emails.send({
+        from: `You're Invited! <no-reply@coastal-referral-exchange.com>`,
+        to: [createdUser.email],
+        subject: `Your Coastal Referral application is pending initial review`,
+        html: stowawayInvitationTemplate(createdUser.name, eventInfo)
+      })
     }
 
     await createLog('info', 'New user created', {

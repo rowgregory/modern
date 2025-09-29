@@ -8,13 +8,11 @@ import getRendezvousTypeColor from '@/app/lib/utils/rendezvous/getRendezvousType
 import generateRecurringThursdayMeetings from '@/app/lib/utils/rendezvous/generateRecurringThursdayMeetings'
 import getRendezvousTypeIcon from '@/app/lib/utils/rendezvous/getRendezvousTypeIcon'
 import getRendezvousForDate from '@/app/lib/utils/rendezvous/getRendezvousForDates'
-import { useFetchRendezvousListQuery } from '@/app/redux/services/rendezvousApi'
-import { RendezvousEvent } from '@/types/rendezvous'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
 import RendezvousListView from '@/app/components/rendezvous/RendezvousListView'
+import { useRendezvousSelector } from '@/app/redux/store'
 
 const Rendezvous = () => {
-  const { data } = useFetchRendezvousListQuery({ chapterId }) as { data: { rendezvous: RendezvousEvent[] } }
+  const { rendezvous } = useRendezvousSelector()
   const [viewMode, setViewMode] = useState('calendar')
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
 
@@ -38,11 +36,11 @@ const Rendezvous = () => {
 
   // Merge dynamic meetings with database overrides
   const mergedMeetings = useMemo(() => {
-    if (!data?.rendezvous) {
+    if (!rendezvous) {
       return dynamicMeetings // Return dynamic meetings if no database data yet
     }
 
-    const dbOverrides = data.rendezvous
+    const dbOverrides = rendezvous
 
     // Create merged meetings array
     const merged = dynamicMeetings.map((dynamicMeeting) => {
@@ -76,7 +74,7 @@ const Rendezvous = () => {
 
     // Filter out meetings with REMOVED status
     return merged.filter((meeting) => meeting.status !== 'REMOVED')
-  }, [dynamicMeetings, data?.rendezvous])
+  }, [dynamicMeetings, rendezvous])
 
   return (
     <div className="h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">

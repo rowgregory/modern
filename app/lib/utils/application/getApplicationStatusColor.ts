@@ -1,5 +1,7 @@
 const getApplicationStatusColor: any = (status: string) => {
   switch (status) {
+    case 'FLAGGED':
+      return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
     case 'PENDING':
       return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20'
     case 'ACTIVE':

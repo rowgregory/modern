@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Search, Mail, Phone, MapPin, Building2, Briefcase, Calendar, Sailboat, User } from 'lucide-react'
 import { useUserSelector } from '@/app/redux/store'
@@ -132,8 +132,8 @@ const SwabbieCard = ({ swabbie, index }: any) => {
 const SwabbiesPage = () => {
   const session = useSession()
   const { users } = useUserSelector()
-  const [searchQuery, setSearchQuery] = React.useState('')
-  const [statusFilter, setStatusFilter] = React.useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
 
   const filteredSwabbies = users
     ?.filter((user) => {

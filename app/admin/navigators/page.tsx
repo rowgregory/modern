@@ -4,8 +4,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Users, Plus } from 'lucide-react'
 import { useUserSelector } from '@/app/redux/store'
-import { useGetUsersQuery } from '@/app/redux/services/userApi'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
 import AdminNavigatorCard from '@/app/components/admin/AdminNavigatorCard'
 import navigatorStatusOptions from '@/app/lib/utils/navigator/navigatorStatusOptions'
 import { getNavigatorStatusIcon } from '@/app/lib/utils/navigator/getNavigatorStatusIcon'
@@ -16,7 +14,6 @@ const Navigators = () => {
   const [statusFilter, setStatusFilter] = useState('all')
   const [viewMode, setViewMode] = useState('grid') // 'grid' or 'list'
   const { users } = useUserSelector()
-  useGetUsersQuery({ chapterId })
 
   const filteredNavigators = users.filter((navigator) => {
     const matchesSearch =

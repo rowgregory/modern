@@ -24,6 +24,7 @@ export async function getMyProfile(req: NextRequest, chapterId: string, userId: 
         company: true,
         industry: true,
         website: true,
+        title: true,
         businessLicenseNumber: true,
         yearsInBusiness: true,
         bio: true,
@@ -42,6 +43,39 @@ export async function getMyProfile(req: NextRequest, chapterId: string, userId: 
         isAdmin: true,
         isSuperUser: true,
         isLicensed: true,
+
+        // NEW: Professional Goals & Media
+        goal: true,
+        collage: true,
+        coverImage: true,
+        coverImageFilename: true,
+
+        // NEW: Social Media & Online Presence
+        facebookUrl: true,
+        threadsUrl: true,
+        youtubeUrl: true,
+        xUrl: true,
+        linkedInUrl: true,
+        portfolioUrl: true,
+
+        // NEW: Content & Communication
+        posts: true,
+        podcasts: true,
+
+        // NEW: Skills & Professional Development
+        skills: true,
+        careerAchievements: true,
+        learningGoals: true,
+
+        // NEW: Services & Professional Network
+        servicesOffered: true,
+        professionalAssociations: true,
+        professionalBooks: true,
+
+        // NEW: Projects & Expertise Sharing
+        sideProjects: true,
+        askMeAbout: true,
+
         chapter: {
           select: {
             id: true,

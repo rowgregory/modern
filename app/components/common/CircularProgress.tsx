@@ -22,11 +22,7 @@ const CircularProgress = ({ percentage, value, color = 'rgb(34, 197, 94)' }: any
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        {!value ? (
-          <div className="w-5 h-5 border-2 border-t-0 rounded-full border-cyan-400 animate-spin" />
-        ) : (
-          <div className="text-xl font-bold text-white">{value}%</div>
-        )}
+        <div className="text-xl font-bold text-white">{Number(value)?.toFixed(1)}%</div>
       </div>
     </div>
   )

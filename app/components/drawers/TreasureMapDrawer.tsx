@@ -6,7 +6,11 @@ import { useAppDispatch, useFormSelector, useTreasureMapSelector } from '@/app/r
 import Backdrop from '../common/Backdrop'
 import Drawer from '../common/Drawer'
 import { useSession } from 'next-auth/react'
-import { setCloseTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
+import {
+  addTreasureMapToState,
+  setCloseTreasureMapDrawer,
+  updateTreasureMapInState
+} from '@/app/redux/features/treasureMapSlice'
 import TreasureMapForm from '../forms/TreasureMapForm'
 import { createFormActions } from '@/app/redux/features/formSlice'
 import { showToast } from '@/app/redux/features/toastSlice'
@@ -41,9 +45,11 @@ const TreasureMapDrawer = () => {
       }
 
       if (inputs?.isUpdating) {
-        await updateTreasureMap({ treasureMapId: inputs?.id, ...treasureMapData }).unwrap()
+        const updated = await updateTreasureMap({ ...treasureMapData, treasureMapId: inputs?.id }).unwrap()
+        dispatch(updateTreasureMapInState({ id: inputs?.id, data: updated?.treasureMap }))
       } else {
-        await createTreasureMap({ ...treasureMapData }).unwrap()
+        const created = await createTreasureMap({ ...treasureMapData }).unwrap()
+        dispatch(addTreasureMapToState(created?.treasureMap))
       }
 
       onClose()
@@ -51,16 +57,16 @@ const TreasureMapDrawer = () => {
       dispatch(
         showToast({
           type: 'success',
-          message: `${isUpdating ? 'Update' : 'Create'} Treasure Map Success`,
-          description: `Treasure Map ${isUpdating ? 'updated' : 'created'} successfully.`
+          message: `Treasure Map ${isUpdating ? 'Updated' : 'Created'}`,
+          description: `The treasure map has been ${isUpdating ? 'updated' : 'added'} to the log successfully.`
         })
       )
     } catch (error: any) {
       dispatch(
         showToast({
           type: 'error',
-          message: `${isUpdating ? 'Update' : 'Create'} Treasure Map Failed`,
-          description: error?.data?.message
+          message: `Treasure Map ${isUpdating ? 'Update' : 'Create'} Failed`,
+          description: error?.data?.message || 'There was an issue charting the map. Try again.'
         })
       )
     }

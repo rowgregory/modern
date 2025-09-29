@@ -14,16 +14,19 @@ import OutcomesForCompoletedMeetings from './OutcomesForCompoletedMeetings'
 import RequestedActionButtons from './RequestedActionButtons'
 import ConfirmedActionButtons from './ConfirmedActionButtons'
 import { setInputs } from '@/app/redux/features/formSlice'
-import { setOpenParleyDrawer } from '@/app/redux/features/parleySlice'
+import { setOpenParleyDrawer, updateParleyInState } from '@/app/redux/features/parleySlice'
 
 const ParleyCard: FC<{ parley: IParley; index: number }> = ({ parley, index }) => {
   const session = useSession()
   const [updateStatus, { isLoading: isUpdating }] = useUpdateParleyStatusMutation()
   const dispatch = useAppDispatch()
+  const userId = session.data?.user?.id
 
   const handleStatusUpdate = async (id: string, status: string) => {
     try {
-      await updateStatus({ chapterId, userId: session.data?.user?.id, parleyId: id, status }).unwrap()
+      const updated = await updateStatus({ chapterId, userId: userId, parleyId: id, status }).unwrap()
+      dispatch(updateParleyInState({ id: parley?.id, data: updated?.parley }))
+
       dispatch(
         showToast({
           message: `Parley is Confirmed`,
@@ -50,8 +53,8 @@ const ParleyCard: FC<{ parley: IParley; index: number }> = ({ parley, index }) =
       exit={{ opacity: 0, y: -20 }}
       transition={{ delay: index * 0.05 }}
       className={`backdrop-blur-sm border rounded-xl p-6 hover:border-gray-600 transition-all ${
-        parley.recipientId === session.data?.user?.id && parley.status === 'REQUESTED'
-          ? 'bg-cyan-800/20 border-cyan-400 border-2 shadow-lg shadow-cyan-500/20' // Thicker border + glow
+        parley.recipientId === userId && parley.status === 'REQUESTED'
+          ? 'bg-cyan-800/20 border-cyan-400 border-2 shadow-lg shadow-cyan-500/20'
           : parley.status === 'CONFIRMED'
             ? 'bg-emerald-800/20 border-emerald-600/50'
             : parley.status === 'CANCELLED'
@@ -66,7 +69,12 @@ const ParleyCard: FC<{ parley: IParley; index: number }> = ({ parley, index }) =
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         {/* Main Info */}
         <div className="space-y-4 w-full">
-          <Header parley={parley} />
+          {/* Header with Delete Button */}
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <Header parley={parley} />
+            </div>
+          </div>
 
           {/* Participants with direction arrow */}
           <ParticipantsWithDirectionArrow parley={parley} />
@@ -106,6 +114,7 @@ const ParleyCard: FC<{ parley: IParley; index: number }> = ({ parley, index }) =
                   )
                   dispatch(setOpenParleyDrawer())
                 }}
+                userId={session.data?.user?.id}
               />
             )}
 

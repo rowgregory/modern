@@ -1,32 +1,40 @@
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 import {
   User,
   Mail,
   Phone,
   Building,
   Briefcase,
-  Plus,
-  Trash2,
   AlertCircle,
   CheckCircle,
   MapPin,
   FileText,
   Calendar,
   Globe,
-  Layers
+  Layers,
+  Target,
+  Award,
+  Lightbulb,
+  SquaresIntersect,
+  BookUser,
+  Projector,
+  FileQuestion,
+  Podcast
 } from 'lucide-react'
-import { setInputs } from '@/app/redux/features/formSlice'
-import { useAppDispatch } from '@/app/redux/store'
 import { Switch } from '@/app/components/ui/Switch'
 import { Input } from '@/app/components/ui/Input'
 import { formatDateLong } from '@/app/lib/utils/date/formatDate'
 import MemberStatusBadge from '@/app/components/member/MemberStatusBadge'
-import { motion } from 'framer-motion'
 import { Textarea } from '@/app/components/ui/TextArea'
-import { containerVariants, itemVariants } from '@/app/lib/constants/motion'
 import { IBeaconForm } from '@/types/forms'
+import TagSelector from '../common/TagSelector'
+import ObjectArraySelector from '../common/ObjectArraySelector'
+import { useAppDispatch } from '@/app/redux/store'
+import Collage from '../beacon/Collage'
+import SingleImageUploader from '../common/SingleImageUploader'
 
 const PREDEFINED_INTERESTS = [
+  // Business & Industries
   'Real Estate',
   'Technology',
   'Healthcare',
@@ -42,146 +50,562 @@ const PREDEFINED_INTERESTS = [
   'Retail',
   'Manufacturing',
   'Transportation',
+  'Logistics',
   'Food & Beverage',
-  'Photography',
-  'Design',
-  'Entertainment',
-  'Sports & Fitness',
-  'Travel',
-  'Non-Profit',
-  'Government',
-  'Agriculture',
-  'Energy',
-  'Telecommunications',
-  'Media',
-  'Banking',
-  'Investment',
+  'Hospitality',
+  'Tourism',
+  'Automotive',
+  'Aviation',
+  'Aerospace',
+  'Pharmaceuticals',
+  'Biotechnology',
+  'Medical Devices',
+
+  // Professional Services
   'Human Resources',
   'Project Management',
-  'Data Analytics',
-  'Cybersecurity',
+  'Business Development',
+  'Operations',
+  'Supply Chain',
+  'Quality Assurance',
+  'Customer Service',
+  'Executive Leadership',
+  'Entrepreneurship',
+  'Franchising',
+  'Startups',
+  'Venture Capital',
+
+  // Technology & Digital
   'Software Development',
-  'Digital Marketing'
+  'Cybersecurity',
+  'Data Analytics',
+  'Cloud Computing',
+  'Artificial Intelligence',
+  'Machine Learning',
+  'Blockchain',
+  'Mobile Apps',
+  'Web Development',
+  'E-commerce',
+  'Digital Marketing',
+  'Social Media',
+  'SEO/SEM',
+  'UX/UI Design',
+  'Game Development',
+  'IT Support',
+
+  // Finance & Investment
+  'Banking',
+  'Investment',
+  'Wealth Management',
+  'Financial Planning',
+  'Stock Trading',
+  'Cryptocurrency',
+  'Private Equity',
+  'Hedge Funds',
+  'Mergers & Acquisitions',
+  'Tax Strategy',
+  'Estate Planning',
+
+  // Creative & Media
+  'Photography',
+  'Videography',
+  'Graphic Design',
+  'Web Design',
+  'Interior Design',
+  'Fashion Design',
+  'Architecture',
+  'Fine Arts',
+  'Music',
+  'Film & Video',
+  'Writing & Publishing',
+  'Journalism',
+  'Broadcasting',
+  'Advertising',
+  'Content Creation',
+  'Animation',
+  'Podcasting',
+
+  // Health & Wellness
+  'Fitness',
+  'Nutrition',
+  'Mental Health',
+  'Yoga',
+  'Meditation',
+  'Life Coaching',
+  'Personal Training',
+  'Physical Therapy',
+  'Chiropractic',
+  'Alternative Medicine',
+  'Wellness Coaching',
+  'Health Tech',
+
+  // Entertainment & Recreation
+  'Sports',
+  'Gaming',
+  'Travel',
+  'Outdoor Recreation',
+  'Event Planning',
+  'Concert Production',
+  'Theater',
+  'Dance',
+  'Comedy',
+  'Museums & Galleries',
+
+  // Non-Profit & Social Impact
+  'Non-Profit Management',
+  'Fundraising',
+  'Community Development',
+  'Social Work',
+  'Environmental Conservation',
+  'Sustainability',
+  'Renewable Energy',
+  'Social Entrepreneurship',
+  'Advocacy',
+  'Charity Work',
+
+  // Government & Public Sector
+  'Government',
+  'Public Administration',
+  'Policy Development',
+  'Urban Planning',
+  'Emergency Services',
+  'Military',
+  'Diplomacy',
+  'Public Safety',
+
+  // Agriculture & Natural Resources
+  'Agriculture',
+  'Farming',
+  'Forestry',
+  'Fishing',
+  'Mining',
+  'Sustainable Farming',
+  'Organic Farming',
+  'Agribusiness',
+
+  // Energy & Utilities
+  'Oil & Gas',
+  'Renewable Energy',
+  'Solar Energy',
+  'Wind Energy',
+  'Utilities',
+  'Nuclear Energy',
+  'Energy Trading',
+
+  // Communications
+  'Telecommunications',
+  'Public Relations',
+  'Corporate Communications',
+  'Crisis Management',
+  'Brand Management',
+  'Media Relations',
+
+  // Other
+  'Research & Development',
+  'Academic Research',
+  'Engineering',
+  'Science',
+  'Laboratory Work',
+  'Quality Control',
+  'Regulatory Compliance',
+  'Import/Export',
+  'International Trade',
+  'Translation Services'
+]
+
+const skillTags = [
+  // Programming Languages
+  'JavaScript',
+  'TypeScript',
+  'Python',
+  'Java',
+  'C#',
+  'PHP',
+  'Ruby',
+  'Go',
+  'Rust',
+  'Swift',
+  'Kotlin',
+  'C++',
+  'R',
+  'Scala',
+  'Perl',
+
+  // Frontend
+  'React',
+  'Vue.js',
+  'Angular',
+  'Next.js',
+  'Svelte',
+  'HTML/CSS',
+  'Tailwind CSS',
+  'Bootstrap',
+  'jQuery',
+  'Redux',
+  'Material UI',
+  'Webpack',
+  'Sass/SCSS',
+
+  // Backend
+  'Node.js',
+  'Express',
+  'Django',
+  'Flask',
+  'Spring Boot',
+  'Laravel',
+  'Ruby on Rails',
+  'FastAPI',
+  'ASP.NET',
+  'GraphQL',
+  'REST APIs',
+  'Microservices',
+
+  // Databases
+  'SQL',
+  'PostgreSQL',
+  'MySQL',
+  'MongoDB',
+  'Redis',
+  'Firebase',
+  'DynamoDB',
+  'Elasticsearch',
+  'SQLite',
+  'Oracle',
+  'Cassandra',
+
+  // Cloud & DevOps
+  'AWS',
+  'Azure',
+  'Google Cloud',
+  'Docker',
+  'Kubernetes',
+  'CI/CD',
+  'Jenkins',
+  'Terraform',
+  'Ansible',
+  'GitLab',
+  'GitHub Actions',
+  'Heroku',
+  'Vercel',
+  'Netlify',
+
+  // Data & AI
+  'Data Analysis',
+  'Machine Learning',
+  'AI/ML',
+  'Deep Learning',
+  'TensorFlow',
+  'PyTorch',
+  'Pandas',
+  'NumPy',
+  'Scikit-learn',
+  'NLP',
+  'Computer Vision',
+  'Data Visualization',
+  'Power BI',
+  'Tableau',
+  'SQL Analytics',
+
+  // Business & Management
+  'Project Management',
+  'Agile',
+  'Scrum',
+  'Product Management',
+  'Business Analysis',
+  'Strategic Planning',
+  'Stakeholder Management',
+  'Budget Management',
+  'Risk Management',
+
+  // Soft Skills
+  'Leadership',
+  'Team Management',
+  'Communication',
+  'Public Speaking',
+  'Negotiation',
+  'Problem Solving',
+  'Critical Thinking',
+  'Time Management',
+  'Mentoring',
+  'Conflict Resolution',
+
+  // Marketing & Sales
+  'Digital Marketing',
+  'SEO',
+  'Content Marketing',
+  'Social Media Marketing',
+  'Email Marketing',
+  'Google Analytics',
+  'PPC',
+  'Brand Strategy',
+  'Sales',
+  'CRM',
+  'Copywriting',
+
+  // Design
+  'UI/UX Design',
+  'Figma',
+  'Adobe XD',
+  'Sketch',
+  'Photoshop',
+  'Illustrator',
+  'InDesign',
+  'Prototyping',
+  'Wireframing',
+  'User Research',
+  'Graphic Design',
+  'Motion Graphics',
+
+  // Other Technical
+  'Git',
+  'Linux',
+  'Cybersecurity',
+  'Blockchain',
+  'IoT',
+  'Mobile Development',
+  'Testing/QA',
+  'API Development',
+  'System Architecture',
+  'Networking'
+]
+
+const learningGoalTags = [
+  // Technology & Development
+  'Machine Learning',
+  'Artificial Intelligence',
+  'Cloud Computing',
+  'Cybersecurity',
+  'Web Development',
+  'Mobile Development',
+  'Blockchain',
+  'DevOps',
+  'Data Science',
+  'Full Stack Development',
+  'API Development',
+  'Database Management',
+  'System Architecture',
+
+  // Programming Languages
+  'Python',
+  'JavaScript',
+  'Java',
+  'C++',
+  'Go',
+  'Rust',
+  'TypeScript',
+  'SQL',
+
+  // Business & Management
+  'Product Management',
+  'Project Management',
+  'Business Strategy',
+  'Entrepreneurship',
+  'Financial Management',
+  'Operations Management',
+  'Change Management',
+  'Risk Management',
+  'Agile Methodologies',
+  'Six Sigma',
+  'Lean Principles',
+
+  // Design & Creative
+  'UX/UI Design',
+  'Graphic Design',
+  'Video Editing',
+  '3D Modeling',
+  'Animation',
+  'Photography',
+  'Content Creation',
+  'Brand Design',
+  'User Research',
+
+  // Marketing & Sales
+  'Digital Marketing',
+  'SEO',
+  'Social Media Marketing',
+  'Content Marketing',
+  'Email Marketing',
+  'Sales Skills',
+  'Copywriting',
+  'Market Research',
+  'Brand Strategy',
+
+  // Data & Analytics
+  'Data Analysis',
+  'Data Visualization',
+  'Business Intelligence',
+  'Statistical Analysis',
+  'Excel Advanced',
+  'Power BI',
+  'Tableau',
+  'Google Analytics',
+
+  // Soft Skills & Leadership
+  'Leadership Skills',
+  'Public Speaking',
+  'Communication Skills',
+  'Negotiation',
+  'Emotional Intelligence',
+  'Team Building',
+  'Conflict Resolution',
+  'Time Management',
+  'Critical Thinking',
+  'Problem Solving',
+  'Decision Making',
+  'Mentoring & Coaching',
+
+  // Languages
+  'Spanish',
+  'Mandarin Chinese',
+  'French',
+  'German',
+  'Japanese',
+  'Arabic',
+  'Portuguese',
+  'Korean',
+  'Italian',
+  'Russian',
+
+  // Finance & Accounting
+  'Accounting Principles',
+  'Financial Analysis',
+  'Investment Strategies',
+  'Tax Planning',
+  'QuickBooks',
+  'Excel for Finance',
+  'Corporate Finance',
+
+  // Health & Wellness
+  'Nutrition',
+  'Fitness Training',
+  'Yoga Instruction',
+  'Mental Health Awareness',
+  'Mindfulness',
+  'Stress Management',
+
+  // Other Professional Skills
+  'Writing Skills',
+  'Legal Knowledge',
+  'Human Resources',
+  'Supply Chain Management',
+  'Customer Service Excellence',
+  'Networking Skills',
+  'Personal Branding'
 ]
 
 const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, handleToggle }) => {
-  const [newInterest, setNewInterest] = useState('')
   const dispatch = useAppDispatch()
 
-  const addInterest = () => {
-    if (newInterest.trim() && !inputs.interests.includes(newInterest.trim())) {
-      dispatch(
-        setInputs({
-          formName: 'beaconForm',
-          data: {
-            interests: [...inputs.interests, newInterest.trim()]
-          }
-        })
-      )
-      setNewInterest('')
-    }
-  }
-
-  const removeInterest = (interest: string) => {
-    dispatch(
-      setInputs({
-        formName: 'beaconForm',
-        data: {
-          interests: inputs.interests.filter((i: string) => i !== interest)
-        }
-      })
-    )
-  }
   return (
     <div className="p-8">
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-white">Chapter</h3>
-        {/* Chapter Information (Read-only) */}
-        <div className="space-y-2">
-          <label className="flex items-center space-x-3 text-sm font-medium text-gray-300">
-            <div className="p-1.5 bg-cyan-500/10 rounded-lg">
-              <MapPin className="w-4 h-4 text-cyan-400" />
-            </div>
-            <span>Chapter</span>
-          </label>
-          <div className="w-full bg-gray-800/30 border border-gray-700/30 text-gray-400 rounded-xl px-4 py-3 text-sm">
-            {inputs.chapter.name} - {inputs.chapter.location}
-          </div>
-        </div>
+        <h3 className="text-lg font-semibold text-white">Treasure Quest</h3>
+
+        <p className="text-sm text-gray-400 leading-relaxed">
+          Let your crew know what kind of referral you&apos;re actively seeking this week. This helps other members
+          identify opportunities that match your current business needs.
+        </p>
+
+        <Input
+          label="Weekly Treasure Wishlist"
+          icon={<MapPin />}
+          name="weeklyTreasureWishlist"
+          value={inputs.weeklyTreasureWishlist || ''}
+          onChange={handleInput}
+          disabled={!isEditing}
+          placeholder="What kind of treasure map are you seeking this week?"
+          error={errors.weeklyTreasureWishlist}
+        />
       </div>
-      <div className="mt-8 grid lg:grid-cols-2 gap-8">
+      <div className="mt-8 pb-10 border-b border-gray-700/50">
+        <h3 className="text-lg font-semibold text-white mb-4">Professional Vision</h3>
+        <Input
+          label="Professional Goal"
+          icon={<Target />}
+          name="goal"
+          value={inputs.goal || ''}
+          onChange={handleInput}
+          placeholder="What's your main professional objective?"
+          disabled={!isEditing}
+        />
+      </div>
+
+      <div className="mt-8 pb-10 grid lg:grid-cols-2 gap-8 border-b border-gray-700/50">
         {/* Basic Information */}
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
-
           <Input
             label="Full Name"
             icon={<User />}
             name="name"
-            value={inputs.name}
+            value={inputs.name || ''}
             onChange={handleInput}
             disabled={!isEditing}
             placeholder="Enter your full name"
             error={errors.name}
           />
-
           <Input
             label="Email Address"
             icon={<Mail />}
             type="email"
             name="email"
-            value={inputs.email}
+            value={inputs.email || ''}
             onChange={handleInput}
             disabled={!isEditing}
             placeholder="Enter your email"
             error={errors.email}
           />
-
           <Input
             label="Phone Number"
             icon={<Phone />}
             type="tel"
             name="phone"
-            value={inputs.phone}
+            value={inputs.phone || ''}
             onChange={handleInput}
             disabled={!isEditing}
             placeholder="+1 (555) 123-4567"
             error={errors.phone}
           />
-
           <Input
-            label="Website"
-            icon={<Globe />}
-            type="url"
-            name="website"
-            value={inputs.website}
+            label="Years in Business"
+            icon={<Calendar />}
+            name="yearsInBusiness"
+            value={inputs.yearsInBusiness || ''}
             onChange={handleInput}
             disabled={!isEditing}
-            placeholder="e.g., https://sqysh.io"
-            error={errors.website}
+            placeholder="e.g., 5 years"
+            error={errors.yearsInBusiness}
           />
         </div>
-
         {/* Professional Information */}
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Professional Information</h3>
-
+          <h3 className="text-lg font-semibold text-white mb-4 opacity-0">Professional Information</h3>
           <Input
             label="Company"
             icon={<Building />}
             name="company"
-            value={inputs.company}
+            value={inputs.company || ''}
             onChange={handleInput}
             disabled={!isEditing}
             placeholder="Enter your company"
             error={errors.company}
           />
-
+          <Input
+            label="Website"
+            icon={<Globe />}
+            type="url"
+            name="website"
+            value={inputs.website || ''}
+            onChange={handleInput}
+            disabled={!isEditing}
+            placeholder="e.g., https://sqysh.io"
+            error={errors.website}
+          />
           <Input
             label="Industry"
             icon={<Briefcase />}
             name="industry"
-            value={inputs.industry}
+            value={inputs.industry || ''}
             onChange={handleInput}
             disabled={true}
             placeholder="Enter your industry"
@@ -189,20 +613,10 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
           />
 
           <Input
-            label="Years in Business"
-            icon={<Calendar />}
-            name="yearsInBusiness"
-            value={inputs.yearsInBusiness}
-            onChange={handleInput}
-            disabled={!isEditing}
-            placeholder="e.g., 5 years"
-            error={errors.yearsInBusiness}
-          />
-          <Input
             label="Business License Number"
             icon={<Layers />}
             name="businessLicenseNumber"
-            value={inputs.businessLicenseNumber}
+            value={inputs.businessLicenseNumber || ''}
             onChange={handleInput}
             disabled={!isEditing}
             placeholder="e.g., BL-2025-1847392"
@@ -211,15 +625,85 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
         </div>
       </div>
 
+      {/* Media & Images */}
+      <div className="mt-8 pb-10 grid lg:grid-cols-2 gap-8 border-b border-gray-700/50">
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Media & Images</h3>
+          <SingleImageUploader
+            label="Cover Image"
+            inputs={inputs}
+            handleInput={handleInput}
+            isEditing={isEditing}
+            coverImageName="coverImage"
+            coverImageFilenameName="coverImageFilename"
+            placeholder="Upload your cover image"
+          />
+        </div>
+      </div>
+      <div className="mt-8 pb-10 grid lg:grid-cols-2 gap-8 border-b border-gray-700/50">
+        {/* Social Media Links */}
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold text-white mb-6">Social Media & Online Presence</h3>
+          <Input
+            label="LinkedIn Profile"
+            icon={<Globe />}
+            name="linkedInUrl"
+            value={inputs.linkedInUrl || ''}
+            onChange={handleInput}
+            placeholder="https://linkedin.com/in/yourprofile"
+            disabled={!isEditing}
+          />
+
+          <Input
+            label="Facebook Profile"
+            icon={<Globe />}
+            name="facebookUrl"
+            value={inputs.facebookUrl || ''}
+            onChange={handleInput}
+            placeholder="https://facebook.com/yourprofile"
+            disabled={!isEditing}
+          />
+
+          <Input
+            label="YouTube Channel"
+            icon={<Globe />}
+            name="youtubeUrl"
+            value={inputs.youtubeUrl || ''}
+            onChange={handleInput}
+            placeholder="https://youtube.com/@yourchannel"
+            disabled={!isEditing}
+          />
+
+          <Input
+            label="X (Twitter) Profile"
+            icon={<Globe />}
+            name="xUrl"
+            value={inputs.xUrl || ''}
+            onChange={handleInput}
+            placeholder="https://x.com/yourusername"
+            disabled={!isEditing}
+          />
+
+          <Input
+            label="Threads Profile"
+            icon={<Globe />}
+            name="threadsUrl"
+            value={inputs.threadsUrl || ''}
+            onChange={handleInput}
+            placeholder="https://threads.net/@yourusername"
+            disabled={!isEditing}
+          />
+        </div>
+      </div>
       {/* Bio Section - Full Width */}
-      <div className="mt-8 space-y-4">
+      <div className="mt-8 pb-10 space-y-4 border-b border-gray-700/50">
         <h3 className="text-lg font-semibold text-white">About You</h3>
         <Textarea
           label="Professional Bio"
           icon={<FileText />}
           name="bio"
           value={inputs.bio}
-          onChange={handleInput}
+          onChange={handleInput || ''}
           disabled={!isEditing}
           placeholder="Tell us about yourself, your experience, and what you're looking to achieve..."
           rows={4}
@@ -228,80 +712,218 @@ const BeaconForm: FC<IBeaconForm> = ({ inputs, errors, handleInput, isEditing, h
         />
       </div>
 
-      {/* Interests Section */}
-      <div className="mt-8 space-y-4">
-        <h3 className="text-lg font-semibold text-white">Interests & Networking</h3>
+      {/* Skills & Expertise */}
+      <div className="mt-8 pb-10 border-b border-gray-700/50">
+        <h3 className="text-lg font-semibold text-white mb-6">Skills & Professional Development</h3>
+        <div className="grid gap-6">
+          <TagSelector
+            inputs={inputs}
+            label="Skills"
+            icon={<Award className="w-4 h-4 text-cyan-400" />}
+            name="skills"
+            tags={skillTags}
+            isEditing={isEditing}
+          />
+          <ObjectArraySelector
+            inputs={inputs}
+            label="Career Achievements"
+            icon={<Award />}
+            name="careerAchievements"
+            items={inputs.careerAchievements || []}
+            disabled={!isEditing}
+            fields={[
+              {
+                name: 'title',
+                label: 'Achievement Title',
+                placeholder: 'e.g., Employee of the Year, Led successful product launch...',
+                type: 'text'
+              },
+              {
+                name: 'year',
+                label: 'Year',
+                placeholder: 'e.g., 2024',
+                type: 'text'
+              }
+            ]}
+            dispatch={dispatch}
+          />
+          <TagSelector
+            inputs={inputs}
+            label="Learning Goals"
+            icon={<Lightbulb className="w-4 h-4 text-cyan-400" />}
+            name="learningGoals"
+            tags={learningGoalTags}
+            isEditing={isEditing}
+          />
 
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-gray-300 mb-2 block">Your Interests</label>
+          <TagSelector
+            inputs={inputs}
+            label="Interests"
+            icon={<SquaresIntersect className="w-4 h-4 text-cyan-400" />}
+            name="interests"
+            tags={PREDEFINED_INTERESTS}
+            isEditing={isEditing}
+          />
+        </div>
+      </div>
 
-            {/* Current Interests */}
-            <motion.div
-              className="flex flex-wrap gap-2 mb-3"
-              variants={containerVariants}
-              initial="hidden"
-              animate="show"
-            >
-              {inputs.interests.map((interest: any, index: number) => (
-                <motion.span
-                  key={index}
-                  variants={itemVariants}
-                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-cyan-500/20 to-violet-500/20 border border-cyan-500/20 text-cyan-300 px-3 py-1.5 rounded-lg text-sm"
-                >
-                  <span>{interest}</span>
-                  {isEditing && (
-                    <button onClick={() => removeInterest(interest)} className="text-cyan-400 hover:text-cyan-300">
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  )}
-                </motion.span>
-              ))}
-            </motion.div>
+      {/* Services & Professional Network */}
+      <div className="mt-8 pb-10 border-b border-gray-700/50">
+        <h3 className="text-lg font-semibold text-white mb-6">Services & Professional Network</h3>
+        <div className="grid gap-6">
+          <ObjectArraySelector
+            inputs={inputs}
+            label="Services Offered"
+            icon={<Briefcase />}
+            name="servicesOffered"
+            items={inputs.servicesOffered || []}
+            disabled={!isEditing}
+            fields={[
+              {
+                name: 'name',
+                label: 'Service Name',
+                placeholder: '',
+                type: 'text'
+              },
+              {
+                name: 'description',
+                label: 'Description',
+                placeholder: '',
+                type: 'textarea'
+              }
+            ]}
+            dispatch={dispatch}
+          />
+          <ObjectArraySelector
+            inputs={inputs}
+            label="Professional Associations"
+            icon={<Briefcase />}
+            name="professionalAssociations"
+            items={inputs.professionalAssociations || []}
+            disabled={!isEditing}
+            fields={[
+              {
+                name: 'name',
+                label: 'Association Name',
+                placeholder: 'e.g. Boys & Girls Club of Lynn',
+                type: 'text'
+              },
+              {
+                name: 'role',
+                label: 'Role',
+                placeholder: '',
+                type: 'text'
+              }
+            ]}
+            dispatch={dispatch}
+          />
+          <ObjectArraySelector
+            inputs={inputs}
+            label="Professional Books"
+            icon={<BookUser />}
+            name="professionalBooks"
+            items={inputs.professionalBooks || []}
+            disabled={!isEditing}
+            fields={[
+              {
+                name: 'title',
+                label: 'Book Title',
+                placeholder: 'e.g. Learn How to Sqysh',
+                type: 'text'
+              },
+              {
+                name: 'author',
+                label: 'Author',
+                placeholder: 'e.g. Sqysh',
+                type: 'text'
+              }
+            ]}
+            dispatch={dispatch}
+          />
+        </div>
+      </div>
 
-            {isEditing && (
-              <>
-                {/* Predefined Interests */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-400 mb-2">Quick Add (click to add):</h4>
-                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-                    {PREDEFINED_INTERESTS.filter((interest) => !inputs.interests.includes(interest)).map((interest) => (
-                      <button
-                        key={interest}
-                        onClick={() => {
-                          // Add the predefined interest
-                          const updatedInterests = [...inputs.interests, interest]
-                          dispatch(setInputs({ formName: 'beaconForm', data: { interests: updatedInterests } }))
-                        }}
-                        className="inline-flex items-center space-x-1 bg-gray-700/30 hover:bg-cyan-500/20 border border-gray-600/50 hover:border-cyan-500/30 text-gray-300 hover:text-cyan-300 px-2 py-1 rounded text-xs transition-colors"
-                      >
-                        <Plus className="w-3 h-3" />
-                        <span>{interest}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+      {/* Projects & Expertise Sharing */}
+      <div className="mt-8 pb-10 border-b border-gray-700/50">
+        <h3 className="text-lg font-semibold text-white mb-6">Projects & Expertise Sharing</h3>
+        <div className="grid gap-6">
+          <ObjectArraySelector
+            inputs={inputs}
+            label="Side Projects"
+            icon={<Projector />}
+            name="sideProjects"
+            items={inputs.sideProjects || []}
+            disabled={!isEditing}
+            fields={[
+              {
+                name: 'name',
+                label: 'Project Name',
+                placeholder: '',
+                type: 'text'
+              },
+              {
+                name: 'details',
+                label: 'Details',
+                placeholder: '',
+                type: 'textarea'
+              }
+            ]}
+            dispatch={dispatch}
+          />
+          <ObjectArraySelector
+            inputs={inputs}
+            label="Ask Me About"
+            icon={<FileQuestion />}
+            name="askMeAbout"
+            items={inputs.askMeAbout || []}
+            disabled={!isEditing}
+            fields={[
+              {
+                name: 'topic',
+                label: 'Topic',
+                placeholder: '',
+                type: 'text'
+              }
+            ]}
+            dispatch={dispatch}
+          />
+        </div>
+      </div>
 
-                {/* Custom Interest Input */}
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={newInterest}
-                    onChange={(e) => setNewInterest(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && addInterest()}
-                    placeholder="Add custom interest"
-                    className="flex-1 bg-gray-800/50 border border-gray-700/50 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
-                  />
-                  <button
-                    onClick={addInterest}
-                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-sm transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+      <Collage isEditing={isEditing} initialImages={inputs?.collage} />
+
+      <div className="mt-8 pb-10 border-b border-gray-700/50">
+        <h3 className="text-lg font-semibold text-white mb-6">Content & Communication</h3>
+        <div className="grid gap-6">
+          <ObjectArraySelector
+            inputs={inputs}
+            label="Podcasts"
+            icon={<Podcast />}
+            name="podcasts"
+            items={inputs.podcasts || []}
+            disabled={!isEditing}
+            fields={[
+              {
+                name: 'name',
+                label: 'Podcast Name',
+                placeholder: '',
+                type: 'text'
+              },
+              {
+                name: 'details',
+                label: 'Details',
+                placeholder: '',
+                type: 'textarea'
+              },
+              {
+                name: 'externalLink',
+                label: 'External Link',
+                placeholder: '',
+                type: 'text'
+              }
+            ]}
+            dispatch={dispatch}
+          />
         </div>
       </div>
 

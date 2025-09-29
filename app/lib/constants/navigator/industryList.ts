@@ -146,6 +146,7 @@ const industryList = [
   'Hospitality Manager',
   'Travel Agent',
   'Tourism Specialist',
+  'Specialty Coffee Industry',
 
   // Transportation & Logistics
   'Trucking Company Owner',

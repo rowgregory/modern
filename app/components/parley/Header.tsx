@@ -37,7 +37,7 @@ const Header: FC<{ parley: IParley }> = ({ parley }) => {
                 className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center space-x-1 ${getParleyStatusColor(parley.status)}`}
               >
                 {getParleyStatusIcon(parley.status)}
-                <span>{parley.status.toLowerCase()}</span>
+                <span>{parley.status?.toLowerCase()}</span>
               </div>
 
               <div className="flex items-center space-x-2 text-gray-400 text-sm">

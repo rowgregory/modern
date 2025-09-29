@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import { setCloseParleyDrawer } from '@/app/redux/features/parleySlice'
+import { addParleyToState, setCloseParleyDrawer, updateParleyInState } from '@/app/redux/features/parleySlice'
 import { useAppDispatch, useFormSelector, useParleySelector, useUserSelector } from '@/app/redux/store'
 import Backdrop from '../common/Backdrop'
 import { createFormActions } from '@/app/redux/features/formSlice'
@@ -46,9 +46,11 @@ const ParleyDrawer = () => {
       }
 
       if (inputs?.isUpdating) {
-        await updateParley({ parleyId: inputs?.id, ...parleyData }).unwrap()
+        const updated = await updateParley({ parleyId: inputs?.id, ...parleyData }).unwrap()
+        dispatch(updateParleyInState({ id: inputs?.id, data: updated?.parley }))
       } else {
-        await createParley({ ...parleyData }).unwrap()
+        const created = await createParley(parleyData).unwrap()
+        dispatch(addParleyToState(created?.parley))
       }
 
       onClose()

@@ -19,6 +19,15 @@ export const rendezvousSlice = createSlice({
   reducers: {
     resetRendezvousError: (state) => {
       state.error = null
+    },
+    setRendezvous: (state, { payload }) => {
+      state.rendezvous = payload
+    },
+    setUpdateRendezvous: (state, { payload }) => {
+      const index = state.rendezvous.findIndex((r) => r.id === payload.id)
+      if (index !== -1) {
+        state.rendezvous[index] = payload
+      }
     }
   },
   extraReducers: (builder) => {
@@ -44,5 +53,5 @@ export const rendezvousSlice = createSlice({
   }
 })
 
-export const { resetRendezvousError } = rendezvousSlice.actions
+export const { resetRendezvousError, setRendezvous, setUpdateRendezvous } = rendezvousSlice.actions
 export const rendezvousReducer = rendezvousSlice.reducer

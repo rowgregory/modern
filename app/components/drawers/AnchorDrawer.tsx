@@ -5,7 +5,7 @@ import Drawer from '../common/Drawer'
 import { X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useAnchorSelector, useAppDispatch, useFormSelector } from '@/app/redux/store'
-import { setCloseAnchorDrawer } from '@/app/redux/features/anchorSlice'
+import { addAnchorToState, setCloseAnchorDrawer, updateAnchorInState } from '@/app/redux/features/anchorSlice'
 import { useCreateAnchorMutation, useUpdateAnchorMutation } from '@/app/redux/services/anchorApi'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
 import AnchorForm from '../forms/AnchorForm'
@@ -75,9 +75,11 @@ const AnchorDrawer = () => {
       }
 
       if (inputs?.isUpdating) {
-        await updateAnchor({ ...submitData, anchorId: anchorForm?.inputs?.id }).unwrap()
+        const updated = await updateAnchor({ ...submitData, anchorId: anchorForm?.inputs?.id }).unwrap()
+        dispatch(updateAnchorInState({ id: inputs?.id, data: updated?.anchor }))
       } else {
-        await createAnchor(submitData).unwrap()
+        const created = await createAnchor(submitData).unwrap()
+        dispatch(addAnchorToState(created?.anchor))
       }
 
       onClose()

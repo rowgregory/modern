@@ -38,7 +38,7 @@ export function validateUserData(data: any) {
   }
 
   // Validate membership status
-  const validStatuses = ['PENDING', 'ACTIVE', 'INACTIVE', 'EXPIRED', 'SUSPENDED']
+  const validStatuses = ['FLAGGED', 'PENDING', 'ACTIVE', 'INACTIVE', 'EXPIRED', 'SUSPENDED']
   if (data.membershipStatus && !validStatuses.includes(data.membershipStatus)) {
     errors.push({ field: 'membershipStatus', message: 'Invalid membership status' })
   }

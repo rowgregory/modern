@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { clearInputs, createFormActions } from '@/app/redux/features/formSlice'
-import { RootState, useAppDispatch, useAppSelector } from '@/app/redux/store'
-import { setCloseAddUserDrawer } from '@/app/redux/features/userSlice'
+import { useAppDispatch, useFormSelector, useUserSelector } from '@/app/redux/store'
+import { addUserToState, setCloseAddUserDrawer, updateUserInState } from '@/app/redux/features/userSlice'
 import { useCreateUserMutation, useUpdateUserMutation } from '@/app/redux/services/userApi'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { showToast } from '@/app/redux/features/toastSlice'
@@ -14,8 +14,8 @@ import validateNavigatorForm from '../forms/validations/validateNavigatorForm'
 const NavigatorDrawer = () => {
   const dispatch = useAppDispatch()
   const { handleInput, setErrors, handleToggle } = createFormActions('navigatorForm', dispatch)
-  const { navigatorForm } = useAppSelector((state: RootState) => state.form)
-  const { addUserDrawer } = useAppSelector((state: RootState) => state.user)
+  const { navigatorForm } = useFormSelector()
+  const { addUserDrawer } = useUserSelector()
   const onClose = () => dispatch(setCloseAddUserDrawer())
   const [createUser, { isLoading: isCreating }] = useCreateUserMutation()
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation()
@@ -38,9 +38,11 @@ const NavigatorDrawer = () => {
       }
 
       if (navigatorForm?.inputs?.isUpdating) {
-        await updateUser({ userId: navigatorForm?.inputs?.id, ...memberData }).unwrap()
+        const updated = await updateUser({ ...memberData, userId: navigatorForm?.inputs?.id }).unwrap()
+        dispatch(updateUserInState(updated?.user))
       } else {
-        await createUser(memberData).unwrap()
+        const created = await createUser(memberData).unwrap()
+        dispatch(addUserToState(created?.user))
       }
 
       dispatch(clearInputs({ formName: 'navigatorForm' }))

@@ -3,7 +3,7 @@ import { X } from 'lucide-react'
 import { useAppDispatch, useFormSelector, useUserSelector } from '@/app/redux/store'
 import Backdrop from '../common/Backdrop'
 import Drawer from '../common/Drawer'
-import { setCloseSwabbieDrawer } from '@/app/redux/features/userSlice'
+import { addUserToState, setCloseSwabbieDrawer, updateUserInState } from '@/app/redux/features/userSlice'
 import SwabbieForm from '../forms/SwabbieForm'
 import { createFormActions } from '@/app/redux/features/formSlice'
 import { showToast } from '@/app/redux/features/toastSlice'
@@ -18,7 +18,7 @@ const SwabbieDrawer = () => {
   const onClose = () => dispatch(setCloseSwabbieDrawer())
   const { swabbieForm } = useFormSelector()
   const inputs = swabbieForm?.inputs
-  // const errors = swabbieForm?.errors
+  const errors = swabbieForm?.errors
   const { handleInput, setErrors, handleToggle } = createFormActions('swabbieForm', dispatch)
   const [createSwabbie, { isLoading: isCreating }] = useCreateUserMutation()
   const [updateSwabbie, { isLoading: isUpdating }] = useUpdateUserMutation()
@@ -37,13 +37,16 @@ const SwabbieDrawer = () => {
         chapterId,
         userId: user?.id,
         hasCompletedApplication: true,
-        isAddedByAdmin: true
+        isAddedByAdmin: true,
+        membershipStatus: 'PENDING'
       }
 
       if (inputs?.isUpdating) {
-        await updateSwabbie({ swabbieId: inputs?.id, ...swabbieData }).unwrap()
+        const updated = await updateSwabbie({ swabbieId: inputs?.id, ...swabbieData }).unwrap()
+        dispatch(updateUserInState({ id: inputs.id, data: updated?.user }))
       } else {
-        await createSwabbie({ ...swabbieData }).unwrap()
+        const created = await createSwabbie({ ...swabbieData }).unwrap()
+        dispatch(addUserToState(created?.user))
       }
 
       onClose()
@@ -83,9 +86,11 @@ const SwabbieDrawer = () => {
                 transition={{ delay: 0.2, duration: 0.4 }}
               >
                 <h2 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent">
-                  {swabbieForm?.inputs?.isUpdating ? 'Update Swabbie' : 'Invite Swabbie'}
+                  {inputs?.isUpdating ? 'Update Swabbie' : 'Draft Swabbie'}
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">Sends email to swabbie upon submission (coming soon)</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Sends email to swabbie upon submission where they can view their application from port.
+                </p>
               </motion.div>
 
               <motion.button
@@ -102,11 +107,12 @@ const SwabbieDrawer = () => {
             </div>
             {/* Swabbie Form */}
             <SwabbieForm
-              inputs={swabbieForm?.inputs}
+              inputs={inputs}
+              errors={errors}
               handleInput={handleInput}
               isLoading={isLoading}
               handleSubmit={handleSubmit}
-              isUpdating={swabbieForm?.inputs?.isUpdating}
+              isUpdating={inputs?.isUpdating}
               onClose={onClose}
               handleToggle={handleToggle}
             />

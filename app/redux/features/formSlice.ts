@@ -1,4 +1,5 @@
 import { initialParleyFormState } from '@/app/lib/constants/entities/initialParleyFormState'
+import { createInitialUserWithMeta } from '@/app/lib/constants/user/initialUserFormState'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export type Inputs = {
@@ -40,29 +41,6 @@ export const navigatorInputs = {
   isAdmin: false
 }
 
-const beaconInputs = {
-  name: '',
-  email: '',
-  phone: '',
-  profileImage: '',
-  profileImageFilename: '',
-  industry: '',
-  bio: '',
-  yearsInBusiness: '',
-  businessLicenseNumber: '',
-  website: '',
-  company: '',
-  isPublic: false,
-  interests: [],
-  chapter: {
-    name: '',
-    location: ''
-  },
-  meta: {
-    profileCompleteness: false
-  }
-}
-
 const formInitialState = {
   isCreating: false,
   isEditing: false,
@@ -75,7 +53,7 @@ const formInitialState = {
     errors: {}
   },
   beaconForm: {
-    inputs: beaconInputs,
+    inputs: createInitialUserWithMeta(),
     errors: {}
   },
   swabbieForm: {
@@ -95,10 +73,11 @@ const formInitialState = {
     inputs: initialParleyFormState,
     errors: {}
   },
-  anchorForm: { inputs: {}, errors: {} },
+  anchorForm: { inputs: { status: 'VERIFIED' }, errors: {} },
   treasureMapForm: { inputs: {}, errors: {} },
   grogForm: { inputs: {}, errors: {} },
-  rendezvousForm: { inputs: {}, errors: {} }
+  rendezvousForm: { inputs: {}, errors: {} },
+  stowawayForm: { inputs: {}, errors: {} }
 } as any
 
 const formSlice = createSlice({

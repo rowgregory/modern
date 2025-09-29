@@ -17,6 +17,7 @@ import { anchorReducer } from './features/anchorSlice'
 import { treasureMapReducer } from './features/treasureMapSlice'
 import { dashboardReducer } from './features/dashboardSlice'
 import { grogReducer } from './features/grogSlice'
+import { rendezvousReducer } from './features/rendezvousSlice'
 
 const rootReducer = combineReducers({
   form: formReducer,
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   treasureMap: treasureMapReducer,
   dashboard: dashboardReducer,
   grog: grogReducer,
+  rendezvous: rendezvousReducer,
   [api.reducerPath]: api.reducer
 })
 
@@ -65,3 +67,4 @@ export const useAnchorSelector = () => useAppSelector((state) => state.anchor)
 export const useTreasureMapSelector = () => useAppSelector((state) => state.treasureMap)
 export const useDashboardSelector = () => useAppSelector((state) => state.dashboard)
 export const useGrogSelector = () => useAppSelector((state) => state.grog)
+export const useRendezvousSelector = () => useAppSelector((state) => state.rendezvous)

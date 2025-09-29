@@ -1,69 +1,33 @@
-'use client'
-
-import React, { FC, ReactNode, useState } from 'react'
-import { motion } from 'framer-motion'
-import useCustomPathname from '@/hooks/useCustomPathname'
-import FixedLeftNavigationPanel from '../components/admin/FixedLeftNavigationPanel'
-import FixedHeader from '../components/admin/FixedHeader'
-import { memberNavLinks } from '../lib/constants/navigation/memberNavLinks'
-import { useSession } from 'next-auth/react'
-import { useGetMyProfileQuery, useGetUsersQuery } from '../redux/services/userApi'
+import React, { FC, ReactNode } from 'react'
 import { chapterId } from '../lib/constants/api/chapterId'
-import { User } from '@prisma/client'
-import getCurrentPageId from '../lib/utils/common/getCurrentPageId'
-import MobileNavigationDrawer from '../components/drawers/MobileNavigationDrawer'
+import { cookies } from 'next/headers'
+import MemberLayoutClient from './member-layout-client'
 
-const MemberLayout: FC<{ children: ReactNode }> = ({ children }) => {
-  const session = useSession()
-  useGetUsersQuery({ chapterId }) as { data: { users: User[] | null } }
-  const { data } = useGetMyProfileQuery({ chapterId, userId: session.data?.user.id }, { skip: !session.data?.user.id })
-  const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false)
-  const path = useCustomPathname()
-  const selectedPage = getCurrentPageId(path, memberNavLinks)
+const asyncFetch = async (apiPath: string, fetchOptions: any) => {
+  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/member/${chapterId}/${apiPath}`, fetchOptions)
 
-  return (
-    <>
-      <MobileNavigationDrawer links={memberNavLinks} />
-      <div className="min-h-screen bg-gray-950 flex">
-        {/* Fixed Left Navigation Panel */}
-        <FixedLeftNavigationPanel
-          isNavigationCollapsed={isNavigationCollapsed}
-          setIsNavigationCollapsed={setIsNavigationCollapsed}
-          selectedPage={selectedPage}
-          links={memberNavLinks}
-          data={data}
-        />
+  return response
+}
 
-        {/* Main Content Area */}
-        <div
-          className={`${isNavigationCollapsed ? 'lg:ml-20' : 'lg:ml-[280px]'} flex-1 flex flex-col`}
-          style={{
-            transition: 'margin-left 0.3s ease-in-out'
-          }}
-        >
-          {/* Fixed Header */}
-          <FixedHeader
-            isNavigationCollapsed={isNavigationCollapsed}
-            selectedPage={selectedPage}
-            links={memberNavLinks}
-          />
+const MemberLayout: FC<{ children: ReactNode }> = async ({ children }) => {
+  const cookieStore = await cookies()
 
-          {/* Content Area */}
-          <main className="flex-1 pt-16 overflow-hidden">
-            <motion.div
-              key={selectedPage}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="h-full overflow-y-auto"
-            >
-              {children}
-            </motion.div>
-          </main>
-        </div>
-      </div>
-    </>
-  )
+  const fetchOptions = {
+    cache: 'no-store' as RequestCache,
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: cookieStore.toString()
+    }
+  }
+
+  const memberOverviewResponse = await asyncFetch('overview', fetchOptions)
+  if (!memberOverviewResponse.ok) {
+    return <div>Error loading member overview stats</div>
+  }
+
+  const data = await memberOverviewResponse.json()
+
+  return <MemberLayoutClient data={data}>{children}</MemberLayoutClient>
 }
 
 export default MemberLayout

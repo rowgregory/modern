@@ -3,23 +3,19 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Search, Users2, User2Icon } from 'lucide-react'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { useSession } from 'next-auth/react'
 import EmptyState from '@/app/components/common/EmptyState'
 import AnchorCard from '@/app/components/anchor/AnchorCard'
 import getAnchorStatusIcon from '@/app/lib/utils/anchor/getAnchorStatusIcon'
-import { useGetAnchorsQuery } from '@/app/redux/services/anchorApi'
-import { IAnchor } from '@/types/anchor'
 import getAnchorStatusOptions from '@/app/lib/utils/anchor/getAnchorStatusOptions'
 import getAnchorStatusColor from '@/app/lib/utils/anchor/getAnchorStatusColor'
 import { setOpenAnchorDrawer } from '@/app/redux/features/anchorSlice'
+import { useAnchorSelector } from '@/app/redux/store'
 
 const AdminAnchors = () => {
   const session = useSession()
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
-  const { data } = useGetAnchorsQuery({ chapterId }) as { data: { anchors: IAnchor[] } }
-  const anchors = data?.anchors
+  const { anchors } = useAnchorSelector()
   const [showMyAnchorsOnly, setShowMyAnchorsOnly] = useState(false)
 
   const filteredAnchors = anchors
@@ -31,13 +27,11 @@ const AdminAnchors = () => {
         anchor.giver.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
         anchor.receiver.company.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const matchesStatus = statusFilter === 'all' || anchor.status === statusFilter
-
       if (showMyAnchorsOnly) {
         return anchor.giverId === session?.data?.user.id || anchor.receiverId === session.data?.user.id
       }
 
-      return matchesSearch && matchesStatus
+      return matchesSearch
     })
     .sort((a, b) => {
       // Get current user ID
@@ -103,18 +97,6 @@ const AdminAnchors = () => {
 
           {/* Filters */}
           <div className="flex flex-wrap gap-2">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all"
-            >
-              {getAnchorStatusOptions(anchors).map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label} ({option.count})
-                </option>
-              ))}
-            </select>
-
             <button
               onClick={() => setShowMyAnchorsOnly(!showMyAnchorsOnly)}
               className={`px-4 py-3 border rounded-lg transition-all flex items-center space-x-2 ${
@@ -141,7 +123,7 @@ const AdminAnchors = () => {
         {filteredAnchors?.length === 0 && (
           <EmptyState
             searchQuery={searchQuery}
-            statusFilter={statusFilter}
+            statusFilter=""
             typeFilter=""
             title="Anchor"
             advice="Drop your first anchor to get started"

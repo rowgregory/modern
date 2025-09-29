@@ -40,6 +40,12 @@ export const treasureMapApi = api.injectEndpoints({
         body: { treasureMapId, status }
       }),
       invalidatesTags: ['Treasure-Map', 'Dashboard']
+    }),
+    deleteTreasureMap: build.mutation({
+      query: ({ chapterId, userId, treasureMapId }) => ({
+        url: `${BASE_URL}/${chapterId}/${userId}/${treasureMapId}/delete-treasure-map`,
+        method: 'DELETE'
+      })
     })
   })
 })
@@ -49,5 +55,6 @@ export const {
   useGetMyTreasureMapsQuery,
   useCreateTreasureMapMutation,
   useUpdateTreasureMapMutation,
-  useUpdateTreasureMapStatusMutation
+  useUpdateTreasureMapStatusMutation,
+  useDeleteTreasureMapMutation
 } = treasureMapApi

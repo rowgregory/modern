@@ -1,23 +1,21 @@
 'use client'
 
 import React from 'react'
-import { Users, Settings, Download, MoreHorizontal, Scroll } from 'lucide-react'
+import { MoreHorizontal } from 'lucide-react'
 import CircularProgress from '@/app/components/common/CircularProgress'
-import QuickActionButton from '@/app/components/bridge/QuickActionButton'
 import AdminBridgeStatsGrid from '@/app/components/admin/bridge/AdminBridgeStatsGrid'
 import WeeklyActivityChart from '@/app/components/bridge/WeeklyActivityChart'
 import IndustrySlots from '@/app/components/admin/bridge/IndustrySlots'
 import AdminOuputSummary from '@/app/components/admin/bridge/AdminOuputSummary'
 import MemberEngagement from '@/app/components/admin/bridge/MemberEngagement'
 import TopPerformers from '@/app/components/admin/bridge/TopPerformers'
-import { useListAdminStatsQuery } from '@/app/redux/services/dashboardApi'
 import TooltipWrapper from '@/app/components/common/TooltipWrapper'
-import { useRouter } from 'next/navigation'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { useDashboardSelector } from '@/app/redux/store'
+import QuickActionButtons from '@/app/components/admin/bridge/QuackActionButtons'
 
 const AdminBridge = () => {
-  const { data } = useListAdminStatsQuery({ chapterId })
-  const { push } = useRouter()
+  const data = useDashboardSelector()
+
   return (
     <div className="bg-gray-900">
       {/* Main Layout */}
@@ -33,35 +31,7 @@ const AdminBridge = () => {
           <IndustrySlots industrySlots={data?.industrySlots} capacityPercent={data?.capacityPercent} />
 
           {/* Quick Actions */}
-          <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6">
-            <h3 className="text-xl font-semibold text-white mb-6">Quick Actions</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <QuickActionButton
-                title="Manage Navigators"
-                icon={Users}
-                color="from-cyan-500 to-cyan-600 text-white rounded-lg hover:from-cyan-400 hover:to-cyan-500"
-                onClick={() => push('/admin/navigators')}
-              />
-              <QuickActionButton
-                title="Call a Parley"
-                icon={Scroll}
-                color="from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-400 hover:to-blue-500"
-                onClick={() => push('/admin/parley')}
-              />
-              <QuickActionButton
-                title="Generate Report"
-                icon={Download}
-                color="from-violet-500 to-violet-600 text-white rounded-lg hover:from-violet-400 hover:to-violet-500"
-                onClick={() => push('/admin/reports')}
-              />
-              <QuickActionButton
-                title="Rigging"
-                icon={Settings}
-                color="from-pink-500 to-pink-600 text-white rounded-lg hover:from-pink-400 hover:to-pink-500"
-                onClick={() => push('/admin/rigging')}
-              />
-            </div>
-          </div>
+          <QuickActionButtons />
         </div>
 
         {/* Right Sidebar */}

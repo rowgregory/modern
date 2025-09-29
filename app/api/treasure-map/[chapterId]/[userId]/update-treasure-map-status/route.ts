@@ -1,4 +1,4 @@
-import { sliceUser } from '@/app/lib/constants/api/sliceNames'
+import { sliceTreasureMap } from '@/app/lib/constants/api/sliceNames'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -62,18 +62,6 @@ export async function PATCH(req: NextRequest, { params }: any) {
       )
     }
 
-    // Check if user has permission to update this parley
-    // const canUpdate = existingTreasureMap.giverId === userId || existingTreasureMap.receiverId === userId
-    // if (!canUpdate) {
-    //   return NextResponse.json(
-    //     {
-    //       error: 'Forbidden',
-    //       message: 'You do not have permission to update this Treasure Map'
-    //     },
-    //     { status: 403 }
-    //   )
-    // }
-
     // Prepare update data
     const updateData: any = {
       status,
@@ -114,8 +102,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
     return NextResponse.json(
       {
-        parley: updatedTreasureMap,
-        sliceName: sliceUser,
+        treasureMap: updatedTreasureMap,
+        sliceName: sliceTreasureMap,
         message: `Treasure Map status updated to ${status.toLowerCase()}`
       },
       { status: 200 }

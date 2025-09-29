@@ -84,6 +84,14 @@ export const userApi = api.injectEndpoints({
         body: data
       }),
       invalidatesTags: ['User']
+    }),
+    updateStowaway: build.mutation({
+      query: ({ chapterId, ...data }) => ({
+        url: `${BASE_URL}/${chapterId}/stowaway/update`,
+        method: 'PUT',
+        body: data
+      }),
+      invalidatesTags: ['User']
     })
   })
 })
@@ -99,5 +107,6 @@ export const {
   useUpdateUserStatusMutation,
   useGenerateMemberMetricsQuery,
   useSignalQuartermasterMutation,
-  useUpdatePapersMutation
+  useUpdatePapersMutation,
+  useUpdateStowawayMutation
 } = userApi

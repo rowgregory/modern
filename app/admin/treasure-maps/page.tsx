@@ -2,24 +2,21 @@
 
 import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { useSession } from 'next-auth/react'
 import EmptyState from '@/app/components/common/EmptyState'
 import { Search, User2Icon, Users2 } from 'lucide-react'
-import { useGetTreasureMapsQuery } from '@/app/redux/services/treasureMapApi'
-import { ITreasureMap } from '@/types/treasure-map'
 import getTreasureMapStatusOptions from '@/app/lib/utils/treasure-map/getTreasureMapStatusOptions'
 import getTreasureMapStatusColor from '@/app/lib/utils/treasure-map/getTreasureMapStatusColor'
 import getTreasureMapStatusIcon from '@/app/lib/utils/treasure-map/getTreasureMapStatusIcon'
 import { setOpenTreasureMapDrawer } from '@/app/redux/features/treasureMapSlice'
 import TreasureMapCard from '@/app/components/treasure-map/TreasureMapCard'
+import { useTreasureMapSelector } from '@/app/redux/store'
 
 const AdminTreasureMaps = () => {
   const session = useSession()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const { data } = useGetTreasureMapsQuery({ chapterId }) as { data: { treasureMaps: ITreasureMap[] } }
-  const treasureMaps = data?.treasureMaps
+  const { treasureMaps } = useTreasureMapSelector()
   const [showMyTreasureMapsOnly, setShowMyTreasureMapsOnly] = useState(false)
 
   const filteredTreasureMaps = treasureMaps

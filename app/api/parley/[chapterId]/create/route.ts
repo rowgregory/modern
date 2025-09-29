@@ -113,7 +113,8 @@ export async function POST(req: NextRequest, { params }: any) {
             id: true,
             name: true,
             email: true,
-            image: true
+            image: true,
+            profileImage: true
           }
         },
         recipient: {
@@ -121,7 +122,8 @@ export async function POST(req: NextRequest, { params }: any) {
             id: true,
             name: true,
             email: true,
-            image: true
+            image: true,
+            profileImage: true
           }
         },
         chapter: {
