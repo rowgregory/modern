@@ -45,7 +45,7 @@ export default async function RootLayout({
       error = { status: response.status, message: 'Failed to fetch user data' }
     }
   } catch (e) {
-    console.error('Caught error:', e) // Log the actual error
+    console.error('Caught error:', e)
     error = { status: 500, message: 'Network error fetching user data' }
   }
 
