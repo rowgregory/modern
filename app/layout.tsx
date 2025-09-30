@@ -25,6 +25,8 @@ export default async function RootLayout({
 
   try {
     const cookieStore = await cookies()
+    console.log('Fetching from:', `${process.env.NEXTAUTH_URL}/api/user/${chapterId}/get-users-list`)
+
     const response = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${chapterId}/get-users-list`, {
       cache: 'no-store',
       headers: {
@@ -33,12 +35,17 @@ export default async function RootLayout({
       }
     })
 
+    console.log('Response status:', response.status)
+
     if (response.ok) {
       initialData = await response.json()
     } else {
+      const errorText = await response.text()
+      console.error('API returned error:', errorText)
       error = { status: response.status, message: 'Failed to fetch user data' }
     }
-  } catch {
+  } catch (e) {
+    console.error('Caught error:', e) // Log the actual error
     error = { status: 500, message: 'Network error fetching user data' }
   }
 
