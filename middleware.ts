@@ -11,11 +11,14 @@ const protectedAPIRoutes = [
   '/api/settings/[chapterId]'
 ]
 
+const cronRoutes = ['/api/cron/weekly-reminder-email']
+
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req
 
   // Skip middleware for static files and Next.js internals only
   if (
+    cronRoutes.includes(nextUrl.pathname) ||
     nextUrl.pathname.startsWith('/_next') ||
     nextUrl.pathname.includes('.') ||
     nextUrl.pathname.startsWith('/icon') ||
