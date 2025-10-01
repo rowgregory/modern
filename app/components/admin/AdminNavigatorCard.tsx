@@ -45,6 +45,8 @@ const AdminNavigatorCard: FC<{ navigator: User; index: number; viewMode: string 
           dispatch(setOpenAddUserDrawer())
         } else if (navigator?.membershipStatus === 'PENDING') {
           push('/admin/applications')
+        } else if (navigator?.membershipStatus === 'FLAGGED') {
+          push('/admin/stowaways')
         }
       }}
       key={navigator.id}
