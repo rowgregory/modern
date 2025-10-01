@@ -178,7 +178,7 @@ export async function POST(req: NextRequest, { params }: any) {
       await resend.emails.send({
         from: `You're Invited! <no-reply@coastal-referral-exchange.com>`,
         to: [createdUser.email],
-        subject: `Your Coastal Referral application is pending initial review`,
+        subject: `You're Invited to Coastal Referral Exchange Visitor Day!`,
         html: stowawayInvitationTemplate(createdUser.name, eventInfo)
       })
     }
