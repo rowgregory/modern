@@ -29,29 +29,44 @@ async function sendWeeklyReminders(req: NextRequest) {
 
     const weekEndDate = 'tonight (Wednesday at 11:59 PM)'
 
-    const emailPromises = users.map(async (user) => {
-      try {
-        const result = await resend.emails.send({
-          from: 'no-reply@coastal-referral-exchange.com',
-          to: user.email,
-          subject: 'Log Your Treasure Maps, Anchors & Parleys - Midnight Deadline!',
-          html: weeklyReminderTemplate(
-            user.name || user.email.split('@')[0],
-            weekEndDate,
-            user.role === 'ADMIN' || user.isAdmin
-          )
-        })
-        return { success: true, email: user.email, result }
-      } catch (error) {
-        return {
-          success: false,
-          email: user.email,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        }
-      }
-    })
+    // Send emails with rate limiting (2 per second for Resend free tier)
+    const results = []
+    const BATCH_SIZE = 2
+    const DELAY_MS = 1000 // 1 second between batches
 
-    const results = await Promise.all(emailPromises)
+    for (let i = 0; i < users.length; i += BATCH_SIZE) {
+      const batch = users.slice(i, i + BATCH_SIZE)
+
+      const batchPromises = batch.map(async (user) => {
+        try {
+          const result = await resend.emails.send({
+            from: 'no-reply@coastal-referral-exchange.com',
+            to: user.email,
+            subject: 'Log Your Treasure Maps, Anchors & Parleys - Midnight Deadline!',
+            html: weeklyReminderTemplate(
+              user.name || user.email.split('@')[0],
+              weekEndDate,
+              user.role === 'ADMIN' || user.isAdmin
+            )
+          })
+          return { success: true, email: user.email, result }
+        } catch (error) {
+          return {
+            success: false,
+            email: user.email,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        }
+      })
+
+      const batchResults = await Promise.all(batchPromises)
+      results.push(...batchResults)
+
+      // Wait before next batch (unless it's the last batch)
+      if (i + BATCH_SIZE < users.length) {
+        await new Promise((resolve) => setTimeout(resolve, DELAY_MS))
+      }
+    }
 
     // Count successes and failures
     const successful = results.filter((r) => r.success).length
