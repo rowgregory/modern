@@ -47,7 +47,7 @@ export async function PUT(req: NextRequest, { params }: any) {
     }
 
     // Update the user
-    await prisma.user.update({ where: { id: userId }, data: updateData })
+    const updatedUser = await prisma.user.update({ where: { id: userId }, data: updateData })
 
     await createLog('info', 'User updated by admin', {
       location: ['app route - GET /api/user/[chapterId]/[userId]/update-user'],
@@ -60,6 +60,7 @@ export async function PUT(req: NextRequest, { params }: any) {
 
     return NextResponse.json(
       {
+        user: updatedUser,
         succes: true,
         message: 'Navigator updated'
       },
