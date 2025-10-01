@@ -87,7 +87,7 @@ const AboutSection = () => {
                 </p>
 
                 <MotionLink
-                  href="/map-of-activity"
+                  href="/navigators"
                   whileHover={{ scale: 1.05, x: 5 }}
                   whileTap={{ scale: 0.95 }}
                   className="inline-flex items-center float-right  gap-2 bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all font-sora font-medium"
