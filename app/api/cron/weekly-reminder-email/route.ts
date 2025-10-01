@@ -8,7 +8,22 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+// Helper to get the correct base URL
+function getBaseUrl() {
+  // Use custom domain in production, fallback to VERCEL_URL for previews
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return 'http://localhost:3000'
+}
+
 async function sendWeeklyReminders(req: NextRequest) {
+  const baseUrl = getBaseUrl()
+  const normalizedUrl = `${baseUrl}/api/cron/weekly-reminder-email`
+
   try {
     const users = await prisma.user.findMany({ where: { membershipStatus: 'ACTIVE' } })
 
@@ -49,7 +64,7 @@ async function sendWeeklyReminders(req: NextRequest) {
       message: `Sent ${successful}/${users.length} weekly reminder emails successfully`,
       name: 'WeeklyRemindersSent',
       timestamp: new Date().toISOString(),
-      url: req.url,
+      url: normalizedUrl,
       method: req.method,
       metadata: {
         totalUsers: users.length,
@@ -67,7 +82,7 @@ async function sendWeeklyReminders(req: NextRequest) {
         message: `${failed}/${users.length} email(s) failed to send`,
         name: 'WeeklyRemindersPartialFailure',
         timestamp: new Date().toISOString(),
-        url: req.url,
+        url: normalizedUrl,
         method: req.method,
         metadata: {
           failedCount: failed,
@@ -89,7 +104,7 @@ async function sendWeeklyReminders(req: NextRequest) {
       message: `Fatal error in weekly reminders: ${error instanceof Error ? error.message : 'Unknown error'}`,
       name: 'WeeklyRemindersError',
       timestamp: new Date().toISOString(),
-      url: req.url,
+      url: normalizedUrl,
       method: req.method,
       metadata: {
         error: error instanceof Error ? error.message : String(error),
