@@ -41,24 +41,28 @@ const StepMarquee = () => {
 const HeroSection: FC<{ isVisible: boolean }> = ({ isVisible }) => {
   return (
     <motion.section
-      className="mt-[-74px] py-28 flex flex-col items-center justify-center text-white overflow-hidden relative bg-no-repeat bg-cover bg-center w-full h-screen"
+      className="mt-[-74px] py-16 md:py-28 flex flex-col items-center justify-center text-white overflow-hidden relative bg-no-repeat bg-cover bg-center w-full min-h-screen"
       initial="hidden"
       animate={isVisible ? 'visible' : 'hidden'}
       style={{ backgroundImage: `url('/images/hero.png')` }}
     >
+      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/40 z-10" />
-      <div className="absolute top-1/2 -translate-y-1/2 translate-x-4/5  w-96 h-96 opacity-30">
+
+      {/* Gradient blobs - optimized for mobile */}
+      <div className="absolute top-1/2 -translate-y-1/2 right-0 translate-x-1/2 w-64 h-64 md:w-96 md:h-96 opacity-20 md:opacity-30">
         <div className="w-full h-full bg-teal-500 rounded-full blur-3xl"></div>
       </div>
-      <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-96 h-96 opacity-30">
+      <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-64 h-64 md:w-96 md:h-96 opacity-20 md:opacity-30">
         <div className="w-full h-full bg-blue-600 rounded-full blur-3xl"></div>
       </div>
-      <div className="absolute top-1/2 -translate-y-1/2 -translate-x-4/5 w-96 h-96 opacity-30">
+      <div className="absolute top-1/2 -translate-y-1/2 left-0 -translate-x-1/2 w-64 h-64 md:w-96 md:h-96 opacity-20 md:opacity-30">
         <div className="w-full h-full bg-cyan-500 rounded-full blur-3xl"></div>
       </div>
-      <div className="relative z-20 max-w-7xl mx-auto px-6 text-center">
+
+      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-6 text-center">
         <motion.div variants={fadeInUp} className="flex items-center justify-center flex-col">
-          <h1 className="text-[80px] font-bold mb-6 font-sora leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[80px] font-bold mb-4 md:mb-6 font-sora leading-tight">
             <span className="bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent drop-shadow-2xl">
               Where business meets
             </span>
@@ -66,12 +70,12 @@ const HeroSection: FC<{ isVisible: boolean }> = ({ isVisible }) => {
             the{' '}
             <span className="relative inline-block">
               <span className="absolute inset-0 bg-gradient-to-r from-blue-600/40 to-cyan-600/40 -z-10 transform -skew-x-2 rounded-lg"></span>
-              <span className="relative bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent drop-shadow-2xl px-6 py-2">
+              <span className="relative bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent drop-shadow-2xl px-3 md:px-6 py-1 md:py-2">
                 horizon
               </span>
             </span>
           </h1>
-          <div className="mb-8 max-w-2xl w-full text-xl text-[#cfddde] font-sora font-bold">
+          <div className="mb-6 md:mb-8 max-w-2xl w-full text-base sm:text-lg md:text-xl text-[#cfddde] font-sora font-bold px-4">
             Join forces with like-minded entrepreneurs who believe in connection, collaboration, and creating real
             opportunities that lead to lasting growth.
           </div>

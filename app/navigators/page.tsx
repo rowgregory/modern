@@ -26,20 +26,22 @@ const Navigators = () => {
   return (
     <div className="min-h-dvh bg-gray-900 pb-20">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-teal-600 py-16">
+      <div className="bg-gradient-to-r from-blue-600 to-teal-600 py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Professional Network</h1>
-          <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 md:mb-4 leading-tight">
+            Our Professional Network
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-blue-100 mb-6 md:mb-8 max-w-3xl mx-auto leading-relaxed">
             Connect with trusted professionals in the Coastal Referral Exchange. Each member has been vetted for
             excellence and is committed to providing exceptional service to our shared client network.
           </p>
-          <div className="flex items-center justify-center space-x-6 text-blue-100">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-blue-100 text-sm md:text-base">
             <div className="flex items-center">
-              <Users className="w-5 h-5 mr-2" />
+              <Users className="w-4 h-4 md:w-5 md:h-5 mr-2 flex-shrink-0" />
               <span>{navigators?.length} Professional Members</span>
             </div>
             <div className="flex items-center">
-              <Award className="w-5 h-5 mr-2" />
+              <Award className="w-4 h-4 md:w-5 md:h-5 mr-2 flex-shrink-0" />
               <span>Vetted & Certified</span>
             </div>
           </div>
@@ -62,7 +64,7 @@ const Navigators = () => {
           <select
             value={selectedIndustry}
             onChange={(e) => setSelectedIndustry(e.target.value)}
-            className="px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="h-[50px] px-4 bg-slate-800 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             {industries.map((industry, i) => (
               <option key={i} value={industry}>

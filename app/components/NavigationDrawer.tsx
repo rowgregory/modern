@@ -15,7 +15,7 @@ const NavigationDrawer = () => {
 
   const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Application', href: '/application' },
+    { name: 'Application', href: '/swabbie' },
     { name: 'Navigators', href: '/navigators' },
     { name: 'Launch App', href: '/auth/login' }
   ]

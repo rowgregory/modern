@@ -35,7 +35,7 @@ const SwabbieApplicationForm: FC<IForm> = ({ inputs, errors, handleInput, handle
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.1 }}
-      className="bg-slate-800/40 backdrop-blur-md border border-slate-600/30 rounded-xl p-8 shadow-2xl shadow-slate-900/50"
+      className="bg-slate-800/40 backdrop-blur-md border border-slate-600/30 rounded-xl md:p-8 shadow-2xl shadow-slate-900/50"
     >
       <div className="p-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
