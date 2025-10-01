@@ -3,6 +3,9 @@ import './globals.css'
 import ReduxWrapper from './redux-wrapper'
 import { auth } from './lib/auth'
 import { SessionProvider } from 'next-auth/react'
+import { cookies } from 'next/headers'
+import { chapterId } from './lib/constants/api/chapterId'
+import { Sora } from 'next/font/google'
 
 export const metadata: Metadata = {
   title: 'CORE',
@@ -10,8 +13,12 @@ export const metadata: Metadata = {
     'Discover meaningful connections with a fresh take on networking. Match, collaborate, and grow your influence on a platform built for real interactions'
 }
 
-import { cookies } from 'next/headers'
-import { chapterId } from './lib/constants/api/chapterId'
+const sora = Sora({
+  variable: '--font-sora',
+  subsets: ['latin'],
+  weight: ['200', '300', '400', '500', '600', '700', '800'],
+  display: 'swap'
+})
 
 export default async function RootLayout({
   children
@@ -51,7 +58,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`antialiased`}>
+      <body className={`${sora.variable} antialiased`}>
         <SessionProvider session={session}>
           <ReduxWrapper initialData={initialData} error={error}>
             {children}

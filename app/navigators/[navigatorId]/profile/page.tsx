@@ -25,7 +25,7 @@ const ProfilePage = () => {
         <Lightbox images={user?.collage} initialIndex={selectedIndex} onClose={() => setLightboxOpen(false)} />
       )}
 
-      <div className="min-h-screen bg-slate-900 text-white">
+      <div className="min-h-screen bg-slate-900 text-white pb-20">
         {/* Header Cover Photo */}
         <HeaderCoverPhoto user={user} />
 

@@ -7,45 +7,45 @@ module.exports = {
   ],
   darkMode: 'class',
   theme: {
-    screens: {
-      // Mobile first approach
-      xs: '475px', // Extra small devices (large phones)
-      sm: '640px', // Small devices (tablets)
-      md: '768px', // Medium devices (small laptops)
-      lg: '1024px', // Large devices (laptops/desktops)
-      xl: '1280px', // Extra large devices (large desktops)
-      '2xl': '1536px', // 2X large devices (larger desktops)
-      '3xl': '1700px',
-
-      // Custom breakpoints for specific use cases
-      tablet: '768px', // Tablet-specific styles
-      laptop: '1024px', // Laptop-specific styles
-      desktop: '1280px', // Desktop-specific styles
-      wide: '1440px', // Wide screen desktops
-      ultrawide: '1920px', // Ultra-wide monitors
-
-      // Height-based breakpoints (useful for mobile)
-      'h-sm': { raw: '(min-height: 640px)' },
-      'h-md': { raw: '(min-height: 768px)' },
-      'h-lg': { raw: '(min-height: 1024px)' },
-
-      // Custom ranges (between breakpoints)
-      'mobile-only': { max: '767px' }, // Only mobile
-      'tablet-only': { min: '768px', max: '1023px' }, // Only tablet
-      'desktop-up': '1024px', // Desktop and up
-
-      // Orientation breakpoints
-      portrait: { raw: '(orientation: portrait)' },
-      landscape: { raw: '(orientation: landscape)' },
-
-      // Print styles
-      print: { raw: 'print' },
-
-      // Hover capability (helps with mobile vs desktop interactions)
-      hover: { raw: '(hover: hover)' },
-      'no-hover': { raw: '(hover: none)' }
-    },
     extend: {
+      screens: {
+        // Mobile first approach
+        xs: '475px', // Extra small devices (large phones)
+        sm: '640px', // Small devices (tablets)
+        md: '768px', // Medium devices (small laptops)
+        lg: '1024px', // Large devices (laptops/desktops)
+        xl: '1280px', // Extra large devices (large desktops)
+        '2xl': '1536px', // 2X large devices (larger desktops)
+        '3xl': '1700px',
+
+        // Custom breakpoints for specific use cases
+        tablet: '768px', // Tablet-specific styles
+        laptop: '1024px', // Laptop-specific styles
+        desktop: '1280px', // Desktop-specific styles
+        wide: '1440px', // Wide screen desktops
+        ultrawide: '1920px', // Ultra-wide monitors
+
+        // Height-based breakpoints (useful for mobile)
+        'h-sm': { raw: '(min-height: 640px)' },
+        'h-md': { raw: '(min-height: 768px)' },
+        'h-lg': { raw: '(min-height: 1024px)' },
+
+        // Custom ranges (between breakpoints)
+        'mobile-only': { max: '767px' }, // Only mobile
+        'tablet-only': { min: '768px', max: '1023px' }, // Only tablet
+        'desktop-up': '1024px', // Desktop and up
+
+        // Orientation breakpoints
+        portrait: { raw: '(orientation: portrait)' },
+        landscape: { raw: '(orientation: landscape)' },
+
+        // Print styles
+        print: { raw: 'print' },
+
+        // Hover capability (helps with mobile vs desktop interactions)
+        hover: { raw: '(hover: hover)' },
+        'no-hover': { raw: '(hover: none)' }
+      },
       colors: {
         'test-red': '#ff0000',
         // Dark modern palette
@@ -150,7 +150,6 @@ module.exports = {
           active: '#64748b' // Active states
         }
       },
-      // Enhanced shadows for dark theme
       boxShadow: {
         'dark-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.3)',
         dark: '0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.2)',
@@ -160,7 +159,6 @@ module.exports = {
         'dark-2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
         'dark-inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)'
       },
-      // Typography improvements for dark theme
       fontSize: {
         '2xs': '0.625rem'
       },

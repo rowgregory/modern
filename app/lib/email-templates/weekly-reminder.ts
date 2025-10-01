@@ -68,7 +68,7 @@ const weeklyReminderTemplate = (memberName: string, weekEndDate: string, isAdmin
 
     <!-- Action Button -->
     <div style="text-align: center; margin: 36px 0;">
-      <a href="${isAdmin ? '/admin/bridge' : '/member/bridge'}" style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; padding: 16px 32px; border-radius: 10px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.3); margin-bottom: 12px;">
+      <a href="${isAdmin ? 'https://coastal-referral-exchange.com/admin/bridge' : 'https://coastal-referral-exchange.com/member/bridge'}" style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; padding: 16px 32px; border-radius: 10px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.3); margin-bottom: 12px;">
         🚀 Log Activities Now
       </a>
       <p style="margin: 0; color: #64748b; font-size: 13px;">Takes less than 5 minutes</p>

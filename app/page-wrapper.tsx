@@ -14,6 +14,8 @@ import StowawayDrawer from './components/drawers/StowawayDrawer'
 import { useAppDispatch } from './redux/store'
 import { showToast } from './redux/features/toastSlice'
 import { setHydrateUsers } from './redux/features/userSlice'
+import Footer from './components/Footer'
+import NavigationDrawer from './components/NavigationDrawer'
 
 interface PageWrapperProps {
   children: React.ReactNode
@@ -24,7 +26,7 @@ interface PageWrapperProps {
 export default function PageWrapper({ children, initialData, error }: PageWrapperProps) {
   const dispatch = useAppDispatch()
   const path = useCustomPathname()
-  const showHeader = !['/admin', '/member', '/swabbie/port', '/auth/custom-callback'].some((str) => path.includes(str))
+  const showLink = !['/admin', '/member', '/swabbie/port', '/auth/custom-callback'].some((str) => path.includes(str))
 
   useEffect(() => {
     if (error) {
@@ -50,8 +52,10 @@ export default function PageWrapper({ children, initialData, error }: PageWrappe
       <TreasureMapDrawer />
       <GrogDrawer />
       <StowawayDrawer />
-      {showHeader && <Header />}
+      <NavigationDrawer />
+      {showLink && <Header />}
       {children}
+      {showLink && <Footer />}
     </>
   )
 }

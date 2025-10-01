@@ -9,13 +9,15 @@ export interface AppStatePayload {
   } | null
   handbookDrawer: boolean
   mobileNavigation: boolean
+  navigationDrawer: boolean
 }
 
 const initialAppState: AppStatePayload = {
   lastTempId: '',
   tempApplication: null,
   handbookDrawer: false,
-  mobileNavigation: false
+  mobileNavigation: false,
+  navigationDrawer: false
 }
 
 export const appSlice = createSlice({
@@ -47,6 +49,12 @@ export const appSlice = createSlice({
     },
     setCloseMobileNavigation: (state) => {
       state.mobileNavigation = false
+    },
+    setOpenNavigationDrawer: (state) => {
+      state.navigationDrawer = true
+    },
+    setCloseNavigationDrawer: (state) => {
+      state.navigationDrawer = false
     }
   }
 })
@@ -60,5 +68,7 @@ export const {
   setOpenHandbookDrawer,
   setCloseHandbookDrawer,
   setOpenMobileNavigation,
-  setCloseMobileNavigation
+  setCloseMobileNavigation,
+  setOpenNavigationDrawer,
+  setCloseNavigationDrawer
 } = appSlice.actions

@@ -24,12 +24,7 @@ const MissionSection = () => {
           alt="Hero background"
         />
         <motion.div variants={fadeInUp} className="text-center max-w-2xl">
-          <p className="text-xl text-gray-200 leading-relaxed max-w-4xl mx-auto">
-            Coastal Referral Exchange Networking exists to help business owners grow financially through trusted,
-            referral-based connections. By fostering a supportive and high-energy environment, we empower our members to
-            build meaningful relationships, exchange quality referrals, and share best practices that drive measurable
-            results for their businesses and their communities.
-          </p>
+          <p className="text-xl text-gray-200 leading-relaxed max-w-4xl mx-auto"></p>
         </motion.div>
       </div>
     </motion.section>

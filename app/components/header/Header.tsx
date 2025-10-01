@@ -2,14 +2,19 @@ import Link from 'next/link'
 import React from 'react'
 import LaunchAppButton from '../common/LaunchAppButton'
 import useCustomPathname from '@/hooks/useCustomPathname'
-import { ShipWheel } from 'lucide-react'
-import { useUserSelector } from '@/app/redux/store'
+import { Menu, ShipWheel } from 'lucide-react'
+import { useAppDispatch, useUserSelector } from '@/app/redux/store'
+import { setOpenNavigationDrawer } from '@/app/redux/features/appSlice'
 
 const Header = () => {
   const path = useCustomPathname()
   const { user } = useUserSelector()
+  const dispatch = useAppDispatch()
+
   return (
-    <div className="sticky top-0 z-50 flex items-center justify-between space-x-4 py-3 px-6 bg-gray-900 h-[74px]">
+    <div
+      className={`${path === '/' ? 'bg-transparent' : 'bg-slate-900'} flex items-center justify-between space-x-4 py-3 px-6 h-[74px] relative z-20`}
+    >
       <Link
         href="/"
         className="bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent uppercase text-2xl font-bold cursor-pointer hover:bg-gradient-to-r hover:from-teal-400 hover:via-blue-400 hover:to-cyan-400 flex items-center"
@@ -20,35 +25,38 @@ const Header = () => {
         </span>
         RE
       </Link>
-      <div className="absolute left-1/2 -translate-x-1/2 space-x-4">
+      <div className="absolute left-1/2 -translate-x-1/2 space-x-4 hidden md:block">
         <Link
           href="/"
-          className={`${path === '/' ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300`}
+          className={`${path === '/' ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300 text-[15px] uppercase font-sora font-bold`}
         >
           Home
         </Link>
         <Link
           href="/swabbie"
-          className={`${path === '/swabbie' ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300`}
+          className={`${path === '/swabbie' ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300 text-[15px] uppercase font-sora font-bold`}
         >
           Application
         </Link>
         <Link
           href="/navigators"
-          className={`${path.includes('navigators') ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300`}
+          className={`${path.includes('navigators') ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300 text-[15px] uppercase font-sora font-bold`}
         >
           Navigators
         </Link>
         {user?.chapter?.hasUnlockedGrog && (
           <Link
             href="/events"
-            className={`${path === '/events' ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300`}
+            className={`${path === '/events' ? 'bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent' : 'text-white'} hover:bg-gradient-to-r hover:from-cyan-400 hover:via-blue-400 hover:to-teal-400 hover:bg-clip-text hover:text-transparent hover:duration-300 text-[15px] uppercase font-sora font-bold`}
           >
             Events
           </Link>
         )}
       </div>
-      {path !== '/auth/login' && <LaunchAppButton />}
+      <div className="flex items-center gap-x-6">
+        <Menu onClick={() => dispatch(setOpenNavigationDrawer())} className="w-5 h-5 block md:hidden text-white" />
+        {path !== '/auth/login' && <LaunchAppButton />}
+      </div>
     </div>
   )
 }

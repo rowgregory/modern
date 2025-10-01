@@ -15,7 +15,7 @@ const Picture: FC<PictureProps> = ({ src, alt, className, priority = false, onCl
   return (
     <Image
       onClick={onClick}
-      src={src || '/images/sqysh-gif.gif'}
+      src={src || '/images/cre-logo.jpg'}
       alt={alt || 'Rosie Paws'}
       width={width || '0'}
       height={height || '0'}
